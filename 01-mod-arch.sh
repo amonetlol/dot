@@ -62,6 +62,8 @@ official_packages=(
   python-pipenv
   tree-sitter-cli
   python-virtualenv
+  tmux
+  prettier
 
   foot
   kitty

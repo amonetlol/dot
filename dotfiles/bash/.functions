@@ -183,3 +183,75 @@ vf() {
     [[ -n "$file" ]] && nvim "$file"
 }
 
+# ============================================================
+# MISC
+# ============================================================
+
+extract() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: extract <arquivo>"
+        return 1
+    fi
+
+    if [[ ! -f "$1" ]]; then
+        echo "Erro: arquivo '$1' não encontrado." >&2
+        return 1
+    fi
+
+    case "$1" in
+        *.tar.bz2) tar xjf "$1" ;;
+        *.tar.gz)  tar xzf "$1" ;;
+        *.tar.xz)  tar xJf "$1" ;;
+        *.tar)     tar xf "$1" ;;
+        *.tbz2)    tar xjf "$1" ;;
+        *.tgz)     tar xzf "$1" ;;
+        *.zip)     unzip "$1" ;;
+        *.rar)     unrar x "$1" ;;
+        *.7z)      7z x "$1" ;;
+        *.gz)      gunzip "$1" ;;
+        *.bz2)     bunzip2 "$1" ;;
+        *.xz)      unxz "$1" ;;
+        *)         echo "Formato não suportado: $1" >&2; return 1 ;;
+    esac
+}
+
+myip() {
+    curl -s ifconfig.me
+    echo
+}
+
+localip() {
+    ip -4 addr show scope global | awk '/inet / {print $2}' | cut -d/ -f1
+}
+
+ipinfo() {
+    echo "Local: $(localip)"
+    echo "Web: $(myip)"
+}
+
+# ============================================================
+# WALLPAPERS
+# ============================================================
+
+wall() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: wall <imagem>"
+        return 1
+    fi
+
+    if [[ ! -f "$1" ]]; then
+        echo "Erro: imagem '$1' não encontrada." >&2
+        return 1
+    fi
+
+    if command -v swww >/dev/null 2>&1; then
+        swww img "$1"
+    elif command -v awww >/dev/null 2>&1; then
+        awww img "$1"
+    elif command -v feh >/dev/null 2>&1; then
+        feh --bg-fill "$1"
+    else
+        echo "Erro: nenhum setter de wallpaper encontrado." >&2
+        return 1
+    fi
+}

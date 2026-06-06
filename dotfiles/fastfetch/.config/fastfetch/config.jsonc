@@ -194,7 +194,7 @@
             "type": "sound",
             "key": "├╴󰋋 Sound    │",
             "keyColor": "blue",
-            "format": "{5} {3} ({2:20})"
+            "format": "{name:45}"
         },
         {
             "type": "custom",

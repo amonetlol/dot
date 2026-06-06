@@ -42,6 +42,8 @@ official_packages=(
   tree
   tldr
   lazygit
+  bat
+  #sysd-manager
 
   gcc
   make
@@ -80,6 +82,7 @@ official_packages=(
   networkmanager
   network-manager-applet
   openssh
+  inetutils
 
   open-vm-tools
   fuse2

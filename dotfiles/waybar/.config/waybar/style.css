@@ -1,0 +1,117 @@
+* {
+  border: none;
+  border-radius: 8px;
+  min-height: 0;
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: 0.5s;
+}
+
+window#waybar.hidden {
+  opacity: 0.5;
+}
+
+#workspaces {
+  background-color: transparent;
+}
+
+#workspaces button {
+  min-width: 0;
+  padding: 6px 8px;
+  margin: 4px 0px;
+  border-radius: 0px;
+  background-color: rgba(28, 29, 45, 0.80);
+  color: #737373;
+}
+
+#workspaces button.active {
+  color: rgba(137, 135, 255, 1);
+}
+
+#workspaces button:hover {
+  box-shadow: inherit;
+  text-shadow: inherit;
+  color: #e5f7fc;
+  background-color: rgba(28, 29, 45, 0.80);
+}
+
+#cpu,
+#custom-gpu_temp,
+#wireplumber,
+#memory,
+#tray,
+#custom-weather {
+  border-radius: 0px;
+  margin: 4px 0px;
+  padding: 6px 10px;
+  color: #e5f7fc;
+  background-color: rgba(28, 29, 45, 0.80);
+}
+
+#custom-recording_status {
+  border-radius: 0px;
+  margin: 4px 0px;
+  padding: 6px 10px;
+  color: #ff5555;
+  background-color: rgba(28, 29, 45, 0.80);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+#custom-weather {
+  color: #8be9fd;
+}
+
+#custom-gpu_temp {
+  color: #ffdd6f;
+}
+
+#custom-weather.hidden {
+  padding: 6px 8px;
+}
+
+#wireplumber {}
+
+#clock {
+  background-color: rgba(28, 29, 45, 0.80);
+  padding: 0px 15px 0px 6px;
+  margin: 4px 0px;
+  border-radius: 0px 14px 14px 0px;
+  font-family: JetBrainsMono Nerd Font;
+  color: #e5f7fc;
+}
+
+#custom-arch {
+  background-color: rgba(28, 29, 45, 0.80);
+  border-radius: 15px 0px 0px 15px;
+  padding: 0px 6px 0px 15px;
+  margin: 4px 0px;
+  font-family: JetBrainsMono Nerd Font;
+  color: #e5f7fc;
+
+}
+
+tooltip {
+  border-radius: 10px;
+  border: 1px solid rgba(139, 233, 253, 0.22);
+  background-color: rgba(28, 29, 45, 0.80);
+}
+
+tooltip label {
+  padding: 6px 9px;
+  color: #e5f7fc;
+}
+
+#mpris {
+  border-radius: 0px;
+  margin: 4px 0px;
+  padding: 6px 10px;
+  color: #1ed760;
+  background-color: rgba(28, 29, 45, 0.80);
+}

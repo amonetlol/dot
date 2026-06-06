@@ -47,6 +47,8 @@ packages=(
   neofetch
   fastfetch
   starship
+  rofi
+  waybar
 )
 
 section "Resolvendo conflitos comuns antes do Stow"
@@ -86,6 +88,29 @@ if [[ -d "$HOME/.bin" ]]; then
   ok "Permissões aplicadas em ~/.bin."
 else
   warn "~/.bin não encontrado após stow."
+fi
+
+section "Aplicando permissões extras"
+
+if [[ -f "$HOME/.config/rofi/launcher.sh" ]]; then
+  chmod +x "$HOME/.config/rofi/launcher.sh"
+  ok "Permissão aplicada: ~/.config/rofi/launcher.sh"
+else
+  warn "Arquivo não encontrado: ~/.config/rofi/launcher.sh"
+fi
+
+if [[ -f "$HOME/.config/rofi/rofi-applet/powermenu.sh" ]]; then
+  chmod +x "$HOME/.config/rofi/rofi-applet/powermenu.sh"
+  ok "Permissão aplicada: ~/.config/rofi/rofi-applet/powermenu.sh"
+else
+  warn "Arquivo não encontrado: ~/.config/rofi/rofi-applet/powermenu.sh"
+fi
+
+if [[ -d "$HOME/.config/waybar/scripts" ]]; then
+  find "$HOME/.config/waybar/scripts" -type f -exec chmod +x {} \;
+  ok "Permissões aplicadas em ~/.config/waybar/scripts/*"
+else
+  warn "Diretório não encontrado: ~/.config/waybar/scripts"
 fi
 
 section "STOW FINALIZADO"

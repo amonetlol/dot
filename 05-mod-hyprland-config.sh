@@ -45,6 +45,11 @@ env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
 env = GDK_BACKEND,wayland,x11
 env = MOZ_ENABLE_WAYLAND,1
 
+# VMware
+env = GSK_RENDERER=cairo
+env = WEBKIT_DISABLE_DMABUFF=1
+
+
 # ------------------------------------------------------------
 # Startup
 # ------------------------------------------------------------
@@ -129,8 +134,8 @@ misc {
 $terminal = foot
 $fileManager = thunar
 $browser = firefox
-$menu = rofi -show drun
-$logout = wlogout
+$menu = ~/.config/rofi/launcher.sh
+$logout = ~/.config/rofi/rofi-applet/powermenu.sh
 
 # ------------------------------------------------------------
 # Binds principais
@@ -159,6 +164,12 @@ bind = SUPER SHIFT, R, exec, hyprctl reload
 
 # Restart Waybar
 bind = , F12, exec, pkill waybar; waybar &
+
+# Wallpaper aleatório
+bind = , F9, exec, ~/.config/waybar/scripts/random-wallpaper.sh
+
+# CheatSheet
+bind = SUPER, slash, exec, [float; center; size 1200 800] foot -e nvim ~/.config/hypr/hyprland.conf
 
 # ------------------------------------------------------------
 # Binds básicos extras

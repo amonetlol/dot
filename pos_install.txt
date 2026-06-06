@@ -1,0 +1,4 @@
+visual-studio-code-bin
+
+Nvim (User e Root)
+:MasonInstallAll

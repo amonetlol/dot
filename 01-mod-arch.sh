@@ -84,7 +84,7 @@ official_packages=(
 )
 
 aur_packages=(
-  visual-studio-code-bin
+  
 )
 
 section "Instalando pacotes oficiais"

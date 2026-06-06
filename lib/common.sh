@@ -145,12 +145,14 @@ ensure_yay() {
 
   local tmpdir
   tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' RETURN
 
   git clone https://aur.archlinux.org/yay-bin.git "$tmpdir/yay-bin"
-  cd "$tmpdir/yay-bin"
+
+  pushd "$tmpdir/yay-bin" >/dev/null
   makepkg -si --noconfirm
-  cd - >/dev/null
+  popd >/dev/null
+
+  rm -rf "$tmpdir"
 
   ok "yay instalado."
 }

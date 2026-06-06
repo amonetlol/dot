@@ -49,12 +49,32 @@ packages=(
   starship
 )
 
+section "Resolvendo conflitos comuns antes do Stow"
+
+backup_if_real_file() {
+  local target="$1"
+
+  if [[ -e "$target" && ! -L "$target" ]]; then
+    local backup="${target}.bak-$(date +%Y%m%d-%H%M%S)"
+    warn "Conflito encontrado: $target"
+    log "Movendo para backup: $backup"
+    mv "$target" "$backup"
+  fi
+}
+
+# Conflitos comuns do módulo bash
+backup_if_real_file "$HOME/.bashrc"
+backup_if_real_file "$HOME/.bash_profile"
+backup_if_real_file "$HOME/.profile"
+backup_if_real_file "$HOME/.aliases"
+backup_if_real_file "$HOME/.functions"
+
 section "Aplicando Stow"
 
 for pkg in "${packages[@]}"; do
   if [[ -d "$TARGET_DOTFILES/$pkg" ]]; then
     log "Aplicando stow: $pkg"
-    stow -v -t "$HOME" "$pkg"
+    stow -v -t "$HOME" --restow "$pkg"
   else
     warn "Pacote stow não encontrado, ignorando: $pkg"
   fi

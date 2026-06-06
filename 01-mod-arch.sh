@@ -122,7 +122,7 @@ fi
 install_sddm_catppuccin() {
   section "SDDM Theme Catppuccin"
 
-  install_packages_smart sddm unzip curl
+  install_packages_smart sddm unzip curl qt5-quickcontrols2 qt5-graphicaleffects qt5-svg
 
   local lightdm_active=0
   local sddm_active=0
@@ -149,45 +149,32 @@ install_sddm_catppuccin() {
     ok "SDDM já está ativo ou habilitado."
   fi
 
-  local tmpdir
-  tmpdir="$(mktemp -d)"
+  section "Instalando tema Catppuccin via AUR"
 
-  log "Baixando tema Catppuccin SDDM..."
-  curl -L \
-    -o "$tmpdir/catppuccin-sddm.zip" \
-    "https://github.com/catppuccin/sddm/archive/refs/heads/main.zip"
-
-  unzip -q "$tmpdir/catppuccin-sddm.zip" -d "$tmpdir"
-
-  local extracted
-  extracted="$(find "$tmpdir" -maxdepth 1 -type d -name 'sddm-*' | head -n 1)"
-
-  if [[ -z "$extracted" ]]; then
-    rm -rf "$tmpdir"
-    fail "Não consegui localizar a pasta extraída do tema Catppuccin."
-  fi
-
-  local theme_source=""
-  local preferred_theme="${SDDM_THEME:-catppuccin-macchiato}"
-
-  if [[ -d "$extracted/src/$preferred_theme" ]]; then
-    theme_source="$extracted/src/$preferred_theme"
+  if ! pacman -Q catppuccin-sddm-theme-mocha >/dev/null 2>&1; then
+    ensure_yay
+    yay -S --needed --noconfirm catppuccin-sddm-theme-mocha
   else
-    theme_source="$(find "$extracted/src" -maxdepth 1 -type d -name 'catppuccin-*' | head -n 1 || true)"
+    ok "catppuccin-sddm-theme-mocha já instalado."
   fi
 
-  if [[ -z "$theme_source" || ! -d "$theme_source" ]]; then
-    rm -rf "$tmpdir"
-    fail "Não encontrei uma pasta de tema Catppuccin válida dentro de $extracted/src."
+  local theme_name="catppuccin-mocha"
+
+  if [[ ! -d "/usr/share/sddm/themes/$theme_name" ]]; then
+    warn "Não encontrei /usr/share/sddm/themes/$theme_name."
+    log "Temas disponíveis:"
+    find /usr/share/sddm/themes -maxdepth 1 -mindepth 1 -type d -printf '  - %f\n' 2>/dev/null || true
+
+    local detected_theme
+    detected_theme="$(find /usr/share/sddm/themes -maxdepth 1 -mindepth 1 -type d -name 'catppuccin*' -printf '%f\n' 2>/dev/null | head -n 1 || true)"
+
+    if [[ -n "$detected_theme" ]]; then
+      theme_name="$detected_theme"
+      ok "Tema Catppuccin detectado: $theme_name"
+    else
+      fail "Tema Catppuccin não encontrado após instalação."
+    fi
   fi
-
-  local theme_name
-  theme_name="$(basename "$theme_source")"
-
-  log "Instalando tema: $theme_name"
-  sudo mkdir -p /usr/share/sddm/themes
-  sudo rm -rf "/usr/share/sddm/themes/$theme_name"
-  sudo cp -r "$theme_source" "/usr/share/sddm/themes/$theme_name"
 
   sudo mkdir -p /etc/sddm.conf.d
 
@@ -198,14 +185,13 @@ install_sddm_catppuccin() {
 
   if [[ -f /etc/sddm.conf.d/theme.conf ]]; then
     sudo cp /etc/sddm.conf.d/theme.conf "/etc/sddm.conf.d/theme.conf.bak-$(date +%Y%m%d-%H%M%S)"
+    ok "Backup criado de /etc/sddm.conf.d/theme.conf"
   fi
 
   cat <<EOF | sudo tee /etc/sddm.conf.d/theme.conf >/dev/null
 [Theme]
 Current=$theme_name
 EOF
-
-  rm -rf "$tmpdir"
 
   ok "Tema SDDM configurado: $theme_name"
   warn "Reinicie o sistema para validar a tela de login com SDDM."

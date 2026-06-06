@@ -36,8 +36,7 @@ official_packages=(
   ripgrep
   fzf
   duf
-  fastfetch
-  neofetch
+  fastfetch  
   btop
   htop
   tree
@@ -80,8 +79,7 @@ official_packages=(
 
   open-vm-tools
   fuse2
-  gtkmm3
-  xf86-video-vmware
+  gtkmm3  
   mesa
 )
 

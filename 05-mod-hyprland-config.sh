@@ -107,7 +107,6 @@ animations {
 # Layout
 # ------------------------------------------------------------
 dwindle {
-    pseudotile = true
     preserve_split = true
 }
 
@@ -121,7 +120,6 @@ master {
 misc {
     disable_hyprland_logo = true
     disable_splash_rendering = true
-    vfr = true
     force_default_wallpaper = 0
 }
 
@@ -157,7 +155,7 @@ bind = SUPER, E, exec, $fileManager
 bind = SUPER, X, exec, $logout
 
 # Reload Hyprland
-bind = SUPER SHIFT, R, reload
+bind = SUPER SHIFT, R, exec, hyprctl reload
 
 # Restart Waybar
 bind = , F12, exec, pkill waybar; waybar &
@@ -218,7 +216,7 @@ bindm = SUPER, mouse:273, resizewindow
 # ------------------------------------------------------------
 # Regras iniciais
 # ------------------------------------------------------------
-windowrulev2 = suppressevent maximize, class:.*
+windowrule = match:class .*, suppress_event maximize
 EOF
 
 ok "Configuração criada em $HYPR_CONF"

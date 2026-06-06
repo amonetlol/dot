@@ -41,8 +41,8 @@ ok "Cache de fontes atualizado."
 section "Wallpapers"
 
 WALLS_REPO="https://github.com/amonetlol/walls"
-WALLS_BASE="$HOME/Imagens/wallpapers"
-WALLS_TARGET="$WALLS_BASE/amonetlol-walls"
+WALLS_BASE="$HOME/Imagens"
+WALLS_TARGET="$WALLS_BASE/wallpapers"
 
 mkdir -p "$WALLS_BASE"
 

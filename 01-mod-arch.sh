@@ -61,6 +61,7 @@ official_packages=(
   python-pynvim
   python-pipenv
   tree-sitter-cli
+  python-virtualenv
 
   foot
   kitty
@@ -76,6 +77,7 @@ official_packages=(
 
   networkmanager
   network-manager-applet
+  openssh
 
   open-vm-tools
   fuse2
@@ -100,6 +102,13 @@ if systemctl list-unit-files NetworkManager.service >/dev/null 2>&1; then
   ok "NetworkManager ativado."
 else
   warn "NetworkManager.service não encontrado."
+fi
+
+if systemctl list-unit-files sshd.service >/dev/null 2>&1; then
+  sudo systemctl enable --now sshd.service
+  ok "sshd ativado."
+else
+  warn "sshd.service não encontrado."
 fi
 
 if systemctl list-unit-files vmtoolsd.service >/dev/null 2>&1; then

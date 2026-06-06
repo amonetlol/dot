@@ -1,0 +1,13 @@
+# ~/.aliases-arch
+# Aliases específicos para Arch Linux (yay/pacman/reflector)
+
+alias up2='yay -Syyu --noconfirm'
+alias yay='yay --noconfirm'
+alias yin='yay --noconfirm -S'
+alias yse='yay -Ss'
+alias ysel='yay -Qq | grep'
+alias yre='yay --noconfirm -Rns'
+alias yinfo='yay -Si'
+alias cls='sudo pacman -Scc --noconfirm && yay -Sc --noconfirm'
+alias rpac='sudo reflector --country Brazil --latest 10 --sort rate --save /etc/pacman.d/mirrorlist'
+alias orf='sudo pacman -Qtdq | sudo pacman -Rns -'

@@ -1,0 +1,29 @@
+# ~/.aliases-solus (ou coloca no seu ~/.zshrc / ~/.bashrc)
+# Aliases adaptados do Arch/yay e openSUSE/zypper pro Solus (eopkg)
+
+# Update completo do sistema (refresh repos + upgrade de todos os pacotes)
+alias up2='sudo eopkg upgrade'                  # ou 'sudo eopkg up'
+
+# Instalar pacote(s)
+alias yin='sudo eopkg install'                  # ou 'sudo eopkg it'
+
+# Procurar nos repositórios
+alias yse='eopkg search'                        # ou 'eopkg se'
+
+# Listar pacotes instalados e grep (equivalente ao yay -Qq | grep)
+alias ysel='eopkg list-installed | grep'        # ou 'eopkg li | grep'
+
+# Remover pacote (sem limpar deps órfãs automaticamente)
+alias yre='sudo eopkg remove'                   # ou 'sudo eopkg rm'
+
+# Info detalhada do pacote
+alias yinfo='eopkg info'
+
+# Limpar cache completo (pacotes baixados)
+alias cls='sudo eopkg delete-cache'             # ou 'sudo eopkg dc'
+
+# Atualizar mirrors/repos (força refresh dos repositórios)
+alias rpac='sudo eopkg update-repo'             # ou 'sudo eopkg ur'
+
+# Remover pacotes órfãos/unneeded (os que foram instalados como deps e não são mais necessários)
+alias orf='sudo eopkg remove-orphans'           # ou 'sudo eopkg rmo'

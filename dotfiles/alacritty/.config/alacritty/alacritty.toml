@@ -1,0 +1,79 @@
+# Alacritty – Configuração única (Catppuccin Frappé + visual idêntico ao seu Kitty/GNOME Console)
+
+[window]
+# Barra de título nativa do GNOME com botões fechar/maximizar/minimizar
+decorations = "Buttonless"          # deixa os botões do GNOME visíveis
+decorations_theme_variant = "Dark"
+
+# Margens internas iguais ao kitty
+padding.x = 10
+padding.y = 10
+
+# Transparência leve + mudança dinâmica com Ctrl+Shift+- / +
+opacity = 0.96
+#dynamic_opacity = true
+
+# Abre centralizado como o GNOME Console/Ptyxis
+startup_mode = "Windowed"
+
+
+[font]
+normal.family = "Cousine Nerd Font"
+bold.family   = "Cousine Nerd Font"
+italic.family = "Cousine Nerd Font"
+bold_italic.family = "Cousine Nerd Font"
+size = 11.0
+
+[scrolling]
+history = 10000
+
+[bell]
+duration = 0  # desliga o bell sonoro e visual
+
+[cursor]
+style.shape = "Block"
+style.blinking = "Off"
+unfocused_hollow = true
+thickness = 0.15          # espessura correta (não é mais uma subseção)
+
+
+# Cores – Catppuccin Frappé (100% iguais ao seu kitty)
+[colors.primary]
+background = "#303446"
+foreground = "#C6D0F5"
+
+[colors.cursor]
+text   = "#303446"
+cursor = "#F2D5CF"
+
+[colors.selection]
+text       = "#303446"
+background = "#F2D5CF"
+
+[colors.normal]
+black   = "#51576D"
+red     = "#E78284"
+green   = "#A6D189"
+yellow  = "#E5C890"
+blue    = "#8CAAEE"
+magenta = "#F4B8E4"
+cyan    = "#81C8BE"
+white   = "#B5BFE2"
+
+[colors.bright]
+black   = "#626880"
+red     = "#E78284"
+green   = "#A6D189"
+yellow  = "#E5C890"
+blue    = "#8CAAEE"
+magenta = "#F4B8E4"
+cyan    = "#81C8BE"
+white   = "#A5ADCE"
+
+[colors.search.matches]
+foreground = "#303446"
+background = "#F2D5CF"
+
+[colors.search.focused_match]
+foreground = "#303446"
+background = "#A6D189"

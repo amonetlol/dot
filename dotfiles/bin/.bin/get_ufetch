@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Script para baixar o ufetch correspondente à distro escolhida
+# Salva em ~/.bin/ufetch
+
+set -euo pipefail  # Boa prática: sai em caso de erro
+
+# Diretório de destino
+DEST_DIR="$HOME/.bin"
+DEST_FILE="$DEST_DIR/ufetch"
+
+# Cria o diretório ~/.bin se não existir
+mkdir -p "$DEST_DIR"
+
+# Lista de distros e URLs correspondentes
+declare -A distros=(
+    [1]="fedora https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-fedora?ref_type=heads"
+    [2]="arch https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-arch?ref_type=heads"
+    [3]="debian https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-debian?ref_type=heads"
+    [4]="nixos https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-nixos?ref_type=heads"
+    [5]="manjaro https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-manjaro?ref_type=heads"
+    [6]="ubuntu https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-ubuntu?ref_type=heads"
+    [0]="linux https://gitlab.com/jschx/ufetch/-/raw/main/ufetch-linux?ref_type=heads"
+)
+
+# Exibe o menu
+echo "Escolha a distro para baixar o ufetch:"
+echo
+for key in $(printf '%s\n' "${!distros[@]}" | sort -n); do
+    name=$(echo "${distros[$key]}" | awk '{print $1}')
+    printf " %s) %s\n" "$key" "$name"
+done
+echo
+echo -n "Digite o número da distro (ou Ctrl+C para sair): "
+
+# Lê a escolha do usuário
+read -r choice
+
+# Valida a entrada
+if [[ ! "${distros[$choice]+exists}" ]]; then
+    echo "Erro: Opção inválida!" >&2
+    exit 1
+fi
+
+# Pega nome e URL
+distro_name=$(echo "${distros[$choice]}" | awk '{print $1}')
+url=$(echo "${distros[$choice]}" | cut -d' ' -f2-)
+
+echo
+echo "Baixando ufetch para $distro_name..."
+wget -q --show-progress -O "$DEST_FILE" "$url"
+
+# Torna executável
+chmod +x "$DEST_FILE"
+
+echo
+echo "Pronto! ufetch para $distro_name foi salvo em $DEST_FILE"
+echo "Agora você pode executar diretamente com: ufetch"
+echo "(desde que ~/.bin esteja no seu \$PATH)"
+echo
+echo "Dica: se ainda não estiver no PATH, adicione no ~/.bashrc ou ~/.zshrc:"
+echo '    export PATH="$HOME/.bin:$PATH"'

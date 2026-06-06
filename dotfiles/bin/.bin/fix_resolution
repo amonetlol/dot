@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# ~/.bin/fix_resolution  (ou onde você preferir colocar)
+set -euo pipefail
+
+CURRENT=$(xrandr --query | grep ' connected primary' | grep -oP '\d+x\d+' | head -1)
+
+if [[ "$CURRENT" == "1920x1080" ]]; then
+    echo "Trocando de 1920x1080 → 1714x916"
+    xrandr -s 1714x916
+elif [[ "$CURRENT" == "1714x916" ]]; then
+    echo "Trocando de 1714x916  1920x1080"
+    xrandr -s 1920x1080
+else
+    echo "Resolução atual ($CURRENT) não é nenhuma das duas esperadas."
+    echo "Aplicando 1920x1080 como padrão..."
+    xrandr -s 1920x1080
+fi
+
+sh ~/.fehbg
+polybar-msg cmd restart
+
+echo "Resolução atual: $(xrandr --query | grep ' connected primary' | awk '{print $4}')"

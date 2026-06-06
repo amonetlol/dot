@@ -1,0 +1,185 @@
+# ============================================================
+# DETECÇÃO DA DISTRO
+# ============================================================
+detect_distro() {
+    if [[ -f /etc/nixos/configuration.nix || -d /etc/nixos ]]; then
+        echo "nixos"
+    elif [[ -f /etc/arch-release || -f /etc/artix-release ]]; then
+        echo "arch"
+    elif [[ -f /etc/debian_version ]] || grep -qiE '^(ID|ID_LIKE)=.*(debian|ubuntu|pop|mint)' /etc/os-release 2>/dev/null; then
+        echo "debian"
+    elif [[ -f /etc/fedora-release ]] || grep -qiE '^(ID|ID_LIKE)=.*fedora' /etc/os-release 2>/dev/null; then
+        echo "fedora"
+    elif [[ -f /etc/os-release ]] && grep -qiE '^(ID|ID_LIKE)=.*(opensuse|suse)' /etc/os-release; then
+        echo "opensuse"
+    elif [[ -f /etc/os-release ]] && grep -qiE '^(ID|ID_LIKE)=.*solus' /etc/os-release; then
+        echo "solus"
+    else
+        echo "unknown"
+    fi
+}
+
+reload_shell() {
+    source "$HOME/.bashrc"
+    echo "Bash recarregado."
+}
+
+
+path_check() {
+    echo "$PATH" | tr ':' '\n'
+}
+
+# ============================================================
+# FASTFETCH / INFORMAÇÕES DO SISTEMA
+# ============================================================
+
+ft() {
+    local config_dir="$HOME/.config/fastfetch"
+
+    if ! command -v fastfetch >/dev/null 2>&1; then
+        echo "Erro: fastfetch nÃ£o estÃ¡ instalado." >&2
+        return 1
+    fi
+
+    local configs=(
+        "$config_dir/Chris.jsonc"
+        "$config_dir/config.jsonc"
+        "$config_dir/small_config.jsonc"
+        "$config_dir/cybrland.jsonc"
+    )
+
+    local valid_configs=()
+    local cfg
+
+    for cfg in "${configs[@]}"; do
+        [[ -f "$cfg" ]] && valid_configs+=("$cfg")
+    done
+
+    if [[ ${#valid_configs[@]} -eq 0 ]]; then
+        echo "Erro: nenhuma config encontrada em $config_dir" >&2
+        return 1
+    fi
+
+    local chosen="${valid_configs[$RANDOM % ${#valid_configs[@]}]}"
+
+    fastfetch --config "$chosen"
+}
+
+
+# ============================================================
+# GIT
+# ============================================================
+
+gc() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: gc <url-do-repositório> [pasta-opcional]"
+        return 1
+    fi
+
+    if ! command -v git >/dev/null 2>&1; then
+        echo "Erro: git não está instalado." >&2
+        return 1
+    fi
+
+    git clone "$@"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Erro ao clonar o repositório." >&2
+        return 1
+    fi
+
+    local repo_dir
+
+    if [[ -n "$2" ]]; then
+        repo_dir="$2"
+    else
+        repo_dir="$(basename "$1" .git)"
+    fi
+
+    if [[ -d "$repo_dir" ]]; then
+        cd "$repo_dir" || return 1
+        echo "Entrou na pasta: $repo_dir"
+    else
+        echo "Aviso: pasta '$repo_dir' não encontrada após clone." >&2
+        return 1
+    fi
+}
+
+# ============================================================
+# SYSTEMD
+# ============================================================
+
+sys_failed() {
+    systemctl --failed
+    echo
+    journalctl -p 3 -b
+}
+
+
+sys_user_failed() {
+    systemctl --user --failed
+    echo
+    journalctl --user -p 3 -b
+}
+
+
+sys_status() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: sys_status <serviço>"
+        return 1
+    fi
+
+    systemctl status "$1"
+}
+
+
+sys_user_status() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: sys_user_status <serviço>"
+        return 1
+    fi
+
+    systemctl --user status "$1"
+}
+
+
+sys_restart() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: sys_restart <serviço>"
+        return 1
+    fi
+
+    sudo systemctl restart "$1"
+}
+
+
+sys_user_restart() {
+    if [[ -z "$1" ]]; then
+        echo "Uso: sys_user_restart <serviço>"
+        return 1
+    fi
+
+    systemctl --user restart "$1"
+}
+
+# ============================================================
+# NAVEGAçÃO / FZF
+# ============================================================
+
+cdf() {
+    local dir
+
+    dir="$(fd --type d --hidden --exclude .git 2>/dev/null | fzf-tmux -p --reverse)" || return 1
+
+    [[ -n "$dir" ]] && cd "$dir"
+}
+
+
+vf() {
+    local file
+
+    file="$(fd --type f --hidden --exclude .git 2>/dev/null | fzf-tmux -p --reverse)" || return 1
+
+    [[ -n "$file" ]] && nvim "$file"
+}
+

@@ -1,0 +1,11 @@
+# ~/.aliases-nixos
+# Aliases específicos para NixOS
+
+alias clean='sudo nix-collect-garbage -d'
+alias cls='sudo nix-collect-garbage -d && sudo nixos-rebuild switch --upgrade'
+alias upgrade='sudo nixos-rebuild switch --upgrade'
+alias up2='sudo nixos-rebuild switch'
+alias ed='sudo nvim /etc/nixos/configuration.nix'
+alias rebuild='sudo nixos-rebuild switch'
+alias gc='sudo nix-collect-garbage --delete-older-than 3d'
+alias nixup='sudo nix-channel --update && sudo nixos-rebuild switch --upgrade'

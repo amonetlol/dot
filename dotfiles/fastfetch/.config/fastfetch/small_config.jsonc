@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "small",     
+    "padding": {
+      "top": 1, // 1 linha do logo + 1 linha em branco extra = pula uma linha antes do texto
+      "left": 2,
+    },
+    "color": {
+      "1": "cyan",
+    },
+  },
+  "display": {
+    "separator": " : ",
+  },
+  "modules": [
+    "break",
+    {
+      "type": "os",
+      "key": "󰣇", // Ícone Arch (alternativa comum para distro)
+    },
+    {
+      "type": "kernel",
+      "key": "",
+    },
+    {
+      "type": "uptime",
+      "key": "",
+    },
+    {
+      "type": "packages",
+      "key": "󰏖",
+    },
+    {
+      "type": "de",
+      "key": "", // Ícone GNOME (ajuste se usar outro DE)
+    },
+    {
+      "type": "wm",
+      "key": "󰨇", // Ícone Wayland/Mutter
+    },
+    {
+      "type": "cpu",
+      "key": "󰍹",
+    },
+    {
+      "type": "memory",
+      "key": "",
+    },
+  ],
+
+}

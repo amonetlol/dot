@@ -1,0 +1,206 @@
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+    "logo": {
+        "type": "small",
+        "source": "", // search for logos: fastfetch --list-logos or --print-logos
+        "color": {
+            "1": "blink_cyan",
+            "2": "blink_blue"
+        },
+        "padding": {
+            "top": 7,
+            "left": 5,
+            "right": 5
+        }
+    },
+    "display": {
+        "bar": {
+            "char": {
+                "total": "─"
+            },
+            "color": {
+                "border": "light_cyan",
+                "total": "light_cyan"
+            },
+            "width": 10
+        },
+        "percent": {
+            "type": 3,
+            "ndigits": 2
+        },
+        "key": {
+            "width": 16
+        },
+        "separator": "",
+        "color": {
+            "title": "blue",
+            "output": "light_cyan"
+        }
+    },
+    "modules": [
+        "break",
+        {
+            "type": "title",
+            "key": "  ",
+            "keyWidth": 4,
+            "keyColor": "blue",
+            "color": {
+                "at": "blue"
+            }
+        },
+        {
+            "type": "custom",
+            "key": "╭─System─────┬───────────────────────────────────────────────────╮",
+            "keyColor": "blue"
+        },
+        {
+            "type": "host",
+            "key": "├╴󰌢 PC       │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "os",
+            "key": "├╴ OS       │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "wm",
+            "key": "├╴ WM       │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "kernel",
+            "key": "├╴ Kernel   │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "packages",
+            "key": "├╴󰏖 Packages │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "font",
+            "key": "├╴ Font     │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "cursor",
+            "key": "├╴󰆿 Cursor   │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "uptime",
+            "key": "├╴ Uptime   │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "command",
+            "key": "├╴󱦟 OS Age   │",
+            "keyColor": "blue",
+            "text": "birth_install=$(stat -c %W /); current=$(date +%s);    days_difference=$(( (current - birth_install) / 86400 )); echo $days_difference days"
+        },
+        {
+            "type": "custom",
+            "key": "╰────────────┴───────────────────────────────────────────────────╯",
+            "keyColor": "blue"
+        },
+        {
+            "type": "custom",
+            "key": "╭─Terminal───┬───────────────────────────────────────────────────╮",
+            "keyColor": "blue"
+        },
+        {
+            "type": "shell",
+            "key": "├╴ Shell    │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "terminal",
+            "key": "├╴ Terminal │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "terminalfont",
+            "key": "├╴ Font     │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "custom",
+            "key": "╰────────────┴───────────────────────────────────────────────────╯",
+            "keyColor": "blue"
+        },
+        {
+            "type": "custom",
+            "key": "╭─Hardware───┬───────────────────────────────────────────────────╮",
+            "keyColor": "blue"
+        },
+        {
+            "type": "display",
+            "key": "├╴󰍹 Display  │",
+            "keyColor": "blue",
+            "format": "{1}×{2}@{3}Hz "
+        },
+        {
+            "type": "cpu",
+            "key": "├╴ CPU      │",
+            "keyColor": "blue",
+            "format": "{1} [{3} cores]"
+        },
+        {
+            "type": "gpu",
+            "key": "├╴󰾲 GPU      │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "memory",
+            "key": "├╴ RAM      │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "disk",
+            "key": "├╴ Disk     │",
+            "keyColor": "blue",
+            "format": "{13} {1} / {2} ({3})"
+        },
+        {
+            "type": "battery",
+            "key": "├╴ Battery  │",
+            "keyColor": "blue",
+            "format": "{10} {4} ({5})"
+        },
+        {
+            "type": "custom",
+            "key": "╰────────────┴───────────────────────────────────────────────────╯",
+            "keyColor": "blue"
+        },
+        {
+            "type": "colors",
+            "key": "╭─Media──────┬───────────────────────────────────────────────────╮",
+            "keyColor": "blue",
+            "symbol": "diamond"
+        },
+        {
+            "type": "media",
+            "key": "├╴ Playing  │",
+            "keyColor": "blue",
+            "format": "\"{1}\" - {#1}{3}{#}"
+        },
+        {
+            "type": "player",
+            "key": "├╴󰥠 Player   │",
+            "keyColor": "blue"
+        },
+        {
+            "type": "sound",
+            "key": "├╴󰋋 Sound    │",
+            "keyColor": "blue",
+            "format": "{5} {3} ({2:20})"
+        },
+        {
+            "type": "custom",
+            "key": "╰────────────┴───────────────────────────────────────────────────╯",
+            "keyColor": "blue"
+        }
+    ]
+}
+

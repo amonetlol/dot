@@ -1,0 +1,154 @@
+# ~/.aliases
+# Apenas aliases comuns (sem condicional)
+
+# ============================================================
+# ARQUIVOS / DIRETÓRIOS
+# ============================================================
+alias cp='cp -i'
+alias mv='mv -i'
+alias mkdir='mkdir -p'
+alias exe='chmod +x'
+alias cat='bat'
+alias ls='eza -lah --color=always --group-directories-first --icons'
+alias ll='eza -lah --color=always --group-directories-first --icons'
+alias df='duf --hide special'
+alias duf='duf --hide special'
+
+
+# ============================================================
+# BUSCA / FILTROS / HISTÓRICO
+# ============================================================
+alias grep='grep -i'
+alias hg='history | grep'
+alias ag='alias | grep'
+alias lg="ls | grep"
+alias gfont='fc-list -f "%{family}\n" | grep -i '
+alias gfont2='kitty +list-fonts | grep'
+
+
+# ============================================================
+# EDITORES / CONFIGURAÇÕES
+# ============================================================
+alias nv='nvim'
+alias v='nvim'
+alias tx='gnome-text-editor'
+alias .r='source ~/.bashrc'
+alias man='tldr'
+
+alias al='nvim ~/.bashrc ~/.aliases'
+alias aln='cd ~/.config/nvim/ && nvim init.lua'
+alias alw='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && nvim config.jsonc style.css'
+alias j-edit='nvim ~/.local/share/autojump/autojump.txt'
+
+
+# ============================================================
+# SISTEMA / ENERGIA / BOOT
+# ============================================================
+alias off='systemctl poweroff'
+alias reb='systemctl reboot'
+alias update-grub='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+alias failk='faillock --reset'
+
+
+# ============================================================
+# PROCESSOS / MEMÓRIA / MONITORAMENTO
+# ============================================================
+alias ps='procs'
+alias kill='kill -9'
+alias killall='killall -9'
+alias free-mem="sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'"
+alias inxi='inxi -Fxz'
+
+
+# ============================================================
+# LOGS / DIAGNÓSTICO
+# ============================================================
+alias logs="systemctl --failed; echo; journalctl -p 3 -b"
+alias logs2='journalctl -p err --since "1 hour ago"'
+
+
+# ============================================================
+# REDE / INTERNET / CLIMA
+# ============================================================
+alias ping='ping -c 10'
+alias tping='ping -c 4 google.com'
+alias weather="curl -s 'wttr.in/Ubatuba?0&lang=pt-br'"
+alias tempo='curl -s "https://wttr.in/Ubatuba?format=%t\n" | head -n 3'
+
+
+# ============================================================
+# FZF / BUSCA INTERATIVA
+# ============================================================
+alias ff='sh ~/Scripts/fsearch'
+alias fv='fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs -r nvim'
+
+
+# ============================================================
+# FETCH / INFORMAÇÕES VISUAIS DO SISTEMA
+# ============================================================
+alias xft='sexyFetch.sh'
+alias ftm='fastfetch --config ~/.config/fastfetch/small_config.jsonc'
+alias ft2='fastfetch --logo small -c ~/.config/fastfetch/Chris.jsonc'
+alias ft3='fastfetch --logo small'
+alias nf='neofetch'
+alias nf2='nerdfetch'
+alias sf='screenfetch'
+alias uf='ufetch'
+
+
+# ============================================================
+# VNC / WAYVNC
+# ============================================================
+alias svnc='systemctl --user status wayvnc'
+alias rvnc='systemctl --user start wayvnc'
+
+
+# ============================================================
+# QTILE
+# ============================================================
+alias xprop='xprop WM_CLASS | grep WM_CLASS'
+alias win='rofi -show window'
+alias fix='~/.bin/fix_resolution'
+alias qd='cd ~/.config/qtile && ll'
+alias pb='polybar-msg cmd restart >/dev/null 2>&1'
+alias qr='qtile cmd-obj -o cmd -f restart >/dev/null 2>&1'
+alias qpb='qtile cmd-obj -o cmd -f restart >/dev/null 2>&1 && polybar-msg cmd restart >/dev/null 2>&1'
+alias qlog='code ~/.local/share/qtile/qtile.log'
+alias fwall='feh --no-fehbg --bg-fill'
+alias fwall2='feh --bg-fill'
+
+
+# ============================================================
+# HYPRLAND
+# ============================================================
+alias hr='hyprctl reload'
+alias wb='pkill waybar && waybar &'
+alias hd='cd ~/.config/hypr && ll'
+alias swall='awww img ~/Imagens/wallpapers/045.jpg'
+alias swall2='awww img'
+alias hprop='hyprctl clients | grep "class:"'
+alias ewb='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && nvim config.jsonc style.css'
+alias hwb='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && ll'
+alias hro='cd ~/.config/hypr/hypr-rox-vmware/.config/rofi && ll'
+
+
+# ============================================================
+# OPENBOX
+# ============================================================
+alias od='cd ~/.config/openbox/ && ll'
+alias or='openbox --reconfigure'
+
+
+# ============================================================
+# ZOXIDE / AUTOJUMP
+# ============================================================
+alias j='z'
+alias ji='zi'  # interativo com fzf
+
+
+# ============================================================
+# YT-DLP / MÍDIA
+# ============================================================
+alias yt='yt-dlp -f "bestvideo[height<=1080][vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[height<=1080][vcodec^=avc1]/best[ext=mp4]/best" --merge-output-format mp4'
+alias play='celluloid'
+alias cut='~/.bin/cut.sh'

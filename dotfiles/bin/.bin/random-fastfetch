@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Script para executar fastfetch com uma config aleatória
+# Diretório onde estão as configs do fastfetch
+CONFIG_DIR="$HOME/.config/fastfetch"
+
+# Verifica se o diretório existe
+if [[ ! -d "$CONFIG_DIR" ]]; then
+	echo "Erro: Diretório $CONFIG_DIR não encontrado!" >&2
+	exit 1
+fi
+
+# Lista todos os arquivos .jsonc no diretório (ignora pastas e outros arquivos)
+mapfile -t CONFIGS < <(find "$CONFIG_DIR" -maxdepth 1 -type f -name '*.jsonc' | sort)
+
+# Verifica se há pelo menos uma config
+if [[ ${#CONFIGS[@]} -eq 0 ]]; then
+	echo "Erro: Nenhuma config .jsonc encontrada em $CONFIG_DIR!" >&2
+	exit 1
+fi
+
+# Escolhe uma config aleatória
+RANDOM_CONFIG="${CONFIGS[$RANDOM % ${#CONFIGS[@]}]}"
+
+# Executa o fastfetch com a config escolhida
+#echo "Usando config: $(basename "$RANDOM_CONFIG")"
+fastfetch --logo small --config "$RANDOM_CONFIG"

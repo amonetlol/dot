@@ -1,0 +1,31 @@
+# ~/.aliases-opensuse (ou coloca no seu ~/.zshrc / ~/.bashrc)
+# Aliases adaptados do Arch/yay pro openSUSE Tumbleweed (zypper)
+
+# Update completo do sistema (o mais importante no Tumbleweed)
+alias up2='sudo zypper --non-interactive refresh && sudo zypper --non-interactive dup'
+
+# Instalar pacote(s)
+alias yin='sudo zypper --non-interactive install'
+
+# Procurar nos repositórios
+alias yse='zypper search'                  # ou 'zypper se -s' pra mais detalhes
+
+# Listar pacotes instalados e grep (equivalente ao yay -Qq | grep)
+alias ysel='rpm -qa | grep'
+
+# Remover pacote + deps não usadas + limpar cache do pacote
+alias yre='sudo zypper remove --clean-deps'
+alias yre='sudo zypper --non-interactive remove --clean-deps'
+
+# Info detalhada do pacote
+alias yinfo='zypper info'
+
+# Limpar cache completo (pacotes baixados + metadata antigo)
+alias cls='sudo zypper clean --all'
+
+# Atualizar mirrors (Tumbleweed usa MirrorCache automático, mas isso força refresh)
+alias rpac='sudo zypper --non-interactive refresh'
+
+# Remover pacotes órfãos/unneeded (os que foram auto-instalados e não são mais necessários)
+alias orf='sudo zypper packages --unneeded | awk -F"|" "/^i /{print \$3}" | xargs -r sudo zypper remove --clean-deps'
+#alias orf='sudo zypper packages --unneeded | awk -F"|" "/^i /{print \$3}" | xargs -r sudo zypper --non-interactive remove --clean-deps'

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+qtile cmd-obj -o root -f get_groups | jq -r '."1" | "Workspace: \(.name)\nLayout: \(.layout)"'

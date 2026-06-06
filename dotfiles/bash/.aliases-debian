@@ -1,0 +1,17 @@
+# ~/.aliases-debian
+# Aliases específicos para Debian/Ubuntu
+
+alias up2='sudo apt update && sudo apt upgrade -y'
+alias upgrade='sudo apt update && sudo apt full-upgrade -y'
+alias up-safe='sudo apt update && sudo apt upgrade'
+alias up-all='sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean'
+alias yin='sudo apt install'
+alias yre='sudo apt remove --purge'
+alias yre-auto='sudo apt autoremove --purge'
+alias yse='apt search'
+alias yinfo='apt show'
+alias cls='sudo apt clean && sudo apt autoclean && sudo apt autoremove -y'
+alias ffix='sudo apt install -f'
+alias ysel='apt list --installed | grep -i'
+
+

@@ -37,6 +37,7 @@ monitor=,preferred,auto,1
 # Environment
 # ------------------------------------------------------------
 env = XCURSOR_SIZE,24
+env = XCURSOR_THEME,Qogir-cursors
 env = HYPRCURSOR_SIZE,24
 env = WLR_NO_HARDWARE_CURSORS,1
 env = WLR_RENDERER_ALLOW_SOFTWARE,1

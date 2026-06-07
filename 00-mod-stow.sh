@@ -85,8 +85,7 @@ done
 
 if [[ -d "$HOME/.bin" ]]; then
   log "Aplicando chmod +x em ~/.bin/*"
-  chmod +x "$HOME/.bin/*
-  #find "$HOME/.bin" -type f -exec chmod +x {} \;
+  find "$HOME/.bin" -type f -exec chmod +x {} \;
   ok "Permissões aplicadas em ~/.bin."
 else
   warn "~/.bin não encontrado após stow."

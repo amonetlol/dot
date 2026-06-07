@@ -36,6 +36,7 @@ alias .r='source ~/.bashrc'
 alias man='tldr'
 
 alias al='nvim ~/.bashrc ~/.aliases'
+alias al2='nvim ~/.bashrc ~/.aliases ~/.aliases-arch ~/.functions'
 alias aln='cd ~/.config/nvim/ && nvim init.lua'
 alias alw='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && nvim config.jsonc style.css'
 alias j-edit='nvim ~/.local/share/autojump/autojump.txt'
@@ -153,9 +154,9 @@ alias yt='yt-dlp -f "bestvideo[height<=1080][vcodec^=avc1]+bestaudio[acodec^=mp4
 alias play='celluloid'
 alias cut='~/.bin/cut.sh'
 
-==============================
-FUNÇÕES DISPONÍVEIS
-==============================
+#==============================
+#FUNÇÕES DISPONÍVEIS
+#==============================
 
 alias func='cat << "EOF"
 ==============================

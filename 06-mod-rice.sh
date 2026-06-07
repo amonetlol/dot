@@ -18,13 +18,13 @@ ASSETS_DIR="$PWD/Assets"
 THEMES_DIR="$HOME/.themes"
 ICONS_DIR="$HOME/.icons"
 
-MANHATTAN_ZIP="$ASSETS_DIR/Manhattan.zip"
-QOGIR_CURSOR_ZIP="$ASSETS_DIR/Qogir-Dark.zip"
-MACTAHOE_ICONS_ZIP="$ASSETS_DIR/MacTahoe-dark.zip"
+MANHATTAN_FILE="$ASSETS_DIR/Manhattan.zip"
+QOGIR_CURSOR_FILE="$ASSETS_DIR/Qogir-cursors.tar.xz"
+MACTAHOE_ICONS_FILE="$ASSETS_DIR/MacTahoe.tar.xz"
 
 section "Verificando dependências"
 
-install_packages_smart unzip
+install_packages_smart unzip tar xz gtk3
 
 section "Verificando pasta Assets"
 
@@ -40,37 +40,54 @@ mkdir -p "$ICONS_DIR"
 ok "Diretório criado/verificado: ~/.themes"
 ok "Diretório criado/verificado: ~/.icons"
 
-extract_zip() {
-  local zip_file="$1"
+extract_archive() {
+  local archive_file="$1"
   local destination="$2"
   local label="$3"
 
-  if [[ ! -f "$zip_file" ]]; then
-    warn "Arquivo não encontrado: $zip_file"
+  if [[ ! -f "$archive_file" ]]; then
+    warn "Arquivo não encontrado: $archive_file"
     warn "Pulando: $label"
     return 0
   fi
 
   log "Instalando $label..."
-  log "Arquivo: $zip_file"
+  log "Arquivo: $archive_file"
   log "Destino: $destination"
 
-  unzip -o "$zip_file" -d "$destination"
+  case "$archive_file" in
+    *.zip)
+      unzip -o "$archive_file" -d "$destination"
+      ;;
+    *.tar.xz)
+      tar -xJf "$archive_file" -C "$destination"
+      ;;
+    *.tar.gz|*.tgz)
+      tar -xzf "$archive_file" -C "$destination"
+      ;;
+    *.tar)
+      tar -xf "$archive_file" -C "$destination"
+      ;;
+    *)
+      warn "Formato não suportado: $archive_file"
+      return 0
+      ;;
+  esac
 
   ok "$label instalado em $destination"
 }
 
 section "Instalando tema GTK"
 
-extract_zip "$MANHATTAN_ZIP" "$THEMES_DIR" "Tema Manhattan"
+extract_archive "$MANHATTAN_FILE" "$THEMES_DIR" "Tema Manhattan"
 
 section "Instalando cursor"
 
-extract_zip "$QOGIR_CURSOR_ZIP" "$ICONS_DIR" "Cursor Qogir-Dark"
+extract_archive "$QOGIR_CURSOR_FILE" "$ICONS_DIR" "Cursor Qogir"
 
 section "Instalando ícones"
 
-extract_zip "$MACTAHOE_ICONS_ZIP" "$ICONS_DIR" "Ícones MacTahoe-dark"
+extract_archive "$MACTAHOE_ICONS_FILE" "$ICONS_DIR" "Ícones MacTahoe"
 
 section "Atualizando cache de ícones"
 
@@ -90,16 +107,22 @@ section "MOD RICE FINALIZADO"
 cat <<EOF
 Rice instalado.
 
+Arquivos esperados em Assets:
+
+  Assets/Manhattan.zip
+  Assets/Qogir-cursors.tar.xz
+  Assets/MacTahoe.tar.xz
+
 Verifique no nwg-look:
 
   Tema GTK:
     Manhattan
 
   Cursor:
-    Qogir-Dark
+    Qogir
 
   Ícones:
-    MacTahoe-dark
+    MacTahoe
 
 Caso o nome apareça diferente no nwg-look, é porque o nome real vem do arquivo index.theme dentro de cada tema.
 EOF

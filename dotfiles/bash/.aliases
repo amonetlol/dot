@@ -152,3 +152,35 @@ alias ji='zi'  # interativo com fzf
 alias yt='yt-dlp -f "bestvideo[height<=1080][vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[height<=1080][vcodec^=avc1]/best[ext=mp4]/best" --merge-output-format mp4'
 alias play='celluloid'
 alias cut='~/.bin/cut.sh'
+
+==============================
+FUNÇÕES DISPONÍVEIS
+==============================
+
+alias func='cat << "EOF"
+==============================
+FUNÇÕES DISPONÍVEIS
+==============================
+
+SYSTEMD:
+  sys_failed                  -> mostra serviços systemd com falha
+  sys_user_failed             -> mostra serviços systemd --user com falha
+  sys_status <serviço>        -> status de serviço systemd
+  sys_user_status <serviço>   -> status de serviço systemd --user
+  sys_restart <serviço>       -> reinicia serviço systemd com sudo
+  sys_user_restart <serviço>  -> reinicia serviço systemd --user
+
+NAVEGAÇÃO / FZF:
+  cdf                         -> escolher pasta com fd + fzf-tmux e entrar nela
+  vf                          -> escolher arquivo com fd + fzf-tmux e abrir no nvim
+
+MISC:
+  extract <arquivo>           -> extrair zip, tar, rar, 7z, gz, bz2, xz
+  myip                        -> mostra IP público
+  localip                     -> mostra IP local
+  ipinfo                      -> mostra IP local e IP web
+
+WALLPAPER:
+  wall <imagem>               -> define wallpaper usando swww, awww ou feh
+
+EOF'

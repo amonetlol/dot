@@ -49,6 +49,7 @@ packages=(
   starship
   rofi
   waybar
+  gtk-3.0
 )
 
 section "Resolvendo conflitos comuns antes do Stow"

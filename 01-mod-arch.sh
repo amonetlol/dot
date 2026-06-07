@@ -53,6 +53,7 @@ official_packages=(
   bc
   findutils
   coreutils
+  intel-ucode
 
   nodejs
   npm

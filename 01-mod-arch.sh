@@ -91,7 +91,7 @@ official_packages=(
 )
 
 aur_packages=(
-  mactahoe-icon-theme-git
+  
 )
 
 section "Instalando pacotes oficiais"

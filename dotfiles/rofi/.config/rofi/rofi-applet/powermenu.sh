@@ -92,9 +92,10 @@ confirm_run () {
 # Execute Command
 run_cmd() {
 	if [[ "$1" == '--opt1' ]]; then
-		hyprlock
+		#hyprlock
+		confirm_run 'hyprctl dispatch exit 0'
 	elif [[ "$1" == '--opt2' ]]; then
-		confirm_run 'hypctl dispatch exit 0'
+		confirm_run 'hyprctl dispatch exit 0'
 	elif [[ "$1" == '--opt3' ]]; then
 		confirm_run 'mpc -q pause' 'amixer set Master mute' 'systemctl suspend'
 	elif [[ "$1" == '--opt4' ]]; then

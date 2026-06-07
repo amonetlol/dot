@@ -136,7 +136,7 @@ fi
 install_sddm_catppuccin() {
   section "SDDM Theme Catppuccin"
 
-  install_packages_smart sddm unzip curl qt5-quickcontrols2 qt5-graphicaleffects qt5-svg
+  install_packages_smart sddm unzip curl qt5-quickcontrols2 qt5-graphicaleffects qt5-svg qt6-svg qt6-declarative wget
 
   local lightdm_active=0
   local sddm_active=0
@@ -163,13 +163,39 @@ install_sddm_catppuccin() {
     ok "SDDM já está ativo ou habilitado."
   fi
 
-  section "Instalando tema Catppuccin via AUR"
+  # section "Instalando tema Catppuccin via AUR"
 
-  if ! pacman -Q catppuccin-sddm-theme-mocha >/dev/null 2>&1; then
-    ensure_yay
-    yay -S --needed --noconfirm catppuccin-sddm-theme-mocha
+  # if ! pacman -Q catppuccin-sddm-theme-mocha >/dev/null 2>&1; then
+  #   ensure_yay
+  #   yay -S --needed --noconfirm catppuccin-sddm-theme-mocha
+  # else
+  #   ok "catppuccin-sddm-theme-mocha já instalado."
+  # fi
+
+  section "Instalando tema Catppuccin via AUR"
+  THEME_URL="https://github.com/catppuccin/sddm/releases/download/v1.1.2/catppuccin-macchiato-blue-sddm.zip"
+  THEME_ZIP="catppuccin-macchiato-blue-sddm.zip"
+  TMP_DIR="$PWD/tmp"
+  
+  # Cria pasta temporária
+  mkdir -p "$TMP_DIR"
+  
+  # Baixa o tema
+  echo "Baixando tema Catppuccin Macchiato Blue..."
+  wget -q --show-progress -O "$TMP_DIR/$THEME_ZIP" "$THEME_URL"
+  
+  # Verifica se o download foi bem sucedido
+  if [ -f "$TMP_DIR/$THEME_ZIP" ]; then
+      echo "Descompactando tema..."
+      unzip -o "$TMP_DIR/$THEME_ZIP" -d "$TMP_DIR"
+      
+      echo "Instalando tema no SDDM..."
+      sudo cp -r "$TMP_DIR/catppuccin-macchiato-blue" /usr/share/sddm/themes/
+      
+      echo "✅ Tema Catppuccin Macchiato Blue instalado com sucesso!"
   else
-    ok "catppuccin-sddm-theme-mocha já instalado."
+      echo "❌ Erro: Falha ao baixar o arquivo."
+      exit 1
   fi
 
   local theme_name="catppuccin-mocha"

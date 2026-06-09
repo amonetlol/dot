@@ -9,9 +9,8 @@
 {
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
-	    "source": "~/.config/fastfetch/homer.png",
-	    // "type": "kitty",
-		"type": "sixel",
+	    "source": "",
+		"type": "small",
 	    "height": 14,
 	    "padding": {
 		    "top": 1

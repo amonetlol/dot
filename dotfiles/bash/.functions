@@ -116,7 +116,8 @@ dotupdate() {
     
     # Mostra o que mudou (muito útil)
     echo "📋 Arquivos alterados:"
-    git log --oneline -5 HEAD@{1}..HEAD || echo "Nenhuma mudança detectada"
+    #git log --oneline -5 HEAD@{1}..HEAD || echo "Nenhuma mudança detectada"
+    GIT_PAGER=cat git log --oneline -5 HEAD@{1}..HEAD 2>/dev/null || echo "Nenhuma mudança detectada"
     
     echo "🔄 Preparando ~/.dotfiles ..."
     mkdir -p ~/.dotfiles

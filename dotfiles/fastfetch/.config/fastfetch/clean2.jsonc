@@ -11,9 +11,9 @@
     "logo": {
 	    "source": "",
 		"type": "small",
-	    "height": 14,
+	    //"height": 14,
 	    "padding": {
-		    "top": 1
+		    "top": 4
 	    }
     },
     "display": {

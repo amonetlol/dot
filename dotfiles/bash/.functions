@@ -113,7 +113,7 @@ dotupdate() {
     git pull origin main
     
     echo "🔄 Restowando ~/.dotfiles ..."
-    rm -rf ~/.dotfiles
+    #rm -rf ~/.dotfiles
     stow -R -v dotfiles -t ~/.dotfiles
     
     echo "✅ Dotfiles atualizados!"

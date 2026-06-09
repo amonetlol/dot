@@ -54,6 +54,8 @@ official_packages=(
   findutils
   coreutils
   intel-ucode
+  snap-pac
+  snapper-support
 
   nodejs
   npm

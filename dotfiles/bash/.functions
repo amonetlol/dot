@@ -141,6 +141,14 @@ dotupdate() {
     # Funções ok/warn (se ainda não tiverem no script)
     ok() { echo -e "\033[32m✅ $1\033[0m"; }
     warn() { echo -e "\033[33m⚠️  $1\033[0m"; }
+
+    # === Todos os scripts dentro de ~/.bin ===
+    if [[ -d "$HOME/.bin" ]]; then
+      chmod +x "$HOME"/.bin/*
+      ok "Permissões aplicadas em ~/.bin."
+    else
+      warn "~/.bin não encontrado após stow."
+    fi
     
     # === Arquivos individuais ===
     for script in \

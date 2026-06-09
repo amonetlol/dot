@@ -106,19 +106,65 @@ gc() {
 }
 
 dotupdate() {
-    cd ~/.src/dot || { echo "Pasta não encontrada"; return 1; }
+    cd ~/.src/dot || { echo "❌ Pasta ~/.src/dot não encontrada"; return 1; }
     
-    echo "🔄 Atualizando Git..."
-    #git pull --rebase origin main
-    #git pull origin main
+    echo "🔄 Atualizando repositório Git..."
     git fetch --all
+    
+    # Resetando para ficar igual ao remoto
     git reset --hard origin/main
     
-    echo "🔄 Restowando ~/.dotfiles ..."
-    #rm -rf ~/.dotfiles
-    stow -R -v dotfiles -t ~/.dotfiles
+    # Mostra o que mudou (muito útil)
+    echo "📋 Arquivos alterados:"
+    git log --oneline -5 HEAD@{1}..HEAD || echo "Nenhuma mudança detectada"
     
-    echo "✅ Dotfiles atualizados!"
+    echo "🔄 Preparando ~/.dotfiles ..."
+    mkdir -p ~/.dotfiles
+    
+    # Limpeza antes de restowar
+    echo "🔄 Removendo links antigos..."
+    stow -D dotfiles -t ~/.dotfiles 2>/dev/null || true
+    find ~/.dotfiles -type l -delete 2>/dev/null || true
+    
+    echo "🔄 Restowando dotfiles..."
+    stow -v -R dotfiles -t ~/.dotfiles
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Dotfiles atualizados com sucesso!"
+    else
+        echo "❌ Erro durante o stow. Verifique os conflitos acima."
+    fi
+
+    echo "🔧 Aplicando permissões extras..."
+    
+    # === Arquivos individuais ===
+    for script in \
+        "$HOME/.config/rofi/launcher.sh" \
+        "$HOME/.config/rofi/rofi-applet/powermenu.sh"; do
+        
+        if [[ -f "$script" ]]; then
+            chmod +x "$script"
+            ok "Permissão aplicada: $script"
+        else
+            warn "Arquivo não encontrado: $script"
+        fi
+    done
+    
+    # === Todos os scripts dentro de waybar/scripts ===
+    if [[ -d "$HOME/.config/waybar/scripts" ]]; then
+        find "$HOME/.config/waybar/scripts" -type f -exec chmod +x {} \;
+        ok "Permissões +x aplicadas em ~/.config/waybar/scripts/*"
+    else
+        warn "Diretório não encontrado: ~/.config/waybar/scripts"
+    fi
+    
+    # === Scripts do rofi-catppuccin (ajustado) ===
+    if [[ -d "$HOME/.config/rofi/rofi-catppuccin" ]]; then
+        find "$HOME/.config/rofi/rofi-catppuccin" -type f -name "*.sh" -exec chmod +x {} \;
+        ok "Permissões +x aplicadas em ~/.config/rofi/rofi-catppuccin/*.sh"
+    else
+        warn "Diretório não encontrado: ~/.config/rofi/rofi-catppuccin"
+    fi
 }
 
 # ============================================================

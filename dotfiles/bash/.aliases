@@ -4,7 +4,7 @@
 # ============================================================
 # GIT / DOTFILES
 # ============================================================
-alias dotup='cd ~/.src/dot && git pull origin main'
+alias dotup='dotupdate'
 
 
 # ============================================================
@@ -188,6 +188,7 @@ MISC:
   localip                     -> mostra IP local
   ipinfo                      -> mostra IP local e IP web
   copypath / cpa              -> copia o caminho atual da pasta / arquivo
+  dotupdate                  - > update do repo DOT + ~/.dotfiles
 
 WALLPAPER:
   wall <imagem>               -> define wallpaper usando swww, awww ou feh

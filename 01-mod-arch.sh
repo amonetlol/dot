@@ -29,6 +29,7 @@ official_packages=(
   neovim
   bash-completion
   procs
+  less
 
   starship
   zoxide

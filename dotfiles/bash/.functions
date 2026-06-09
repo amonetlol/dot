@@ -229,6 +229,30 @@ ipinfo() {
     echo "Web: $(myip)"
 }
 
+copypath() {
+    local path
+
+    if [ -n "$1" ]; then
+        path=$(realpath "$1")
+    else
+        path=$(pwd)
+    fi
+
+    # Detecta o tipo de sessão
+    if [[ "${XDG_SESSION_TYPE}" == "wayland" ]] || [[ -n "$WAYLAND_DISPLAY" ]]; then
+        # Wayland
+        printf '%s' "$path" | wl-copy
+        echo "✅ Caminho copiado (Wayland): $path"
+    elif [[ "${XDG_SESSION_TYPE}" == "x11" ]] || [[ -n "$DISPLAY" ]]; then
+        # X11
+        printf '%s' "$path" | xclip -selection clipboard
+        echo "✅ Caminho copiado (X11): $path"
+    else
+        echo "❌ Não foi possível detectar X11 ou Wayland."
+        return 1
+    fi
+}
+
 # ============================================================
 # WALLPAPERS
 # ============================================================

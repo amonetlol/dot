@@ -110,7 +110,9 @@ dotupdate() {
     
     echo "🔄 Atualizando Git..."
     #git pull --rebase origin main
-    git pull origin main
+    #git pull origin main
+    git fetch --all
+    git reset --hard origin/main
     
     echo "🔄 Restowando ~/.dotfiles ..."
     #rm -rf ~/.dotfiles

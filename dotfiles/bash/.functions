@@ -112,12 +112,6 @@ dotupdate() {
     #git pull --rebase origin main
     git pull origin main
     
-    echo "🔄 Desstowando..."
-    stow -D dotfiles -t ~/.dotfiles 2>/dev/null || true
-    
-    echo "🔄 Limpando links antigos..."
-    find ~/.dotfiles -type l -delete 2>/dev/null || true
-    
     echo "🔄 Restowando..."
     stow -R -v dotfiles -t ~/.dotfiles
     

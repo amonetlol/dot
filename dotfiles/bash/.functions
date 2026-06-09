@@ -105,6 +105,19 @@ gc() {
     fi
 }
 
+dotupdate() {
+    cd ~/.src/dot || { echo "❌ Pasta ~/.src/dot não encontrada"; return 1; }
+    
+    echo "🔄 Atualizando repositório..."
+    #git pull --rebase origin main
+    git pull origin main
+    
+    echo "🔄 Restowando com Stow..."
+    stow -R -v dotfiles -t ~/.dotfiles   # ajuste o -t se for para ~ 
+    
+    echo "✅ Dotfiles atualizados com sucesso!"
+}
+
 # ============================================================
 # SYSTEMD
 # ============================================================

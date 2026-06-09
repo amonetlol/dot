@@ -166,8 +166,9 @@ bind = SUPER SHIFT, R, exec, hyprctl reload
 # Restart Waybar
 bind = , F12, exec, pkill waybar; waybar &
 
-# Wallpaper aleatório
-bind = , F9, exec, ~/.config/waybar/scripts/random-wallpaper.sh
+# Wallpaper
+bind = , F9, exec,  ~/.config/waybar/scripts/random-wallpaper.sh
+bind = , F10, exec, ~/.config/rofi/rofi-catppuccin/wall-picker.sh
 
 # CheatSheet
 bind = SUPER, slash, exec, [float; center; size 1200 800] foot -e nvim ~/.config/hypr/hyprland.conf

@@ -21,7 +21,10 @@ ICONS_DIR="$HOME/.icons"
 MANHATTAN_FILE="$ASSETS_DIR/Manhattan.zip"
 QOGIR_CURSOR_FILE="$ASSETS_DIR/Qogir-cursors.tar.xz"
 MACTAHOE_ICONS_FILE="$ASSETS_DIR/MacTahoe.tar.xz"
-CATPPUCCIN_FILE="$ASSETS_DIR/catppuccin-mocha-blue-standard+default.zip"
+
+# Arquivos do Catppuccin
+CATPPUCCIN_MOCHA="$ASSETS_DIR/catppuccin-mocha-blue-standard+default.zip"
+CATPPUCCIN_FRAPPE="$ASSETS_DIR/catppuccin-frappe-blue-standard+default.zip"
 
 section "Verificando dependências"
 
@@ -78,42 +81,50 @@ extract_archive() {
   ok "$label instalado em $destination"
 }
 
-# Função dedicada para o Catppuccin devido à necessidade de renomear a pasta interna
-install_catppuccin() {
+# Função genérica reutilizável para variantes do Catppuccin
+install_catppuccin_theme() {
   local archive_file="$1"
-  local themes_dir="$2"
-  local tmp_dir="/tmp/catppuccin-theme"
-  local final_dest="$themes_dir/catppuccin-mocha-blue"
+  local folder_inside_zip="$2"  # Ex: catppuccin-mocha-blue-standard+default
+  local final_folder_name="$3"  # Ex: catppuccin-mocha-blue
+  local themes_dir="$4"
+  
+  local tmp_dir="/tmp/catppuccin-theme-extractor"
+  local final_dest="$themes_dir/$final_folder_name"
 
   if [[ ! -f "$archive_file" ]]; then
     warn "Arquivo não encontrado: $archive_file"
-    warn "Pulando: Tema Catppuccin"
+    warn "Pulando: Tema $final_folder_name"
     return 0
   fi
 
-  log "Instalando Tema Catppuccin..."
+  log "Instalando Tema Catppuccin ($final_folder_name)..."
   log "Arquivo: $archive_file"
   log "Destino: $final_dest"
 
-  # Limpa resquícios antigos no /tmp, cria e extrai de forma silenciosa (-q)
+  # Limpa o ambiente temporário e extrai
   rm -rf "$tmp_dir"
   mkdir -p "$tmp_dir"
   unzip -o -q "$archive_file" -d "$tmp_dir"
 
-  # Remove versão antiga se existir no destino final e move a nova pasta renomeada
+  # Remove versão antiga se existir no destino final e move a nova estrutura
   rm -rf "$final_dest"
-  cp -r "$tmp_dir/catppuccin-mocha-blue-standard+default" "$final_dest"
+  cp -r "$tmp_dir/$folder_inside_zip" "$final_dest"
 
-  # Limpeza
+  # Limpeza pós-instalação
   rm -rf "$tmp_dir"
 
-  ok "Tema catppuccin-mocha-blue instalado com sucesso!"
+  ok "Tema $final_folder_name instalado com sucesso!"
 }
 
 section "Instalando temas GTK"
 
 extract_archive "$MANHATTAN_FILE" "$THEMES_DIR" "Tema Manhattan"
-install_catppuccin "$CATPPUCCIN_FILE" "$THEMES_DIR"
+
+# Instalação do Catppuccin Mocha
+install_catppuccin_theme "$CATPPUCCIN_MOCHA" "catppuccin-mocha-blue-standard+default" "catppuccin-mocha-blue" "$THEMES_DIR"
+
+# Instalação do Catppuccin Frappé
+install_catppuccin_theme "$CATPPUCCIN_FRAPPE" "catppuccin-frappe-blue-standard+default" "catppuccin-frappe-blue" "$THEMES_DIR"
 
 section "Instalando cursor"
 
@@ -147,11 +158,12 @@ Arquivos esperados em Assets:
   Assets/Qogir-cursors.tar.xz
   Assets/MacTahoe.tar.xz
   Assets/catppuccin-mocha-blue-standard+default.zip
+  Assets/catppuccin-frappe-blue-standard+default.zip
 
 Verifique no nwg-look:
 
   Tema GTK:
-    Manhattan || catppuccin-mocha-blue 
+    Manhattan || catppuccin-mocha-blue || catppuccin-frappe-blue
 
   Cursor:
     Qogir
@@ -162,4 +174,4 @@ Verifique no nwg-look:
 Caso o nome apareça diferente no nwg-look, é porque o nome real vem do arquivo index.theme dentro de cada tema.
 EOF
 
-ok "Tema, cursor e ícones processados."
+ok "Temas, cursor e ícones processados."

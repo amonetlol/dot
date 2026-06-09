@@ -2,6 +2,12 @@
 # Apenas aliases comuns (sem condicional)
 
 # ============================================================
+# GIT / DOTFILES
+# ============================================================
+alias dotup='cd ~/.src/dot && git pull origin main'
+
+
+# ============================================================
 # ARQUIVOS / DIRETÓRIOS
 # ============================================================
 alias cp='cp -i'
@@ -13,6 +19,7 @@ alias ls='eza -lah --color=always --group-directories-first --icons'
 alias ll='eza -lah --color=always --group-directories-first --icons'
 alias df='duf --hide special'
 alias duf='duf --hide special'
+alias cpa='copypath'
 
 
 # ============================================================
@@ -180,6 +187,7 @@ MISC:
   myip                        -> mostra IP público
   localip                     -> mostra IP local
   ipinfo                      -> mostra IP local e IP web
+  copypath / cpa              -> copia o caminho atual da pasta / arquivo
 
 WALLPAPER:
   wall <imagem>               -> define wallpaper usando swww, awww ou feh

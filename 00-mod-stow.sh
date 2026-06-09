@@ -50,6 +50,7 @@ packages=(
   rofi
   waybar
   gtk-3.0
+  btop
 )
 
 section "Resolvendo conflitos comuns antes do Stow"
@@ -114,6 +115,9 @@ if [[ -d "$HOME/.config/waybar/scripts" ]]; then
 else
   warn "Diretório não encontrado: ~/.config/waybar/scripts"
 fi
+
+## Permissões extras
+  chmod +x $HOME/.dotfiles/rofi/.config/rofi/rofi-catppuccin/*.sh
 
 section "STOW FINALIZADO"
 ok "Dotfiles aplicados com sucesso."

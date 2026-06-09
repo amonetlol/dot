@@ -1,0 +1,117 @@
+configuration {
+    kb-cancel: "Escape,Super_L";
+    show-icons: true;
+    font: "JetBrainsMono Nerd Font Medium 12";
+}
+
+@theme "/dev/null"
+
+* {
+    bg0:          #1e1e2e; 
+    bg1:          #313244; 
+    fg0:          #cdd6f4; 
+    fg1:          #a6adc8; 
+    purple:       #cba6f7; 
+    purple-trans: #cba6f726; 
+
+    background-color: transparent;
+    text-color:       @fg0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    width:            780px;   
+    height:           540px;   
+    border:           2px;             
+    border-color:     @purple;
+    background-color: @bg0;
+    border-radius:    16px;            
+    location:         center;          
+    anchor:           center;
+}
+
+mainbox {
+    background-color: @bg0;
+    children:         [ inputbar, listview ];
+}
+
+inputbar {
+    background-color: @purple-trans;
+    border:           2px;
+    border-color:     @purple;
+    border-radius:    12px;            
+    margin:           15px 20px 10px 20px; 
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    enabled:          true;
+    padding:          10px 0px 10px 15px; 
+    text-color:       @purple; 
+    font:             "JetBrainsMono Nerd Font Medium 14";
+}
+
+entry {
+    padding:          10px 10px 10px 8px;
+    text-color:       @fg0;
+    placeholder:      "Search wallpapers...";
+    placeholder-color:#7f849c;
+}
+
+listview {
+    border:           0px;
+    padding:          10px 20px 20px 20px;
+    columns:          3;
+    lines:            2;
+    spacing:          20px;
+    flow:             horizontal;
+    fixed-columns:    true;
+    background-color: @bg0;
+}
+
+element {
+    orientation:      vertical;
+    padding:          15px;
+    border-radius:    12px;            
+    cursor:           pointer;
+    children:         [ element-icon, element-text ]; 
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:       @fg0;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color:       @fg0;
+}
+
+element selected.normal {
+    background-color: @purple-trans;  
+    text-color:       @purple;
+}
+
+element-icon {
+    size:             130px;    
+    horizontal-align: 0.5;
+    vertical-align:   0.5;
+    cursor:           inherit;
+    background-color: transparent;
+}
+
+element-text {
+    text-color:       @fg1;
+    horizontal-align: 0.5;
+    vertical-align:   0.5;
+    margin:           12px 0px 0px 0px;
+    font:             "JetBrainsMono Nerd Font 10";
+    background-color: transparent;
+}
+
+element-text selected {
+    text-color:       @fg0;
+}

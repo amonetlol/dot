@@ -112,7 +112,7 @@ dotupdate() {
     #git pull --rebase origin main
     git pull origin main
     
-    echo "🔄 Restowando..."
+    echo "🔄 Restowando ~/.dotfiles ..."
     rm -rf ~/.dotfiles
     stow -R -v dotfiles -t ~/.dotfiles
     

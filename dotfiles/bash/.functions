@@ -106,16 +106,22 @@ gc() {
 }
 
 dotupdate() {
-    cd ~/.src/dot || { echo "❌ Pasta ~/.src/dot não encontrada"; return 1; }
+    cd ~/.src/dot || { echo "Pasta não encontrada"; return 1; }
     
-    echo "🔄 Atualizando repositório..."
+    echo "🔄 Atualizando Git..."
     #git pull --rebase origin main
     git pull origin main
     
-    echo "🔄 Restowando com Stow..."
-    stow -R -v dotfiles -t ~/.dotfiles   # ajuste o -t se for para ~ 
+    echo "🔄 Desstowando..."
+    stow -D dotfiles -t ~/.dotfiles 2>/dev/null || true
     
-    echo "✅ Dotfiles atualizados com sucesso!"
+    echo "🔄 Limpando links antigos..."
+    find ~/.dotfiles -type l -delete 2>/dev/null || true
+    
+    echo "🔄 Restowando..."
+    stow -R -v dotfiles -t ~/.dotfiles
+    
+    echo "✅ Dotfiles atualizados!"
 }
 
 # ============================================================

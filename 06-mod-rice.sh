@@ -21,6 +21,7 @@ ICONS_DIR="$HOME/.icons"
 MANHATTAN_FILE="$ASSETS_DIR/Manhattan.zip"
 QOGIR_CURSOR_FILE="$ASSETS_DIR/Qogir-cursors.tar.xz"
 MACTAHOE_ICONS_FILE="$ASSETS_DIR/MacTahoe.tar.xz"
+CATPPUCCIN_FILE="$ASSETS_DIR/catppuccin-mocha-blue-standard+default.zip"
 
 section "Verificando dependências"
 
@@ -57,7 +58,7 @@ extract_archive() {
 
   case "$archive_file" in
     *.zip)
-      unzip -o "$archive_file" -d "$destination"
+      unzip -o -q "$archive_file" -d "$destination"
       ;;
     *.tar.xz)
       tar -xJf "$archive_file" -C "$destination"
@@ -77,9 +78,42 @@ extract_archive() {
   ok "$label instalado em $destination"
 }
 
-section "Instalando tema GTK"
+# Função dedicada para o Catppuccin devido à necessidade de renomear a pasta interna
+install_catppuccin() {
+  local archive_file="$1"
+  local themes_dir="$2"
+  local tmp_dir="/tmp/catppuccin-theme"
+  local final_dest="$themes_dir/catppuccin-mocha-blue"
+
+  if [[ ! -f "$archive_file" ]]; then
+    warn "Arquivo não encontrado: $archive_file"
+    warn "Pulando: Tema Catppuccin"
+    return 0
+  fi
+
+  log "Instalando Tema Catppuccin..."
+  log "Arquivo: $archive_file"
+  log "Destino: $final_dest"
+
+  # Limpa resquícios antigos no /tmp, cria e extrai de forma silenciosa (-q)
+  rm -rf "$tmp_dir"
+  mkdir -p "$tmp_dir"
+  unzip -o -q "$archive_file" -d "$tmp_dir"
+
+  # Remove versão antiga se existir no destino final e move a nova pasta renomeada
+  rm -rf "$final_dest"
+  cp -r "$tmp_dir/catppuccin-mocha-blue-standard+default" "$final_dest"
+
+  # Limpeza
+  rm -rf "$tmp_dir"
+
+  ok "Tema catppuccin-mocha-blue instalado com sucesso!"
+}
+
+section "Instalando temas GTK"
 
 extract_archive "$MANHATTAN_FILE" "$THEMES_DIR" "Tema Manhattan"
+install_catppuccin "$CATPPUCCIN_FILE" "$THEMES_DIR"
 
 section "Instalando cursor"
 
@@ -112,11 +146,12 @@ Arquivos esperados em Assets:
   Assets/Manhattan.zip
   Assets/Qogir-cursors.tar.xz
   Assets/MacTahoe.tar.xz
+  Assets/catppuccin-mocha-blue-standard+default.zip
 
 Verifique no nwg-look:
 
   Tema GTK:
-    Manhattan
+    Manhattan || catppuccin-mocha-blue 
 
   Cursor:
     Qogir

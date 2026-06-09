@@ -3,7 +3,7 @@
 ## Rofi   : Launcher (Modi Drun, Run, File Browser, Window)
 
 dir="$HOME/.dotfiles/rofi/.config/rofi/rofi-catppuccin"
-theme='theme'
+theme='launcher'
 
 ## Run
 rofi \

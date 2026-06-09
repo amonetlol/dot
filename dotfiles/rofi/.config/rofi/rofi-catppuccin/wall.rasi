@@ -4,23 +4,8 @@ configuration {
     font: "JetBrainsMono Nerd Font Medium 12";
 }
 
-@theme "/dev/null"
-
-* {
-    bg0:          #1e1e2e; 
-    bg1:          #313244; 
-    fg0:          #cdd6f4; 
-    fg1:          #a6adc8; 
-    purple:       #cba6f7; 
-    purple-trans: #cba6f726; 
-
-    background-color: transparent;
-    text-color:       @fg0;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    spacing: 0;
-}
+/*@import "wall-theme-catppuccin-mocha.rasi" */
+@import "wall-theme-catppuccin-frappe.rasi"
 
 window {
     width:            780px;   

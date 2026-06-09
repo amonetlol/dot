@@ -1,0 +1,17 @@
+@theme "/dev/null"
+
+* {
+    bg0:            #303446;  /* Base (Frappé) */
+    bg1:            #414559;  /* Surface0 */
+    fg0:            #c6d0f5;  /* Text */
+    fg1:            #a5adce;  /* Subtext0 */
+    purple:         #ca9ee6;  /* Mauve (Frappé) */
+    purple-trans:   #ca9ee626; /* Mauve com ~15% de opacidade */
+
+    background-color: transparent;
+    text-color:       @fg0;
+    border:           0;
+    margin:           0;
+    padding:          0;
+    spacing:          0;
+}

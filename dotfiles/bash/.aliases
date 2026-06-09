@@ -102,6 +102,7 @@ alias nf='neofetch'
 alias nf2='nerdfetch'
 alias sf='screenfetch'
 alias uf='ufetch'
+alias ft='~/.bin/fastfetch-random.sh'
 
 
 # ============================================================
@@ -189,6 +190,7 @@ MISC:
   ipinfo                      -> mostra IP local e IP web
   copypath / cpa              -> copia o caminho atual da pasta / arquivo
   dotupdate / dotup           - > update do repo DOT + ~/.dotfiles
+  ft_old                      -> antigo ft
 
 WALLPAPER:
   wall <imagem>               -> define wallpaper usando swww, awww ou feh

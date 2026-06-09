@@ -33,7 +33,7 @@ path_check() {
 # FASTFETCH / INFORMAÇÕES DO SISTEMA
 # ============================================================
 
-ft() {
+ft_old() {
     local config_dir="$HOME/.config/fastfetch"
 
     if ! command -v fastfetch >/dev/null 2>&1; then

@@ -56,8 +56,7 @@ official_packages=(
   findutils
   coreutils
   intel-ucode
-  snap-pac
-  snapper-support
+  snap-pac  
 
   nodejs
   npm
@@ -96,7 +95,7 @@ official_packages=(
 )
 
 aur_packages=(
-  
+  snapper-support
 )
 
 section "Instalando pacotes oficiais"

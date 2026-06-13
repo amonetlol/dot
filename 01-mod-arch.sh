@@ -96,6 +96,7 @@ official_packages=(
 
 aur_packages=(
   snapper-support
+  apple-fonts
 )
 
 section "Instalando pacotes oficiais"

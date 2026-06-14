@@ -30,6 +30,7 @@ alias hg='history | grep'
 alias ag='alias | grep'
 alias lg="ls | grep"
 alias gfont='flist'
+alias gfont-p='flist-preview'
 alias gfont2='kitty +list-fonts | grep'
 alias gfont3='fc-list -f "%{family}\n" | grep -i '
 

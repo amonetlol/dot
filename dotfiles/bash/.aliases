@@ -31,6 +31,9 @@ alias ag='alias | grep'
 alias lg="ls | grep"
 alias gfont='flist'
 alias gfont-p='flist-preview'
+alias gfont-pa='flist-path'
+alias gfont-s='flist-style'
+alias gfont-sf='flist-style-full'
 alias gfont2='kitty +list-fonts | grep'
 alias gfont3='fc-list -f "%{family}\n" | grep -i '
 

@@ -67,6 +67,7 @@ alias failk='faillock --reset'
 # PROCESSOS / MEMÓRIA / MONITORAMENTO
 # ============================================================
 alias ps='procs'
+alias ps2='\ps aux | fzf'
 alias kill='kill -9'
 alias killall='killall -9'
 alias free-mem="sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'"

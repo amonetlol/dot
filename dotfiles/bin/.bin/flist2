@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Check if the user provided a search term
+if [ -z "$1" ]; then
+    echo "Usage: $0 <search_term>"
+    echo "Example: $0 'UbuntuMono' or $0 'Script'"
+    exit 1
+fi
+
+SEARCH_TERM="$1"
+
+echo "Searching for fonts matching '$SEARCH_TERM'..."
+echo "--------------------------------------------------"
+
+# Search fontconfig for family names, styles, and file paths
+fc-list : family style file | grep -i "$SEARCH_TERM" | \
+while read -r line; do
+    # Format the output for better readability
+    FILE_PATH=$(echo "$line" | cut -d':' -f1)
+    FONT_DETAILS=$(echo "$line" | cut -d':' -f2-)
+    echo -e "Font: \033[1;32m$FONT_DETAILS\033[0m"
+    echo -e "Path: $FILE_PATH"
+    echo "--------------------------------------------------"
+done
+

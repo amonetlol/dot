@@ -1,0 +1,32 @@
+#!/bin/bash
+# =============================================
+# flist - Versão FINAL Limpa
+# =============================================
+
+if [ -z "$1" ]; then
+    echo "Uso: flist <nome>"
+    echo "Ex: flist \"SF Pro\""
+    echo "    flist Mono"
+    echo "    flist -l"
+    exit 1
+fi
+
+case "$1" in
+    -l|--list)
+        echo "=== Todas as Famílias de Fontes ==="
+        fc-list : family | cut -d: -f1 | sort | uniq
+        ;;
+    
+    *)
+        echo "=== Fontes encontradas para '$1' ==="
+        echo ""
+        
+        # Limpeza forte: pega só o nome da fonte sem caminho e sem extensão
+        fc-list | grep -i "$1" | sed 's|.*/||; s/\.\(otf\|ttf\|ttc\)//g' | \
+        awk -F: '{print $1}' | sort | uniq
+        
+        echo ""
+        echo "Melhor correspondência:"
+        fc-match "$1" | head -n 5
+        ;;
+esac

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Requires 'fontconfig' and 'fzf'
+
+if ! command -v fzf &> /dev/null; then
+    echo "Error: 'fzf' is required for this interactive script."
+    echo "Install it via your package manager (e.g., sudo apt install fzf)"
+    exit 1
+fi
+
+#echo "Fetching system fonts... Use ARROWS to navigate, type to filter, ENTER to select."
+
+# Format output nicely for the interactive menu
+chosen_font=$(fc-list : family | sort -u | fzf --prompt="Search Font: ")
+
+if [ -n "$chosen_font" ]; then
+    echo -e "\n--- Font Selection Details ---"
+    echo "$chosen_font"
+fi
+

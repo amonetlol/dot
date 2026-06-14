@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Requires 'fzf' and 'fontpreview' packages installed on your Linux distro
+if ! command -v fzf &> /dev/null; then
+    echo "Please install fzf to use the interactive search."
+    exit 1
+fi
+
+# Interactively pick an installed font family name
+fc-list : family | sort -u | fzf --preview 'echo "The quick brown fox jumps over the lazy dog" {}'
+

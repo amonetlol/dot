@@ -1,32 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # =============================================
-# flist - Versão FINAL Limpa
+# flist5 - Busca interativa de fontes + estilos
 # =============================================
 
-if [ -z "$1" ]; then
-    echo "Uso: flist <nome>"
-    echo "Ex: flist \"SF Pro\""
-    echo "    flist Mono"
-    echo "    flist -l"
+# Verifica se fzf está instalado
+if ! command -v fzf &> /dev/null; then
+    echo "Error: 'fzf' is required for this interactive script."
+    echo "Install it via your package manager (e.g., sudo pacman -S fzf)"
     exit 1
 fi
 
-case "$1" in
-    -l|--list)
-        echo "=== Todas as Famílias de Fontes ==="
-        fc-list : family | cut -d: -f1 | sort | uniq
-        ;;
+#echo "Fetching system fonts... Use ARROWS to navigate, type to filter, ENTER to select."
+
+# Seleciona a família da fonte
+chosen_font=$(fc-list : family | sort -u | fzf --prompt="Search Font: ")
+
+if [ -n "$chosen_font" ]; then
+    echo -e "\n=== Fonte Selecionada ===\n"
+    echo "$chosen_font"
+    echo -e "\n=== Estilos Disponíveis ===\n"
     
-    *)
-        echo "=== Fontes encontradas para '$1' ==="
-        echo ""
-        
-        # Limpeza forte: pega só o nome da fonte sem caminho e sem extensão
-        fc-list | grep -i "$1" | sed 's|.*/||; s/\.\(otf\|ttf\|ttc\)//g' | \
-        awk -F: '{print $1}' | sort | uniq
-        
-        echo ""
-        echo "Melhor correspondência:"
-        fc-match "$1" | head -n 5
-        ;;
-esac
+    # Mostra todos os estilos dessa família
+    fc-list "$chosen_font" | cut -d: -f2 | sort | uniq | sed 's/style=//'
+    
+    #echo -e "\n=== Melhor correspondência ===\n"
+    #fc-match "$chosen_font" -v | head -n 8
+fi

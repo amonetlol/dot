@@ -144,6 +144,8 @@ alias hprop='hyprctl clients | grep "class:"'
 alias ewb='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && nvim config.jsonc style.css'
 alias hwb='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && ll'
 alias hro='cd ~/.config/hypr/hypr-rox-vmware/.config/rofi && ll'
+alias binds='cat ~/.config/hypr/config.d/60-key-bindings.conf | grep -E "bind|SUPER" | fzf'
+#alias binds='cat ~/.config/hypr/hyprland.conf | grep -E "bind|SUPER" | fzf'
 
 
 # ============================================================

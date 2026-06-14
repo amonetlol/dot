@@ -29,8 +29,9 @@ alias grep='grep -i'
 alias hg='history | grep'
 alias ag='alias | grep'
 alias lg="ls | grep"
-alias gfont='fc-list -f "%{family}\n" | grep -i '
+alias gfont='flist'
 alias gfont2='kitty +list-fonts | grep'
+alias gfont3='fc-list -f "%{family}\n" | grep -i '
 
 
 # ============================================================

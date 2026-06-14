@@ -246,7 +246,7 @@ cdf() {
 
     dir="$(fd --type d --hidden --exclude .git 2>/dev/null | fzf-tmux -p --reverse)" || return 1
 
-    [[ -n "$dir" ]] && cd "$dir"
+    [[ -n "$dir" ]] && cd "$dir" && ll
 }
 
 

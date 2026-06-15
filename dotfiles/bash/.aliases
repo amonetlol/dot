@@ -161,6 +161,7 @@ alias or='openbox --reconfigure'
 # ============================================================
 alias j='z'
 alias ji='zi'  # interativo com fzf
+alias zi='zoxide query -i | xargs -r eza --color=always --icons=always'
 
 
 # ============================================================

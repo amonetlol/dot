@@ -67,7 +67,6 @@ alias failk='faillock --reset'
 # PROCESSOS / MEMÓRIA / MONITORAMENTO
 # ============================================================
 alias ps='procs'
-alias ps2='\ps aux | fzf'
 alias kill='kill -9'
 alias killall='killall -9'
 alias free-mem="sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'"
@@ -146,7 +145,6 @@ alias ewb='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && nvim config.json
 alias hwb='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && ll'
 alias hro='cd ~/.config/hypr/hypr-rox-vmware/.config/rofi && ll'
 alias binds='cat ~/.config/hypr/config.d/60-key-bindings.conf | grep -E "bind|SUPER" | fzf'
-#alias binds='cat ~/.config/hypr/hyprland.conf | grep -E "bind|SUPER" | fzf'
 
 
 # ============================================================
@@ -161,7 +159,6 @@ alias or='openbox --reconfigure'
 # ============================================================
 alias j='z'
 alias ji='zi'  # interativo com fzf
-alias zi='zoxide query -i | xargs -r eza --color=always --icons=always'
 
 
 # ============================================================
@@ -191,6 +188,7 @@ SYSTEMD:
 NAVEGAÇÃO / FZF:
   cdf                         -> escolher pasta com fd + fzf-tmux e entrar nela
   vf                          -> escolher arquivo com fd + fzf-tmux e abrir no nvim
+  fzf-help                    -> binds fzf
 
 MISC:
   extract <arquivo>           -> extrair zip, tar, rar, 7z, gz, bz2, xz
@@ -204,4 +202,26 @@ MISC:
 WALLPAPER:
   wall <imagem>               -> define wallpaper usando swww, awww ou feh
 
+= ATALHOS PADRÃO DO FZF =
+  Ctrl + R   -> Buscar no histÃ³rico de comandos
+  Ctrl + T   -> Buscar arquivos e colar na linha de comando
+  Alt + C    -> Navegar (cd) para subdiretÃ³rios interativamente
+  Alt + F1   -> func()
+  Alt + F2   -> vf()
+  Alt + F3   -> alias | fzf
+
 EOF'
+
+# bind Alt+F1
+bind -x '"\e[1;3P": func'
+
+# bind Alt+F2
+bind -x '"\e[1;3Q": vf'
+
+# bind Alt+F3
+#alias fzf-ag='alias | fzf --layout=reverse'
+alias fzf-ag='alias | fzf'
+bind -x '"\e[1;3R": fzf-ag'
+
+# Ver binds no terminal: showkey -a OU CTRL+v
+# ^[ = \e (ALT)

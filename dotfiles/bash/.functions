@@ -246,7 +246,7 @@ cdf() {
 
     dir="$(fd --type d --hidden --exclude .git 2>/dev/null | fzf-tmux -p --reverse)" || return 1
 
-    [[ -n "$dir" ]] && cd "$dir" && ll
+    [[ -n "$dir" ]] && cd "$dir" && ls -la
 }
 
 
@@ -354,3 +354,20 @@ wall() {
         return 1
     fi
 }
+
+# ============================================================
+# FZF
+# ============================================================
+
+fzf-help() {
+  echo -e "
+  = ATALHOS PADRÃO DO FZF =
+  Ctrl + R   -> Buscar no histórico de comandos
+  Ctrl + T   -> Buscar arquivos e colar na linha de comando
+  Alt + C    -> Navegar (cd) para subdiretórios interativamente
+  Alt + e    -> vf()
+  " | fzf --header "Guia de Atalhos do FZF (Aperte ESC para sair)" --layout=reverse --height=20
+}
+
+# Bind Alt+e
+#bind -x '"\ee": vf'

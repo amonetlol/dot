@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# update_repo - puxa atualizações do git e reaplica dotfiles (stow / mod-stow)
+# Uso: execute este script a partir do repositório ou após o repositório ter sido movido para ~/.dotfiles
+
+DOTFILES_DIR=""
+# tenta detectar topo do repositório git onde o script estiver
+if git_dir=$(git rev-parse --show-toplevel 2>/dev/null || true); then
+  if [ -n "$git_dir" ]; then
+    DOTFILES_DIR="$git_dir"
+  fi
+fi
+
+# fallback para ~/.dotfiles
+: "${DOTFILES_DIR:=$HOME/.dotfiles}"
+
+echo "Usando diretório de dotfiles: $DOTFILES_DIR"
+
+if [ -d "$DOTFILES_DIR/.git" ]; then
+  cd "$DOTFILES_DIR"
+  echo "Buscando atualizações..."
+  git fetch --all --prune
+  # tenta rebase com autostash, senão faz pull normal
+  if ! git pull --rebase --autostash; then
+    git pull --ff-only || git pull
+  fi
+else
+  echo "Aviso: $DOTFILES_DIR não parece ser um repositório git" >&2
+fi
+
+# Se existir um script mod-stow conhecido, executa para reaplicar
+if [ -x "$DOTFILES_DIR/00-mod-stow.sh" ]; then
+  echo "Executando 00-mod-stow.sh..."
+  "$DOTFILES_DIR/00-mod-stow.sh"
+elif [ -x "$DOTFILES_DIR/install-all.sh" ]; then
+  echo "Executando install-all.sh..."
+  "$DOTFILES_DIR/install-all.sh"
+else
+  # fallback: usa GNU stow diretamente se disponível e existir a pasta dotfiles/
+  if command -v stow >/dev/null 2>&1 && [ -d "$DOTFILES_DIR/dotfiles" ]; then
+    echo "Re-aplicando pacotes com stow a partir de $DOTFILES_DIR/dotfiles"
+    cd "$DOTFILES_DIR/dotfiles"
+    for pkg in */ ; do
+      [ -d "$pkg" ] || continue
+      pkg="${pkg%/}"
+      echo "Stowing $pkg"
+      stow -R -t "$HOME" "$pkg"
+    done
+  else
+    echo "Nenhum método de reaplicação detectado (mod-stow/install-all/stow)." >&2
+  fi
+fi
+
+echo "Pronto." 

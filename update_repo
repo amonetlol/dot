@@ -21,31 +21,70 @@ if [ -d "$DOTFILES_DIR/.git" ]; then
   cd "$DOTFILES_DIR"
   echo "Buscando atualizações..."
   git fetch --all --prune
-    # Se houver mudanças locais, stash incluindo arquivos não rastreados
-    stashed=false
-    if [ -n "$(git status --porcelain)" ]; then
-      echo "Detectadas alterações locais. Criando stash (incluindo não rastreados)..."
-      stash_name="update_repo-autostash-$(date +%Y%m%d%H%M%S)"
-      if git stash push --include-untracked -m "$stash_name"; then
-        stashed=true
-      else
-        echo "Falha ao criar stash. Abortando." >&2
-        exit 1
-      fi
-    fi
 
-    # tenta atualizar com rebase; se falhar, tenta pull normal
-    if ! git pull --rebase; then
-      git pull --ff-only || git pull
-    fi
+  # Detecta arquivos que o merge poderia sobrescrever e move não rastreados em conflito para backup
+  branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+  upstream=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || true)
+  if [ -z "$upstream" ]; then
+    upstream="origin/$branch"
+  fi
 
-    # restaura o stash se criado; se houver conflitos, avisa e deixa o stash disponível
-    if [ "$stashed" = true ]; then
-      echo "Tentando restaurar alterações locais (stash pop)..."
-      if ! git stash pop --index; then
-        echo "Houve conflitos ao aplicar o stash. O stash permanece em 'git stash list' para resolução manual." >&2
+  changed_files=$(git diff --name-only HEAD "$upstream" 2>/dev/null || true)
+  untracked_files=$(git ls-files --others --exclude-standard 2>/dev/null || true)
+
+  files_to_move=""
+  if [ -n "$changed_files" ] && [ -n "$untracked_files" ]; then
+    while IFS= read -r f; do
+      [ -z "$f" ] && continue
+      if printf '%s\n' "$untracked_files" | grep -xF -- "$f" >/dev/null 2>&1; then
+        files_to_move="$files_to_move\n$f"
       fi
+    done <<< "$changed_files"
+  fi
+
+  backup_dir=""
+  if [ -n "$files_to_move" ]; then
+    ts=$(date +%Y%m%d%H%M%S)
+    backup_dir="$DOTFILES_DIR/.update_repo_backup_$ts"
+    echo "Arquivos não rastreados que seriam sobrescritos detectados. Movendo para $backup_dir"
+    mkdir -p "$backup_dir"
+    while IFS= read -r f; do
+      [ -z "$f" ] && continue
+      mkdir -p "$(dirname "$backup_dir/$f")"
+      mv -v -- "$f" "$backup_dir/$f" || { echo "Falha ao mover $f" >&2; }
+    done <<< "$(printf '%b' "$files_to_move")"
+  fi
+
+  # Stash alterações rastreadas (não rastreados já foram movidos)
+  stashed=false
+  if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+    echo "Detectadas alterações locais rastreadas. Criando stash..."
+    stash_name="update_repo-autostash-$(date +%Y%m%d%H%M%S)"
+    if git stash push -m "$stash_name"; then
+      stashed=true
+    else
+      echo "Falha ao criar stash. Abortando." >&2
+      exit 1
     fi
+  fi
+
+  # Fazer pull sem usar autostash (anula configuração rebase.autoStash local)
+  if ! git -c rebase.autoStash=false pull --rebase; then
+    git pull --ff-only || git pull
+  fi
+
+  # Restaura o stash se criado; se houver conflitos, avisa e deixa o stash disponível
+  if [ "$stashed" = true ]; then
+    echo "Tentando restaurar alterações locais (stash pop)..."
+    if ! git stash pop --index; then
+      echo "Houve conflitos ao aplicar o stash. O stash permanece em 'git stash list' para resolução manual." >&2
+    fi
+  fi
+
+  if [ -n "$backup_dir" ]; then
+    echo "Arquivos não rastreados movidos para: $backup_dir"
+    echo "Revise e restaure manualmente se necessário (não repondo automaticamente)."
+  fi
 else
   echo "Aviso: $DOTFILES_DIR não parece ser um repositório git" >&2
 fi

@@ -21,10 +21,31 @@ if [ -d "$DOTFILES_DIR/.git" ]; then
   cd "$DOTFILES_DIR"
   echo "Buscando atualizações..."
   git fetch --all --prune
-  # tenta rebase com autostash, senão faz pull normal
-  if ! git pull --rebase --autostash; then
-    git pull --ff-only || git pull
-  fi
+    # Se houver mudanças locais, stash incluindo arquivos não rastreados
+    stashed=false
+    if [ -n "$(git status --porcelain)" ]; then
+      echo "Detectadas alterações locais. Criando stash (incluindo não rastreados)..."
+      stash_name="update_repo-autostash-$(date +%Y%m%d%H%M%S)"
+      if git stash push --include-untracked -m "$stash_name"; then
+        stashed=true
+      else
+        echo "Falha ao criar stash. Abortando." >&2
+        exit 1
+      fi
+    fi
+
+    # tenta atualizar com rebase; se falhar, tenta pull normal
+    if ! git pull --rebase; then
+      git pull --ff-only || git pull
+    fi
+
+    # restaura o stash se criado; se houver conflitos, avisa e deixa o stash disponível
+    if [ "$stashed" = true ]; then
+      echo "Tentando restaurar alterações locais (stash pop)..."
+      if ! git stash pop --index; then
+        echo "Houve conflitos ao aplicar o stash. O stash permanece em 'git stash list' para resolução manual." >&2
+      fi
+    fi
 else
   echo "Aviso: $DOTFILES_DIR não parece ser um repositório git" >&2
 fi

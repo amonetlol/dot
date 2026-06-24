@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+
+FT_CONFIG="$HOME/.config/fastfetch"
+
+clear_screen() {
+    printf "\033c"
+}
+
+load_configs() {
+    configs=()
+
+    shopt -s nullglob
+
+    local files=(
+        "$FT_CONFIG"/*.jsonc
+        "$FT_CONFIG"/*.json
+    )
+
+    shopt -u nullglob
+
+    if (( ${#files[@]} > 0 )); then
+        mapfile -t configs < <(printf "%s\n" "${files[@]}" | sort)
+    fi
+}
+
+pause_menu() {
+    echo
+    echo "ESPAÇO -> Menu"
+    echo "ESC    -> SAIR"
+
+    while true; do
+        IFS= read -rsn1 key
+
+        case "$key" in
+            " ")
+                return 0
+                ;;
+            $'\e')
+                clear_screen
+                exit 0
+                ;;
+        esac
+    done
+}
+
+show_header() {
+    echo "======================================"
+    echo "          FASTFETCH CONFIGS"
+    echo "======================================"
+    echo
+}
+
+show_menu() {
+    clear_screen
+    load_configs
+
+    show_header
+
+    if (( ${#configs[@]} == 0 )); then
+        echo "Nenhum arquivo .jsonc ou .json encontrado em:"
+        echo "$FT_CONFIG"
+        echo
+        echo "ESC -> SAIR"
+
+        while true; do
+            IFS= read -rsn1 key
+            [[ "$key" == $'\e' ]] && clear_screen && exit 0
+        done
+    fi
+
+    echo " 0) Exibir todos"
+    echo
+
+    for i in "${!configs[@]}"; do
+        number=$((i + 1))
+        filename="$(basename "${configs[$i]}")"
+        printf "%2d) %s\n" "$number" "$filename"
+    done
+
+    echo
+    read -rp "Digite o número da config para executar: " choice
+}
+
+run_fastfetch_file() {
+    local selected="$1"
+    local selected_name
+
+    selected_name="$(basename "$selected")"
+
+    echo "======================================"
+    echo "Arquivo selecionado: $selected_name"
+    echo "Executando: fastfetch -c \"$selected\""
+    echo "======================================"
+    echo
+
+    fastfetch -c "$selected"
+
+    echo
+}
+
+run_all() {
+    clear_screen
+
+    show_header
+
+    echo "Exibindo todos os arquivos encontrados..."
+    echo
+
+    for selected in "${configs[@]}"; do
+        run_fastfetch_file "$selected"
+        echo
+        echo "Pressione qualquer tecla para continuar para o próximo..."
+        IFS= read -rsn1
+        clear_screen
+    done
+
+    echo "Todos os arquivos foram exibidos."
+
+    pause_menu
+}
+
+run_selected() {
+    if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+        echo
+        echo "Entrada inválida."
+        pause_menu
+        return
+    fi
+
+    if [[ "$choice" == "0" ]]; then
+        run_all
+        return
+    fi
+
+    local index=$((choice - 1))
+
+    if (( index < 0 || index >= ${#configs[@]} )); then
+        echo
+        echo "Número fora da lista."
+        pause_menu
+        return
+    fi
+
+    local selected="${configs[$index]}"
+
+    clear_screen
+    run_fastfetch_file "$selected"
+
+    pause_menu
+}
+
+main() {
+    while true; do
+        show_menu
+        run_selected
+    done
+}
+
+main

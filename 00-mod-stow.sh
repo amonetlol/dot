@@ -40,8 +40,7 @@ packages=(
   fonts
   foot
   bin
-  bash
-  shortcuts
+  bash  
   alacritty
   kitty
   neofetch

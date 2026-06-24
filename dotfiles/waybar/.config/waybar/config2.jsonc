@@ -12,11 +12,11 @@
     "clock"
   ],
   "modules-right": [
-    "mpris",
+    //"mpris",
     "memory",
     "cpu",
-    "custom/gpu_temp",
-    "custom/recording_status",
+    //"custom/gpu_temp",
+    //"custom/recording_status",
     "tray",
     "custom/weather",
     "wireplumber"
@@ -103,7 +103,7 @@
   "custom/logo": {
     "format": "  ",
     "tooltip": false,
-    "on-click": "vicinae toggle"
+    "on-click": "rofi -show drun drun -show-icons"
   },
   "custom/recording_status": {
     "exec": "recording_status.sh",

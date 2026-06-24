@@ -44,7 +44,12 @@ hide_desktop_by_name() {
 
         local local_file="$APP_DIR_LOCAL/$filename"
 
-        cp "$desktop_file" "$local_file"
+        # Se a origem já for o arquivo local, pule o copy para evitar erro "são o mesmo arquivo"
+        if [ "$(readlink -f "$desktop_file")" != "$(readlink -f "$local_file")" ]; then
+            cp "$desktop_file" "$local_file"
+        else
+            ok "Já está em local: $filename"
+        fi
 
         set_nodisplay_true "$local_file"            
 
@@ -90,7 +95,12 @@ rename_desktop_by_name() {
 
         local local_file="$APP_DIR_LOCAL/$filename"
 
-        cp "$desktop_file" "$local_file"
+        # Se a origem já for o arquivo local, pule o copy
+        if [ "$(readlink -f "$desktop_file")" != "$(readlink -f "$local_file")" ]; then
+            cp "$desktop_file" "$local_file"
+        else
+            ok "Já está em local: $filename"
+        fi
 
         if grep -q '^Name=' "$local_file"; then
             sed -i "s/^Name=.*/Name=${new_name}/" "$local_file"
@@ -165,8 +175,13 @@ rename_desktop_by_name "Gerenciador de Arquivos Thunar" "Thunar"
 rename_desktop_by_name "Thunar File Manager" "Thunar"
 
 # Fallback direto para o arquivo mais comum do Thunar
-if [[ -f "$APP_DIR_SYSTEM/thunar.desktop" ]]; then
-    cp "$APP_DIR_SYSTEM/thunar.desktop" "$APP_DIR_LOCAL/thunar.desktop"
+    if [[ -f "$APP_DIR_SYSTEM/thunar.desktop" ]]; then
+    # Evita copiar se já for o mesmo arquivo
+    if [ "$(readlink -f "$APP_DIR_SYSTEM/thunar.desktop")" != "$(readlink -f "$APP_DIR_LOCAL/thunar.desktop")" ]; then
+        cp "$APP_DIR_SYSTEM/thunar.desktop" "$APP_DIR_LOCAL/thunar.desktop"
+    else
+        ok "Thunar já presente em local"
+    fi
 
     if grep -q '^Name=' "$APP_DIR_LOCAL/thunar.desktop"; then
         sed -i 's/^Name=.*/Name=Thunar/' "$APP_DIR_LOCAL/thunar.desktop"

@@ -1,5 +1,7 @@
 # ~/.aliases
 # Apenas aliases comuns (sem condicional)
+# Alias para rodar programas "detached" do terminal
+alias fr='nohup "$@" >/dev/null 2>&1 & disown'
 
 # ============================================================
 # GIT / DOTFILES

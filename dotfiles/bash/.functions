@@ -328,6 +328,19 @@ copypath() {
     fi
 }
 
+fr() {
+    if [ -z "$1" ]; then
+        echo "Uso: fr <programa> [argumentos]"
+        return 1
+    fi
+
+    # Executa detached de forma limpa para Hyprland/Wayland
+    setsid "$@" >/dev/null 2>&1 &
+    disown $! 2>/dev/null
+    
+    echo "▶️  $(basename "$1") iniciado"
+}
+
 # ============================================================
 # WALLPAPERS
 # ============================================================

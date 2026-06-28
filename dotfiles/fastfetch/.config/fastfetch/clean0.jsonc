@@ -71,7 +71,7 @@
     },
     { // "format": "{1} @ {7}",
       "type": "cpu",
-      "format": "{#italic_bright_light_black}{2}    {#green}│",
+      "format": "{#italic_bright_light_black}{1}    {#green}│",
       "key": "{#green}│ {#blue} CPU    "
     },
     {

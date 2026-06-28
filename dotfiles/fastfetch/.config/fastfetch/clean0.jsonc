@@ -35,7 +35,7 @@
     {// 
       "type": "os",
       "key": "{#cyan}│ {#magenta}󰣇 OS      ",
-      "format": "{#italic_bright_light_black}{2}                 {#cyan}│",
+      "format": "{#italic_bright_light_black}{2}               {#cyan}│",
       "keyColor": "magenta"
     },
     {
@@ -46,12 +46,12 @@
     {
       "type": "terminal",
       "key": "{#cyan}│ {#magenta} Terminal",
-      "format": "{#italic_bright_light_black}tmux                        {#cyan}│"
+      "format": "{#italic_bright_light_black}{2}                        {#cyan}│"
     },
     {
       "type": "shell",
       "key": "{#cyan}│ {#magenta}  Shell  ",
-      "format": "{#italic_bright_light_black}{3}                         {#cyan}│",
+      "format": "{#italic_bright_light_black}{3}                        {#cyan}│",
       "keyColor": "magenta"
     },
     {
@@ -99,7 +99,7 @@
       "type": "disk",
       "key": "{#green}│ {#blue}󱦟 OS Age ",
       "folders": "/",
-      "format": "{#italic_bright_light_black}{days} days                      {#green}│"
+      "format": "{#italic_bright_light_black}{days} days                       {#green}│"
     },
     {
       "type": "custom",

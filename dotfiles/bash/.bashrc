@@ -100,12 +100,8 @@ PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 
 # Escolha qual configuração do Starship usar (descomente apenas uma)
 
-export STARSHIP_CONFIG="$HOME/.config/starship.toml"                    # Configuração principal
-# export STARSHIP_CONFIG="$HOME/.config/starship/minimal.toml"           # Minimalista
-#export STARSHIP_CONFIG="$HOME/.config/starship/powerline.toml"           # Powerline / completa
-# export STARSHIP_CONFIG="$HOME/.config/starship/nerd-font.toml"         # Focada em Nerd Font
-# export STARSHIP_CONFIG="$HOME/.config/starship/simple.toml"            # Bem simples
-# export STARSHIP_CONFIG="$HOME/.config/starship/dev.toml"               # Para desenvolvimento
+export STARSHIP_CONFIG="$HOME/.config/starship.toml"                      # Matugen
+# export STARSHIP_CONFIG="$HOME/.config/starship/starship-default.toml"   # Default
 
 # ============================================================
 

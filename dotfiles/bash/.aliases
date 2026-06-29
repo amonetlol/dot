@@ -5,7 +5,7 @@
 # GIT / DOTFILES
 # ============================================================
 alias dotup='dotupdate'
-alias upc='~/.bin/up-config.sh'
+alias upc='~/.bin/up-configs.sh'
 
 
 # ============================================================

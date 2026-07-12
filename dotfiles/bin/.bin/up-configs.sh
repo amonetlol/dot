@@ -241,9 +241,12 @@ upgrade_bin() {
   backup_path "$dest"
   mkdir -p "$dest"
   copy_tree "$src" "$dest"
+  find "$dest" -type f -exec chmod +x {} \;
+  ok "Permissões executáveis aplicadas em $dest"
   ok ".bin instalado em $dest"
   return 0
 }
+
 
 declare -A CONFIG_NAMES=(
   [1]="Nvim"

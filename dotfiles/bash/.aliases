@@ -6,7 +6,9 @@
 # ============================================================
 alias upc='~/.bin/up-configs.sh'
 alias fsize='du -sh * | sort -h'
-
+alias tmux='herdr'
+alias herdr-kill='herdr server stop'
+alias hkill='herdr server stop'
 
 # ============================================================
 # ARQUIVOS / DIRETÓRIOS

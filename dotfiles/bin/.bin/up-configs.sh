@@ -227,12 +227,31 @@ upgrade_shortcuts() {
   return 0
 }
 
+upgrade_bin() {
+  clone_dot_repo || return 1
+
+  local src="$TMP_DIR/dot/dotfiles/bin/.bin"
+  local dest="$HOME/.bin"
+
+  if [[ ! -d "$src" ]]; then
+    fail "Origem .bin não encontrada em $src"
+    return 1
+  fi
+
+  backup_path "$dest"
+  mkdir -p "$dest"
+  copy_tree "$src" "$dest"
+  ok ".bin instalado em $dest"
+  return 0
+}
+
 declare -A CONFIG_NAMES=(
   [1]="Nvim"
   [2]="Fastfetch"
   [3]="Bash"
   [4]="Fonts"
   [5]="Shortcuts"
+  [6]=".bin"
 )
 
 run_upgrade() {
@@ -251,6 +270,7 @@ run_upgrade() {
     3) upgrade_bash ;;
     4) upgrade_fonts ;;
     5) upgrade_shortcuts ;;
+    6) upgrade_bin ;;
     *) fail "Opção inválida: $id"; rc=1 ;;
   esac
   rc=${rc:-$?}
@@ -277,14 +297,14 @@ parse_selection() {
   fi
 
   if [[ "$input" == "all" || "$input" == "todos" || "$input" == "a" ]]; then
-    _result=(1 2 3 4 5)
+    _result=(1 2 3 4 5 6)
     return 0
   fi
 
   local part start end i
   IFS=',' read -ra parts <<< "$input"
   for part in "${parts[@]}"; do
-    if [[ "$part" =~ ^([1-5])-([1-5])$ ]]; then
+    if [[ "$part" =~ ^([1-6])-([1-6])$ ]]; then
       start="${BASH_REMATCH[1]}"
       end="${BASH_REMATCH[2]}"
       if (( start > end )); then
@@ -295,7 +315,7 @@ parse_selection() {
       for ((i = start; i <= end; i++)); do
         _result+=("$i")
       done
-    elif [[ "$part" =~ ^[1-5]$ ]]; then
+    elif [[ "$part" =~ ^[1-6]$ ]]; then
       _result+=("$part")
     else
       return 1
@@ -330,6 +350,7 @@ show_menu() {
   echo "  3) Bash"
   echo "  4) Fonts"
   echo "  5) Shortcuts"
+  echo "  6) .bin"
   echo
   echo "  0) Sair"
   echo
@@ -390,7 +411,7 @@ main() {
     fi
 
     if ! parse_selection "$input" choices; then
-      warn "Seleção inválida. Use 1-5, 1,3,5, 1-3 ou all."
+      warn "Seleção inválida. Use 1-6, 1,3,6, 1-3 ou all."
       continue
     fi
 

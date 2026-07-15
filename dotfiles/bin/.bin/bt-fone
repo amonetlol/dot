@@ -1,0 +1,316 @@
+#!/usr/bin/env bash
+# Conectar/desconectar fone Bluetooth com reconexão automática no Arch Linux
+set -euo pipefail
+
+DEVICE="70:50:E7:83:05:C4"
+DEVICE_MAC="${DEVICE//:/_}"
+NAME="Fone Bluetooth"
+
+MAX_RETRIES="${BT_MAX_RETRIES:-15}"
+RETRY_DELAY="${BT_RETRY_DELAY:-2}"
+CONNECT_WAIT="${BT_CONNECT_WAIT:-4}"
+
+# Erros mapeados da screenshot (Archcraft/Arch Linux + PipeWire)
+# 1) pipewire: bluez_output.MAC idle -> error (Received error event)
+# 2) bluetoothd: No matching connection for device
+ERROR_PATTERNS=(
+    "bluez_output.${DEVICE_MAC}.*idle -> error"
+    "Received error event"
+    "No matching connection for device"
+    "br-connection-profile-unavailable"
+    "br-connection-create-socket"
+    "Protocol not available"
+    "Connection refused"
+    "org.bluez.Error.Failed"
+    "org.bluez.Error.NotAvailable"
+    "Host is down"
+    "connect error"
+)
+
+usage() {
+    cat <<EOF
+Uso: $(basename "$0") [comando]
+
+Comandos:
+  connect     Conecta com retry automático até sucesso (padrão)
+  disconnect  Desconecta o fone
+  toggle      Conecta se desconectado, desconecta se conectado
+  status      Mostra status atual
+  errors      Mostra erros recentes do Bluetooth no journal (útil para mapear)
+  watch       Monitora o journal e reconecta ao detectar erro
+
+Variáveis de ambiente:
+  BT_MAX_RETRIES   Tentativas máximas (padrão: $MAX_RETRIES)
+  BT_RETRY_DELAY   Segundos entre tentativas (padrão: $RETRY_DELAY)
+  BT_CONNECT_WAIT  Segundos para aguardar após connect (padrão: $CONNECT_WAIT)
+
+Exemplo:
+  $(basename "$0") connect
+  BT_MAX_RETRIES=20 $(basename "$0") connect
+EOF
+}
+
+device_mac_underscores() {
+    echo "$DEVICE_MAC"
+}
+
+card_name() {
+    echo "bluez_card.$(device_mac_underscores)"
+}
+
+log() {
+    echo "[$(date +%H:%M:%S)] $*"
+}
+
+is_connected() {
+    bluetoothctl info "$DEVICE" 2>/dev/null | grep -q "Connected: yes"
+}
+
+has_bluez_card() {
+    pactl list cards short 2>/dev/null | grep -q "$(card_name)"
+}
+
+a2dp_profile_available() {
+    local card
+    card="$(card_name)"
+    pactl list cards 2>/dev/null | awk -v card="$card" '
+        $1 == "Name:" && $2 == card { found=1 }
+        found && $1 == "Profiles:" { in_profiles=1 }
+        in_profiles && /a2dp_sink/ { print; exit }
+    ' | grep -q .
+}
+
+has_audio_sink() {
+    pactl list sinks short 2>/dev/null | grep -q "bluez_output.${DEVICE_MAC}"
+}
+
+is_fully_connected() {
+    is_connected && has_bluez_card && a2dp_profile_available && has_audio_sink
+}
+
+set_a2dp_profile() {
+    local card
+    card="$(card_name)"
+    if has_bluez_card; then
+        pactl set-card-profile "$card" a2dp_sink 2>/dev/null || true
+    fi
+}
+
+journal_since() {
+    local since="$1"
+    journalctl -u bluetooth.service -u bluetooth -u pipewire -u pipewire.service \
+        --since "$since" --no-pager 2>/dev/null \
+        || journalctl --since "$since" --no-pager 2>/dev/null
+}
+
+line_matches_error() {
+    local line="$1"
+    local pattern
+
+    # Erro do PipeWire: só conta se for do nosso fone
+    if echo "$line" | grep -q "bluez_output.${DEVICE_MAC}.*idle -> error"; then
+        return 0
+    fi
+    if echo "$line" | grep -q "pipewire" && echo "$line" | grep -q "bluez_output.${DEVICE_MAC}" \
+        && echo "$line" | grep -qi "Received error event"; then
+        return 0
+    fi
+
+    for pattern in "${ERROR_PATTERNS[@]}"; do
+        if echo "$line" | grep -qiE "$pattern"; then
+            # "No matching connection" e erros genéricos do bluetoothd
+            if echo "$line" | grep -qiE "bluetoothd|pipewire|bluez"; then
+                return 0
+            fi
+        fi
+    done
+
+    return 1
+}
+
+check_journal_errors() {
+    local since="$1"
+    local log_output
+
+    log_output="$(journal_since "$since")"
+
+    while IFS= read -r line; do
+        if line_matches_error "$line"; then
+            log "Erro detectado no journal: $line"
+            return 0
+        fi
+    done <<< "$log_output"
+
+    return 1
+}
+
+force_disconnect() {
+    bluetoothctl disconnect "$DEVICE" 2>/dev/null || true
+    sleep 1
+}
+
+prepare_bluetooth() {
+    bluetoothctl power on >/dev/null
+    bluetoothctl trust "$DEVICE" >/dev/null 2>&1 || true
+}
+
+single_connect_attempt() {
+    local since
+    since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+    prepare_bluetooth
+    log "Tentando conectar $NAME ($DEVICE)..."
+
+    bluetoothctl connect "$DEVICE" 2>/dev/null || true
+    sleep "$CONNECT_WAIT"
+
+    if check_journal_errors "$since"; then
+        return 1
+    fi
+
+    if ! is_connected; then
+        log "Dispositivo não ficou conectado"
+        return 1
+    fi
+
+    if ! has_bluez_card; then
+        log "Card PulseAudio/PipeWire não apareceu"
+        return 1
+    fi
+
+    set_a2dp_profile
+    sleep 1
+
+    if ! a2dp_profile_available; then
+        log "Perfil A2DP não disponível"
+        return 1
+    fi
+
+    if ! has_audio_sink; then
+        log "Sink de áudio PipeWire não apareceu (bluez_output)"
+        return 1
+    fi
+
+    return 0
+}
+
+cmd_connect() {
+    local attempt=1
+
+    log "=== Conexão automática: $NAME ==="
+
+    if is_fully_connected; then
+        log "Já conectado com A2DP ativo."
+        return 0
+    fi
+
+    while [ "$attempt" -le "$MAX_RETRIES" ]; do
+        log "Tentativa $attempt/$MAX_RETRIES"
+
+        if single_connect_attempt; then
+            log "Conectado com sucesso! (A2DP disponível)"
+            pactl list cards short 2>/dev/null | grep "$(card_name)" || true
+            return 0
+        fi
+
+        log "Falha na tentativa $attempt. Desconectando e aguardando ${RETRY_DELAY}s..."
+        force_disconnect
+        sleep "$RETRY_DELAY"
+        attempt=$((attempt + 1))
+    done
+
+    log "Falhou após $MAX_RETRIES tentativas."
+    log "Execute: $(basename "$0") errors   (para ver o erro exato no journal)"
+    return 1
+}
+
+cmd_disconnect() {
+    log "Desconectando $NAME ($DEVICE)..."
+    force_disconnect
+    log "Desconectado."
+}
+
+cmd_toggle() {
+    if is_connected; then
+        cmd_disconnect
+    else
+        cmd_connect
+    fi
+}
+
+cmd_status() {
+    echo "=== $NAME ($DEVICE) ==="
+    bluetoothctl info "$DEVICE" 2>/dev/null | grep -E "Connected:|Paired:|Trusted:|Name:" || echo "Dispositivo não encontrado"
+    echo
+    if has_bluez_card; then
+        echo "Card: $(card_name)"
+        pactl list cards 2>/dev/null | awk -v card="$(card_name)" '
+            $1 == "Name:" && $2 == card { found=1 }
+            found && /Active Profile:/ { print "Perfil ativo:", $0 }
+            found && /a2dp_sink/ && /available/ { print $0 }
+        '
+    else
+        echo "Card PulseAudio/PipeWire: não encontrado"
+    fi
+    if has_audio_sink; then
+        echo "Sink: $(pactl list sinks short 2>/dev/null | grep "bluez_output.${DEVICE_MAC}" | awk '{print $2}')"
+    else
+        echo "Sink de áudio: não encontrado"
+    fi
+    echo
+    if is_fully_connected; then
+        echo "Status: OK (conectado + A2DP)"
+    else
+        echo "Status: incompleto (precisa reconectar)"
+    fi
+}
+
+cmd_errors() {
+    echo "=== Erros recentes do Bluetooth/PipeWire (últimos 5 min) ==="
+    echo "Erros mapeados da screenshot:"
+    echo "  - pipewire: bluez_output.${DEVICE_MAC} idle -> error (Received error event)"
+    echo "  - bluetoothd: No matching connection for device"
+    echo
+    journal_since "5 minutes ago" | grep -iE \
+        "pipewire|bluetoothd|bluez_output.${DEVICE_MAC}|No matching connection|Received error event|error|fail" \
+        || echo "(nenhum erro encontrado)"
+}
+
+cmd_watch() {
+    log "Monitorando journal (pipewire + bluetoothd). Ctrl+C para parar."
+    log "Dispositivo: $NAME ($DEVICE)"
+    log "Reconecta ao ver: idle -> error | No matching connection for device"
+    echo
+
+    journalctl -f --no-pager 2>/dev/null \
+        | grep --line-buffered -iE "pipewire|bluetoothd|bluez_output.${DEVICE_MAC}" \
+        | while read -r line; do
+            echo "$line"
+
+            if line_matches_error "$line"; then
+                log "Erro detectado. Iniciando reconexão automática..."
+                cmd_connect
+            fi
+        done
+}
+
+main() {
+    local cmd="${1:-connect}"
+
+    case "$cmd" in
+        connect)   cmd_connect ;;
+        disconnect) cmd_disconnect ;;
+        toggle)    cmd_toggle ;;
+        status)    cmd_status ;;
+        errors)    cmd_errors ;;
+        watch)     cmd_watch ;;
+        -h|--help|help) usage ;;
+        *)
+            echo "Comando desconhecido: $cmd"
+            usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

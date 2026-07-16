@@ -103,16 +103,10 @@ is_fully_connected() {
 }
 
 set_a2dp_profile() {
-    local card profile
+    local card
     card="$(card_name)"
     if has_bluez_card; then
-        for profile in a2dp-sink-sbc a2dp-sink-sbc_xq a2dp-sink; do
-            if pactl set-card-profile "$card" "$profile" 2>/dev/null; then
-                log "Perfil de áudio definido: $profile"
-                return 0
-            fi
-        done
-        log "Não consegui forçar perfil A2DP estável; mantendo perfil atual."
+        pactl set-card-profile "$card" a2dp_sink 2>/dev/null || true
     fi
 }
 

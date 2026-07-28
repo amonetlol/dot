@@ -3,7 +3,7 @@
 # Script para configurar wallpaper com feh no Qtile
 # Coloque isso dentro de ~/.config/qtile/src/autostart.sh ou chame-o de lá
 
-WALLS_CONFIG="$HOME/.config/qtile/walls"
+WALLS_CONFIG="$HOME/walls"
 WALLS_HOME="$HOME/walls"
 
 # 1. Verifica se a pasta de wallpapers existe na config do qtile

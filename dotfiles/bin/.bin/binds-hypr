@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+hyprctl binds -j |
+  jq -r '# Get bit at $position as 0 or 1
+def getbit($position; $n): #:: (Position;BitField) => 0^1
+    fmod($n/($position|exp2)|floor;2) | fabs
+;
+
+.[] | 
+    .a = "" |
+    (
+        if getbit(6; .modmask) == 1 then # SUPER
+            .a = .a + "SUPER + "
+        end |
+        if getbit(0; .modmask) == 1 then # Shift
+            .a = .a + "Shift + "
+        end |
+        if getbit(2; .modmask) == 1 then # Ctrl
+            .a = .a + "Ctrl + "
+        end |
+        if getbit(3; .modmask) == 1 then # Alt
+            .a = .a + "Alt + "
+        end
+    ) |
+    .description + "|" + .a + .key
+' | column -t -s "|" |
+  rofi -dmenu -i -sync -p "Bind" -format e -case-smart -l 40 -theme-str "listview {columns: 4;}"

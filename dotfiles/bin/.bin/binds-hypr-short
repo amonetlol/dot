@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+hyprctl binds -j |
+  jq -r 'def getbit($position; $n):
+    fmod($n/($position|exp2)|floor;2) | fabs;
+
+def mod($position; $name):
+    if getbit($position; .modmask) == 1 then $name + " + " else "" end;
+
+.[] | .description + "|" + mod(6; "SUPER") + mod(2; "Ctrl") + mod(3; "Alt") + mod(0; "Shift") + .key
+' | column -t -s "|" |
+  rofi -dmenu -i -sync -p "Bind" -format e -case-smart -l 40 -theme-str "listview {columns: 4;}"

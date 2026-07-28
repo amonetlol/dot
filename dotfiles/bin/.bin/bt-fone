@@ -10,6 +10,7 @@ MAX_RETRIES="${BT_MAX_RETRIES:-15}"
 RETRY_DELAY="${BT_RETRY_DELAY:-2}"
 CONNECT_WAIT="${BT_CONNECT_WAIT:-4}"
 WATCH_COOLDOWN="${BT_WATCH_COOLDOWN:-45}"
+BLUETOOTH_ENABLE_WAIT="${BT_ENABLE_WAIT:-8}"
 
 # Erros mapeados da screenshot (Archcraft/Arch Linux + PipeWire)
 # 1) pipewire: bluez_output.MAC idle -> error (Received error event)
@@ -44,6 +45,7 @@ Variáveis de ambiente:
   BT_MAX_RETRIES   Tentativas máximas (padrão: $MAX_RETRIES)
   BT_RETRY_DELAY   Segundos entre tentativas (padrão: $RETRY_DELAY)
   BT_CONNECT_WAIT  Segundos para aguardar após connect (padrão: $CONNECT_WAIT)
+  BT_ENABLE_WAIT   Segundos para aguardar o Bluetooth ligar (padrão: $BLUETOOTH_ENABLE_WAIT)
 
 Exemplo:
   $(basename "$0") connect
@@ -173,8 +175,40 @@ force_disconnect() {
     sleep 1
 }
 
+bluetooth_is_on() {
+    bluetoothctl show 2>/dev/null | grep -q "Powered: yes"
+}
+
+ensure_bluetooth_on() {
+    local elapsed=0
+
+    if bluetooth_is_on; then
+        return 0
+    fi
+
+    log "Bluetooth está desligado. Ligando adaptador..."
+
+    # O adaptador pode estar bloqueado por rfkill. Enquanto estiver bloqueado,
+    # bluetoothctl power on retorna NotReady/Failed e não consegue habilitá-lo.
+    rfkill unblock bluetooth 2>/dev/null || true
+    bluetoothctl power on >/dev/null 2>&1 || true
+
+    # Após o unblock, o BlueZ pode permanecer em "off-enabling" por alguns segundos.
+    while (( elapsed < BLUETOOTH_ENABLE_WAIT )); do
+        if bluetooth_is_on; then
+            log "Bluetooth ligado. Continuando conexão..."
+            return 0
+        fi
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+
+    log "Não foi possível ligar o Bluetooth. Verifique o bloqueio rfkill e o adaptador."
+    return 1
+}
+
 prepare_bluetooth() {
-    bluetoothctl power on >/dev/null
+    ensure_bluetooth_on
     bluetoothctl trust "$DEVICE" >/dev/null 2>&1 || true
 }
 
@@ -183,7 +217,9 @@ single_connect_attempt() {
     local did_connect=0
     since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
-    prepare_bluetooth
+    if ! prepare_bluetooth; then
+        return 1
+    fi
 
     if is_connected_ok; then
         log "Já conectado e com áudio OK."

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -u
+
+if (( $# == 0 )); then
+    printf 'Uso: xx comando [argumentos...]\n' >&2
+    exit 2
+fi
+
+target=$1
+shift
+
+# Permite usar `xx script` para um arquivo localizado no diretório atual.
+if [[ "$target" != */* && -f "$target" ]]; then
+    target="./$target"
+fi
+
+name=${target##*/}
+safe_name=$(printf '%s' "$name" | tr -c '[:alnum:]_.-' '_')
+log_file=${XX_LOG_DIR:-/tmp}/xx-${safe_name}.log
+
+nohup "$target" "$@" </dev/null >>"$log_file" 2>&1 &
+pid=$!
+
+# O nohup já remove a dependência do terminal; disown evita que o shell
+# mantenha o job associado à sessão quando houver controle de jobs.
+disown "$pid" 2>/dev/null || true
+
+printf 'Iniciado em segundo plano: PID %s\n' "$pid"
+printf 'Log: %s\n' "$log_file"

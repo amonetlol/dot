@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+current=$(xrandr --current | awk '/\*/ { print $1; exit }')
+case "$current" in
+    1920x1080) target=1280x800 ;;
+    1280x800) target=1920x1080 ;;
+    *)
+        printf 'Resolução atual não prevista: %s\n' "${current:-não identificada}" >&2
+        exit 1
+        ;;
+esac
+
+exec xrandr -s "$target"

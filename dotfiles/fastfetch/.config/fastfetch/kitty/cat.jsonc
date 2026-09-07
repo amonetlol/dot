@@ -3,6 +3,7 @@
 "logo": {
     "source": "cat.png",
     "type": "kitty",
+    //"type": "sixel",
     "width": 20,
     "height": 22,
     "padding": {

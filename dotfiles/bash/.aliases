@@ -12,6 +12,7 @@ alias hkill='herdr server stop'
 alias gate='systemctl --user status openclaw-gateway'
 alias run='run.sh'
 alias upc='sudo npm install -g @openai/codex@latest ; codex --version'
+alias fail='faillock --reset'
 
 # ============================================================
 # ARQUIVOS / DIRETÓRIOS

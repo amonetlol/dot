@@ -4,7 +4,7 @@
 # ============================================================
 # GIT / DOTFILES
 # ============================================================
-#alias upc='~/.bin/up-configs.sh'
+#alias uconf='~/.bin/up-configs.sh'
 alias fsize='du -sh * | sort -h'
 alias tmux='herdr'
 alias herdr-kill='herdr server stop'

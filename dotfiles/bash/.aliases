@@ -116,6 +116,9 @@ alias nf2='nerdfetch'
 alias sf='screenfetch'
 alias uf='ufetch'
 alias ft='~/.bin/fastfetch-random.sh'
+alias ftc='fastfetch --config ~/.config/fastfetch/groups.jsonc'
+alias ftt='fastfetch --config ~/.config/fastfetch/simple.jsonc'
+
 
 
 # ============================================================

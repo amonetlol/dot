@@ -1,0 +1,13 @@
+[Unit]
+Description=Wallpaper aleatório a cada 5 minutos
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.bin/randow-wallpapers.sh
+Restart=on-failure
+RestartSec=10
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+
+[Install]
+WantedBy=default.target

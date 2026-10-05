@@ -1,0 +1,218 @@
+#!/usr/bin/env bash
+# Alterna a resolução do monitor entre 1920x1080 e 1600x900.
+set -euo pipefail
+
+RES_A="1920x1080"
+RES_B="1600x900"
+
+load_session_env() {
+  local pid="" name item
+  for name in Hyprland plasmashell gnome-shell; do
+    pid="$(pgrep -n -u "$(id -u)" -x "$name" 2>/dev/null || true)"
+    [[ -n "$pid" ]] && break
+  done
+  [[ -n "$pid" && -r "/proc/${pid}/environ" ]] || return 0
+  while IFS= read -r -d '' item; do
+    case "$item" in
+      DBUS_SESSION_BUS_ADDRESS=*|WAYLAND_DISPLAY=*|DISPLAY=*|XDG_RUNTIME_DIR=*|\
+      XDG_CURRENT_DESKTOP=*|XDG_SESSION_TYPE=*|XDG_SESSION_DESKTOP=*|\
+      HYPRLAND_INSTANCE_SIGNATURE=*)
+        export "$item"
+        ;;
+    esac
+  done < "/proc/${pid}/environ"
+}
+
+detect_de() {
+  if [[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* || "${XDG_SESSION_DESKTOP:-}" == "hyprland" ]] \
+    || pgrep -x Hyprland >/dev/null 2>&1; then
+    printf '%s\n' hyprland
+    return
+  fi
+  if [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* || "${XDG_SESSION_DESKTOP:-}" == "plasma" ]] \
+    || pgrep -x plasmashell >/dev/null 2>&1; then
+    printf '%s\n' kde
+    return
+  fi
+  if [[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* || "${XDG_SESSION_DESKTOP:-}" == "gnome" ]] \
+    || pgrep -x gnome-shell >/dev/null 2>&1; then
+    printf '%s\n' gnome
+    return
+  fi
+  printf '%s\n' unknown
+}
+
+next_res() {
+  if [[ "$1" == "$RES_A" ]]; then
+    printf '%s\n' "$RES_B"
+  else
+    printf '%s\n' "$RES_A"
+  fi
+}
+
+notify() {
+  printf '%s\n' "$1"
+  command -v notify-send >/dev/null 2>&1 && notify-send "Monitor" "$1" || true
+}
+
+kscreen_text() {
+  kscreen-doctor -o | sed 's/\x1b\[[0-9;]*m//g'
+}
+
+apply_kde() {
+  local text name enabled modes geometry current target spec index args=()
+  text="$(kscreen_text)"
+  current=""
+  while IFS= read -r name; do
+    [[ -n "$name" ]] || continue
+    geometry="$(printf '%s\n' "$text" | awk -v out="$name" '
+      $1 == "Output:" { cur = ($3 == out) }
+      cur && $1 == "Geometry:" { print $3; exit }
+    ')"
+    [[ -z "$current" && -n "$geometry" ]] && current="${geometry%%@*}"
+  done < <(printf '%s\n' "$text" | awk '$1 == "Output:" { print $3 }')
+
+  [[ -n "$current" ]] || { echo "Nenhuma saída KDE encontrada" >&2; return 1; }
+  target="$(next_res "$current")"
+
+  while IFS= read -r name; do
+    [[ -n "$name" ]] || continue
+    enabled="$(printf '%s\n' "$text" | awk -v out="$name" '
+      $1 == "Output:" { cur = ($3 == out); en = "" }
+      cur && $1 == "enabled" { en = "yes" }
+      cur && $1 == "disabled" { en = "no" }
+      END { print en }
+    ')"
+    [[ "$enabled" == "yes" ]] || continue
+    modes="$(printf '%s\n' "$text" | awk -v out="$name" '
+      $1 == "Output:" { cur = ($3 == out) }
+      cur && $1 == "Modes:" { print; exit }
+    ')"
+    spec="$(printf '%s\n' "$modes" | grep -oE "${target}@[0-9.]+" | head -n 1 || true)"
+    if [[ -z "$spec" ]]; then
+      echo "Modo ${target} indisponível em ${name}" >&2
+      return 1
+    fi
+    spec="${spec%.00}"
+    index="$(printf '%s\n' "$modes" | grep -oE "[0-9]+:${target}@" | head -n 1 | cut -d: -f1 || true)"
+    if kscreen-doctor "output.${name}.mode.${spec}"; then
+      :
+    elif [[ -n "$index" ]] && kscreen-doctor "output.${name}.mode.${index}"; then
+      :
+    else
+      echo "Falha ao aplicar ${target} em ${name}" >&2
+      return 1
+    fi
+    args+=("$name")
+  done < <(printf '%s\n' "$text" | awk '$1 == "Output:" { print $3 }')
+
+  [[ ${#args[@]} -gt 0 ]] || { echo "Nenhuma saída ativa" >&2; return 1; }
+  notify "${current} → ${target}"
+}
+
+apply_gnome() {
+  local current target output
+  if [[ "${XDG_SESSION_TYPE:-}" == "x11" ]] && command -v xrandr >/dev/null 2>&1; then
+    output="$(xrandr --query | awk '/ connected/ { print $1; exit }')"
+    current="$(xrandr --query | awk -v out="$output" '
+      $1 == out { grab = 1; next }
+      grab && /\*/ { print $1; exit }
+    ')"
+    current="${current%%@*}"
+    [[ "$current" =~ ^[0-9]+x[0-9]+$ ]] || current=""
+    target="$(next_res "${current:-}")"
+    xrandr --output "$output" --mode "$target"
+    notify "${current:-atual} → ${target}"
+    return
+  fi
+
+  python3 - "$RES_A" "$RES_B" << 'PY'
+import sys
+
+target_a, target_b = sys.argv[1], sys.argv[2]
+
+try:
+    from gi.repository import Gio, GLib
+except Exception as exc:
+    print(f"GNOME Wayland sem PyGObject: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+proxy = Gio.DBusProxy.new_sync(
+    bus, Gio.DBusProxyFlags.NONE, None,
+    "org.gnome.Mutter.DisplayConfig",
+    "/org/gnome/Mutter/DisplayConfig",
+    "org.gnome.Mutter.DisplayConfig",
+    None,
+)
+serial, monitors, logical, _props = proxy.call_sync(
+    "GetCurrentState", None, Gio.DBusCallFlags.NONE, -1, None
+).unpack()
+
+modes = {}
+for mon in monitors:
+    connector = mon[0]
+    for mode in mon[4]:
+        mode_id, width, height = mode[0], int(mode[1]), int(mode[2])
+        modes.setdefault(connector, []).append((mode_id, width, height))
+
+current = None
+for entry in logical:
+    for mon in entry[5]:
+        connector, mode_id = mon[0], mon[1]
+        for known_id, width, height in modes.get(connector, []):
+            if known_id == mode_id:
+                current = f"{width}x{height}"
+                break
+        if current:
+            break
+    if current:
+        break
+
+target = target_b if current == target_a else target_a
+want_w, want_h = int(target.split("x")[0]), int(target.split("x")[1])
+new_logical = []
+for entry in logical:
+    x, y, scale, transform, primary, mons, _extra = entry
+    new_mons = []
+    for mon in mons:
+        connector = mon[0]
+        chosen = None
+        for mode_id, width, height in modes.get(connector, []):
+            if width == want_w and height == want_h:
+                chosen = mode_id
+                break
+        if chosen is None:
+            print(f"Modo {target} indisponível em {connector}", file=sys.stderr)
+            sys.exit(1)
+        new_mons.append((connector, chosen, {}))
+    new_logical.append((int(x), int(y), float(scale), int(transform), bool(primary), new_mons, {}))
+
+params = GLib.Variant("(uua(iiduba(ssa{sv}))a{sv})", (int(serial), 1, new_logical, {}))
+proxy.call_sync("ApplyMonitorsConfig", params, Gio.DBusCallFlags.NONE, -1, None)
+print(f"{current or 'atual'} → {target}")
+PY
+}
+
+apply_hyprland() {
+  local current target name
+  command -v hyprctl >/dev/null 2>&1 || { echo "hyprctl não encontrado" >&2; return 1; }
+  name="$(hyprctl monitors | awk '/^Monitor / { print $2; exit }')"
+  current="$(hyprctl monitors | awk '/^[0-9]+x[0-9]+@/ { split($1, a, "@"); print a[1]; exit }')"
+  [[ -n "$name" && -n "$current" ]] || { echo "Nenhum monitor Hyprland" >&2; return 1; }
+  target="$(next_res "$current")"
+  hyprctl keyword monitor "${name},${target}@60,auto,1" >/dev/null
+  notify "${current} → ${target}"
+}
+
+load_session_env
+de="$(detect_de)"
+case "$de" in
+  kde) apply_kde ;;
+  gnome) apply_gnome ;;
+  hyprland) apply_hyprland ;;
+  *)
+    echo "Ambiente não reconhecido (kde, gnome ou hyprland)" >&2
+    exit 1
+    ;;
+esac

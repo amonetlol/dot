@@ -6,15 +6,20 @@
 # ============================================================
 alias uconf='~/.bin/up-configs.sh'
 alias fsize='du -sh * | sort -h'
+alias run='run.sh'
+alias fail='faillock --reset'
+
+# ============================================================
+# AI / HERDR
+# ============================================================
+alias gate='systemctl --user status openclaw-gateway'
+alias upc='sudo npm install -g @openai/codex@latest ; codex --version'
+alias upn='sudo npm install -g npm@latest ; npm --version'
 alias tmux='herdr'
 alias herdr-kill='herdr server stop'
 alias hkill='herdr server stop'
-alias gate='systemctl --user status openclaw-gateway'
-alias run='run.sh'
-alias upc='sudo npm install -g @openai/codex@latest ; codex --version'
-alias upn='sudo npm install -g npm@latest ; npm --version'
-alias fail='faillock --reset'
 alias hh='herdr'
+alias hk='herdr server stop'
 
 # ============================================================
 # ARQUIVOS / DIRETÓRIOS

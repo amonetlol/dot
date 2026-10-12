@@ -103,6 +103,7 @@ PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 export STARSHIP_CONFIG="$HOME/.config/starship-nord.toml"        # nord
 #export STARSHIP_CONFIG="$HOME/.config/starship-tokyo-night.toml" # tokyo
 #export STARSHIP_CONFIG="$HOME/.config/starship.toml"             # padrão
+#export STARSHIP_CONFIG="$HOME/.config/starship-mono.toml"        # mono
 
 # ============================================================
 

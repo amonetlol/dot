@@ -4,7 +4,7 @@
 # ============================================================
 # GIT / DOTFILES
 # ============================================================
-#alias uconf='~/.bin/up-configs.sh'
+alias uconf='~/.bin/up-configs.sh'
 alias fsize='du -sh * | sort -h'
 alias tmux='herdr'
 alias herdr-kill='herdr server stop'
@@ -14,6 +14,7 @@ alias run='run.sh'
 alias upc='sudo npm install -g @openai/codex@latest ; codex --version'
 alias upn='sudo npm install -g npm@latest ; npm --version'
 alias fail='faillock --reset'
+alias hh='herdr'
 
 # ============================================================
 # ARQUIVOS / DIRETÓRIOS

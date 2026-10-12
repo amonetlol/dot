@@ -6,17 +6,27 @@ RES_A="1920x1080"
 RES_B="1600x900"
 
 load_session_env() {
-  local pid="" name item
-  for name in Hyprland plasmashell gnome-shell; do
-    pid="$(pgrep -n -u "$(id -u)" -x "$name" 2>/dev/null || true)"
-    [[ -n "$pid" ]] && break
-  done
+  local pid="" name item cand
+  if [[ -z "${NIRI_SOCKET:-}" ]]; then
+    for cand in $(pgrep -u "$(id -u)" -x niri 2>/dev/null || true); do
+      if [[ -r "/proc/${cand}/environ" ]] && tr '\0' '\n' < "/proc/${cand}/environ" | grep -q '^NIRI_SOCKET='; then
+        pid="$cand"
+        break
+      fi
+    done
+  fi
+  if [[ -z "$pid" ]]; then
+    for name in niri Hyprland plasmashell gnome-shell; do
+      pid="$(pgrep -n -u "$(id -u)" -x "$name" 2>/dev/null || true)"
+      [[ -n "$pid" ]] && break
+    done
+  fi
   [[ -n "$pid" && -r "/proc/${pid}/environ" ]] || return 0
   while IFS= read -r -d '' item; do
     case "$item" in
       DBUS_SESSION_BUS_ADDRESS=*|WAYLAND_DISPLAY=*|DISPLAY=*|XDG_RUNTIME_DIR=*|\
       XDG_CURRENT_DESKTOP=*|XDG_SESSION_TYPE=*|XDG_SESSION_DESKTOP=*|\
-      HYPRLAND_INSTANCE_SIGNATURE=*)
+      HYPRLAND_INSTANCE_SIGNATURE=*|NIRI_SOCKET=*)
         export "$item"
         ;;
     esac
@@ -24,6 +34,11 @@ load_session_env() {
 }
 
 detect_de() {
+  if [[ "${XDG_CURRENT_DESKTOP:-}" == *niri* || "${XDG_SESSION_DESKTOP:-}" == "niri" ]] \
+    || pgrep -x niri >/dev/null 2>&1; then
+    printf '%s\n' niri
+    return
+  fi
   if [[ "${XDG_CURRENT_DESKTOP:-}" == *Hyprland* || "${XDG_SESSION_DESKTOP:-}" == "hyprland" ]] \
     || pgrep -x Hyprland >/dev/null 2>&1; then
     printf '%s\n' hyprland
@@ -57,6 +72,41 @@ notify() {
 
 kscreen_text() {
   kscreen-doctor -o | sed 's/\x1b\[[0-9;]*m//g'
+}
+
+apply_niri() {
+  local text name current target mode_line
+  command -v niri >/dev/null 2>&1 || { echo "niri não encontrado" >&2; return 1; }
+  text="$(niri msg outputs 2>/dev/null || true)"
+  [[ -n "$text" ]] || { echo "niri msg outputs falhou" >&2; return 1; }
+  # niri 26: Output "Make Model Serial" (CONNECTOR)
+  name="$(niri msg focused-output 2>/dev/null | sed -n 's/^Output .*(\([^)]*\)).*/\1/p' | head -n 1 || true)"
+  if [[ -z "$name" ]]; then
+    name="$(printf '%s\n' "$text" | sed -n 's/^Output .*(\([^)]*\)).*/\1/p' | head -n 1)"
+  fi
+  current="$(printf '%s\n' "$text" | awk -v out="$name" '
+    $1 == "Output" {
+      cur = 0
+      if (match($0, /\([^)]+\)/)) {
+        conn = substr($0, RSTART + 1, RLENGTH - 2)
+        cur = (conn == out)
+      }
+    }
+    cur && $1 == "Current" && $2 == "mode:" { print $3; exit }
+  ')"
+  if [[ -z "$current" ]]; then
+    current="$(printf '%s\n' "$text" | awk '$1 == "Current" && $2 == "mode:" { print $3; exit }')"
+  fi
+  [[ -n "$name" && -n "$current" ]] || { echo "Nenhum monitor niri" >&2; return 1; }
+  current="${current%%@*}"
+  target="$(next_res "$current")"
+  mode_line="$(printf '%s\n' "$text" | grep -oE "${target}@[0-9.]+" | head -n 1 || true)"
+  if [[ -n "$mode_line" ]]; then
+    niri msg output "$name" mode "$mode_line"
+  else
+    niri msg output "$name" custom-mode "${target}@60.000"
+  fi
+  notify "${current} → ${target}"
 }
 
 apply_kde() {
@@ -210,11 +260,12 @@ apply_hyprland() {
 load_session_env
 de="$(detect_de)"
 case "$de" in
+  niri) apply_niri ;;
   kde) apply_kde ;;
   gnome) apply_gnome ;;
   hyprland) apply_hyprland ;;
   *)
-    echo "Ambiente não reconhecido (kde, gnome ou hyprland)" >&2
+    echo "Ambiente não reconhecido (niri, kde, gnome ou hyprland)" >&2
     exit 1
     ;;
 esac

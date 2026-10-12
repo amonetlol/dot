@@ -100,9 +100,9 @@ PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 
 # Escolha qual configuração do Starship usar (descomente apenas uma)
 
-#export STARSHIP_CONFIG="$HOME/.config/starship-nord.toml"        # nord
+export STARSHIP_CONFIG="$HOME/.config/starship-nord.toml"        # nord
 #export STARSHIP_CONFIG="$HOME/.config/starship-tokyo-night.toml" # tokyo
-export STARSHIP_CONFIG="$HOME/.config/starship.toml"             # padrão
+#export STARSHIP_CONFIG="$HOME/.config/starship.toml"             # padrão
 
 # ============================================================
 

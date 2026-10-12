@@ -1,0 +1,44 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+
+format = """
+░▒▓\
+$os\
+$username\
+[│](inverted)\
+$directory\
+$git_branch\
+[\ue0b4](bg:8)\
+$time\
+[\ue0b4](fg:8)\
+$character"""
+
+[os]
+disabled = false
+format = "[ $symbol ](inverted)"
+
+[os.symbols]
+EndeavourOS = "\uf322"
+Arch = "\uf303"
+
+[username]
+show_always = true
+format = "[ $user ](inverted bold)"
+
+[directory]
+format = "[ $path ](inverted)"
+truncation_length = 3
+home_symbol = '~'
+
+[git_branch]
+format = "[ \ue0a0 $branch ](inverted)"
+
+[time]
+disabled = false
+time_format = '%H:%M'
+format = "[ \uf017 $time ](bg:8 fg:0)"
+
+[character]
+success_symbol = '[❯](fg:4)'
+error_symbol = '[❯](fg:1)'

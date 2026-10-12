@@ -1,0 +1,155 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "small",
+    "source": "",
+    "padding": {
+      "top": 1,
+
+      "right": 2,
+    },
+  },
+
+  "display": {
+    "separator": " \u2192 ",
+
+    "percent": {
+      "type": 9,
+
+      "green": 50,
+
+      "yellow": 80,
+    },
+  },
+
+  "modules": [
+    {
+      "type": "os",
+
+      "key": "{#1}OS ",
+    },
+
+    {
+      "type": "kernel",
+
+      "key": "{#90} \u251c {#39}\uf013",
+    },
+
+    {
+      "type": "packages",
+
+      "key": "{#90} \u251c {#39}\uf487",
+    },
+
+    {
+      "type": "shell",
+
+      "key": "{#90} \u251c {#39}\uf489",
+    },
+
+    {
+      "type": "command",
+
+      "key": "{#90} \u2514 {#39}\uf252",
+
+      "text": "echo $(( ($(date +%s) - $(stat -c %W /)) / 86400 )) days",
+    },
+
+    {
+      "type": "break",
+    },
+
+    {
+      "type": "wm",
+
+      "key": "{#1}WM ",
+    },
+
+    {
+      "type": "de",
+
+      "key": "{#90} \u251c {#39}\uf108",
+    },
+
+    {
+      "type": "terminal",
+
+      "key": "{#90} \u251c {#39}\uf120",
+    },
+
+    {
+      "type": "font",
+
+      "key": "{#90} \u2514 {#39}\uf031",
+
+      "format": "{1}",
+    },
+
+    {
+      "type": "break",
+    },
+
+    {
+      "type": "host",
+
+      "key": "{#1}PC ",
+    },
+
+    {
+      "type": "cpu",
+
+      "key": "{#90} \u251c {#39}\uf2db",
+
+      "showPeCoreCount": true,
+    },
+
+    {
+      "type": "gpu",
+
+      "key": "{#90} \u251c {#39}\udb82\udcae",
+
+      "hideType": "integrated",
+    },
+
+    {
+      "type": "gpu",
+
+      "key": "{#90} \u251c {#39}\udb82\udcae",
+
+      "hideType": "discrete",
+    },
+
+    {
+      "type": "memory",
+
+      "key": "{#90} \u251c {#39}\uf233",
+    },
+
+    {
+      "type": "disk",
+
+      "key": "{#90} \u251c {#39}\uf0a0",
+
+      "folders": "/",
+    },
+
+    {
+      "type": "uptime",
+
+      "key": "{#90} \u2514 {#39}\uf017",
+    },
+
+    {
+      "type": "break",
+    },
+
+    {
+      "type": "colors",
+
+      "symbol": "circle",
+
+      "paddingLeft": 1,
+    },
+  ],
+}

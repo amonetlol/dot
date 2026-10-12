@@ -109,7 +109,8 @@ alias fv='fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs -r
 # FETCH / INFORMAÇÕES VISUAIS DO SISTEMA
 # ============================================================
 alias xft='sexyFetch.sh'
-alias ftm='fastfetch --config ~/.config/fastfetch/small_config.jsonc'
+alias ftm='fastfetch --config ~/.config/fastfetch/mono.jsonc'
+alias ftm2='fastfetch --config ~/.config/fastfetch/small_config.jsonc'
 alias ft2='fastfetch --logo small -c ~/.config/fastfetch/Chris.jsonc'
 alias ft3='fastfetch --logo small'
 alias nf='neofetch'

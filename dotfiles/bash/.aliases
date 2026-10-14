@@ -125,6 +125,7 @@ alias uf='ufetch'
 alias ft='~/.bin/fastfetch-random.sh'
 alias ftc='fastfetch --config ~/.config/fastfetch/groups.jsonc'
 alias ftt='fastfetch --config ~/.config/fastfetch/simple.jsonc'
+alias fti='fastfetch -c all.jsonc'
 
 
 

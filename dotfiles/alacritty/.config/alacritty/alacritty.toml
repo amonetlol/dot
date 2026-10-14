@@ -18,10 +18,10 @@ startup_mode = "Windowed"
 
 
 [font]
-normal.family = "Cousine Nerd Font"
-bold.family   = "Cousine Nerd Font"
-italic.family = "Cousine Nerd Font"
-bold_italic.family = "Cousine Nerd Font"
+normal.family = "0xProto Nerd Font"
+bold.family   = "0xProto Nerd Font"
+italic.family = "0xProto Nerd Font"
+bold_italic.family = "0xProto Nerd Font"
 size = 11.0
 
 [scrolling]

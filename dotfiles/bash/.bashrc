@@ -68,6 +68,9 @@ case "$DISTRO" in
     solus)
         [[ -f "$HOME/.aliases-solus" ]] && . "$HOME/.aliases-solus"
         ;;
+    openmandriva)
+        [[ -f "$HOME/.aliases-openmandriva" ]] && . "$HOME/.aliases-openmandriva"
+        ;;
     unknown)
         # Descomente para debug:
         # echo "[AVISO] Distro não reconhecida."

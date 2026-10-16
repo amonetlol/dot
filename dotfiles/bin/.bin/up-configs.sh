@@ -5,6 +5,7 @@ set -euo pipefail
 
 NVIM_REPO="https://github.com/amonetlol/nvim"
 DOT_REPO="https://github.com/amonetlol/dot"
+RECOVERY_SCRIPT="https://raw.githubusercontent.com/amonetlol/sh/main/modules/recovery-shortcuts.sh"
 
 TMP_DIR=""
 DOT_CLONED=0
@@ -208,6 +209,19 @@ upgrade_fonts() {
   return 0
 }
 
+recovery_shortcuts() {
+  check_git || return 1
+  check_internet || return 1
+
+  log "Executando recovery shortcuts..."
+  if bash -c "$(curl -fsSL "$RECOVERY_SCRIPT")"; then
+    ok "Recovery shortcuts concluído."
+    return 0
+  fi
+  fail "Falha ao executar recovery shortcuts."
+  return 1
+}
+
 upgrade_shortcuts() {
   clone_dot_repo || return 1
 
@@ -254,7 +268,8 @@ declare -A CONFIG_NAMES=(
   [3]="Bash"
   [4]="Fonts"
   [5]="Shortcuts"
-  [6]=".bin"
+  [6]="Recovery Shortcuts"
+  [7]=".bin"
 )
 
 run_upgrade() {
@@ -273,7 +288,8 @@ run_upgrade() {
     3) upgrade_bash ;;
     4) upgrade_fonts ;;
     5) upgrade_shortcuts ;;
-    6) upgrade_bin ;;
+    6) recovery_shortcuts ;;
+    7) upgrade_bin ;;
     *) fail "Opção inválida: $id"; rc=1 ;;
   esac
   rc=${rc:-$?}
@@ -300,14 +316,14 @@ parse_selection() {
   fi
 
   if [[ "$input" == "all" || "$input" == "todos" || "$input" == "a" ]]; then
-    _result=(1 2 3 4 5 6)
+    _result=(1 2 3 4 5 6 7)
     return 0
   fi
 
   local part start end i
   IFS=',' read -ra parts <<< "$input"
   for part in "${parts[@]}"; do
-    if [[ "$part" =~ ^([1-6])-([1-6])$ ]]; then
+    if [[ "$part" =~ ^([1-7])-([1-7])$ ]]; then
       start="${BASH_REMATCH[1]}"
       end="${BASH_REMATCH[2]}"
       if (( start > end )); then
@@ -318,7 +334,7 @@ parse_selection() {
       for ((i = start; i <= end; i++)); do
         _result+=("$i")
       done
-    elif [[ "$part" =~ ^[1-6]$ ]]; then
+    elif [[ "$part" =~ ^[1-7]$ ]]; then
       _result+=("$part")
     else
       return 1
@@ -353,7 +369,8 @@ show_menu() {
   echo "  3) Bash"
   echo "  4) Fonts"
   echo "  5) Shortcuts"
-  echo "  6) .bin"
+  echo "  6) Recovery Shortcuts"
+  echo "  7) .bin"
   echo
   echo "  0) Sair"
   echo
@@ -414,7 +431,7 @@ main() {
     fi
 
     if ! parse_selection "$input" choices; then
-      warn "Seleção inválida. Use 1-6, 1,3,6, 1-3 ou all."
+      warn "Seleção inválida. Use 1-7, 1,3,6, 1-3 ou all."
       continue
     fi
 

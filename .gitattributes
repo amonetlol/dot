@@ -1,0 +1,2 @@
+# LF em todo texto — evita erros $'{\r' no Linux. Binários (fontes) são auto-detectados.
+* text=auto eol=lf

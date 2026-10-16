@@ -6,6 +6,7 @@ set -euo pipefail
 NVIM_REPO="https://github.com/amonetlol/nvim"
 DOT_REPO="https://github.com/amonetlol/dot"
 RECOVERY_SCRIPT="https://raw.githubusercontent.com/amonetlol/sh/main/modules/recovery-shortcuts.sh"
+HIDE_SHORTCUTS_SCRIPT="https://raw.githubusercontent.com/amonetlol/sh/main/modules/hide-shortcuts.sh"
 
 TMP_DIR=""
 DOT_CLONED=0
@@ -223,22 +224,15 @@ recovery_shortcuts() {
 }
 
 upgrade_shortcuts() {
-  clone_dot_repo || return 1
+  check_internet || return 1
 
-  local src="$TMP_DIR/dot/dotfiles/shortcuts/.local/share/applications"
-  local dest="$HOME/.local/share/applications"
-
-  if [[ ! -d "$src" ]]; then
-    fail "Origem shortcuts não encontrada em $src"
-    return 1
+  log "Executando hide shortcuts..."
+  if bash -c "$(curl -fsSL "$HIDE_SHORTCUTS_SCRIPT")"; then
+    ok "Hide shortcuts concluído."
+    return 0
   fi
-
-  mkdir -p "$HOME/.local/share"
-  backup_path "$dest"
-  mkdir -p "$dest"
-  copy_tree "$src" "$dest"
-  ok "Shortcuts instalados em $dest"
-  return 0
+  fail "Falha ao executar hide shortcuts."
+  return 1
 }
 
 upgrade_bin() {

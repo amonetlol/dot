@@ -8,6 +8,7 @@ alias uconf='~/.bin/up-configs.sh'
 alias fsize='du -sh * | sort -h'
 alias run='run.sh'
 alias fail='faillock --reset'
+alias upd='bash ~/.bin/upd.sh && chmod +x ~/.bin/'
 
 # ============================================================
 # AI / HERDR

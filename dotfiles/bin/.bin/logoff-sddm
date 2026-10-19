@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+program="${0##*/}"
+
+fail() {
+  printf '%s: %s\n' "$program" "$*" >&2
+  exit 1
+}
+
+has_process() {
+  command -v pgrep >/dev/null 2>&1 || return 1
+  pgrep -u "$(id -u)" -x "$1" >/dev/null 2>&1
+}
+
+detect_session() {
+  local hints
+  hints="${XDG_CURRENT_DESKTOP:-} ${XDG_SESSION_DESKTOP:-} ${DESKTOP_SESSION:-}"
+  hints="${hints,,}"
+
+  case "$hints" in
+    *hypr*) printf '%s\n' hyprland; return 0 ;;
+    *niri*) printf '%s\n' niri; return 0 ;;
+    *gnome*) printf '%s\n' gnome; return 0 ;;
+    *kde*|*plasma*) printf '%s\n' kde; return 0 ;;
+  esac
+
+  if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] || has_process Hyprland; then
+    printf '%s\n' hyprland
+    return 0
+  fi
+
+  if [[ -n "${NIRI_SOCKET:-}" ]] || has_process niri; then
+    printf '%s\n' niri
+    return 0
+  fi
+
+  if has_process gnome-shell; then
+    printf '%s\n' gnome
+    return 0
+  fi
+
+  if has_process plasmashell; then
+    printf '%s\n' kde
+    return 0
+  fi
+
+  return 1
+}
+
+logout_hyprland() {
+  if command -v hyprshutdown >/dev/null 2>&1; then
+    hyprshutdown
+    return
+  fi
+
+  command -v hyprctl >/dev/null 2>&1 || fail "hyprctl nao foi encontrado."
+
+  # Hyprland Lua (0.55+); if unavailable, try the legacy conf dispatcher.
+  if hyprctl eval 'hl.dispatch(hl.dsp.exit())' >/dev/null 2>&1; then
+    return 0
+  fi
+
+  hyprctl dispatch exit 0
+}
+
+logout_niri() {
+  command -v niri >/dev/null 2>&1 || fail "niri nao foi encontrado."
+  niri msg action quit --skip-confirmation
+}
+
+logout_gnome() {
+  command -v gnome-session-quit >/dev/null 2>&1 || fail "gnome-session-quit nao foi encontrado."
+  gnome-session-quit --logout --no-prompt
+}
+
+logout_kde() {
+  local dbus_cli
+  for dbus_cli in qdbus6 qdbus-qt6 qdbus; do
+    if command -v "$dbus_cli" >/dev/null 2>&1; then
+      "$dbus_cli" org.kde.Shutdown /Shutdown logout && return 0
+    fi
+  done
+  fail "QDBus nao foi encontrado ou o servico de logout do KDE nao respondeu."
+}
+
+if (( EUID == 0 )); then
+  fail "execute como o usuario da sessao, sem sudo."
+fi
+
+if ! session="$(detect_session)"; then
+  fail "nao consegui detectar a sessao (Hyprland, GNOME, KDE ou Niri)."
+fi
+
+case "$session" in
+  hyprland)
+    printf 'Sessao detectada: Hyprland (config Lua ou conf).\n'
+    logout_hyprland
+    ;;
+  niri)
+    printf 'Sessao detectada: Niri (com ou sem Noctalia).\n'
+    logout_niri
+    ;;
+  gnome)
+    printf 'Sessao detectada: GNOME.\n'
+    logout_gnome
+    ;;
+  kde)
+    printf 'Sessao detectada: KDE Plasma.\n'
+    logout_kde
+    ;;
+esac

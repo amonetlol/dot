@@ -23,7 +23,7 @@ case "${de,,}" in
     if command -v plasma-apply-wallpaperimage >/dev/null 2>&1; then plasma-apply-wallpaperimage "$wallpaper"; else exit 0; fi
     ;;
   *qtile*|*x11*)
-    if [[ -n "${DISPLAY:-}" ]] && command -v feh >/dev/null 2>&1; then feh --no-fehbg --bg-fill "$wallpaper"; else exit 0; fi
+    if [[ -n "${DISPLAY:-}" ]] && command -v feh >/dev/null 2>&1; then feh --no-fehbg --no-xinerama --bg-fill "$wallpaper"; else exit 0; fi
     ;;
   *niri*|*hyprland*|*wayland*|*sway*)
     set_wayland_wallpaper
@@ -32,7 +32,7 @@ case "${de,,}" in
     if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
       set_wayland_wallpaper
     elif [[ -n "${DISPLAY:-}" ]] && command -v feh >/dev/null 2>&1; then
-      feh --no-fehbg --bg-fill "$wallpaper"
+      feh --no-fehbg --no-xinerama --bg-fill "$wallpaper"
     else exit 0; fi
     ;;
 esac

@@ -355,7 +355,7 @@ wall() {
     elif command -v awww >/dev/null 2>&1; then
         awww img "$1"
     elif command -v feh >/dev/null 2>&1; then
-        feh --bg-fill "$1"
+        feh --no-xinerama --bg-fill "$1"
     else
         echo "Erro: nenhum setter de wallpaper encontrado." >&2
         return 1

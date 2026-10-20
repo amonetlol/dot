@@ -34,6 +34,10 @@ load_session_env() {
 }
 
 detect_de() {
+  if [[ "${XDG_CURRENT_DESKTOP:-}" == *qtile* || "${XDG_SESSION_DESKTOP:-}" == "qtile" ]] || pgrep -x qtile >/dev/null 2>&1; then
+    printf '%s\n' qtile
+    return
+  fi
   if [[ "${XDG_CURRENT_DESKTOP:-}" == *niri* || "${XDG_SESSION_DESKTOP:-}" == "niri" ]] \
     || pgrep -x niri >/dev/null 2>&1; then
     printf '%s\n' niri
@@ -257,15 +261,27 @@ apply_hyprland() {
   notify "${current} → ${target}"
 }
 
+force_de=""
+case "${1:-}" in
+  "") ;;
+  --kde) force_de=kde ;;
+  --gnome) force_de=gnome ;;
+  --hypr) force_de=hyprland ;;
+  --niri) force_de=niri ;;
+  --qtile) force_de=qtile ;;
+  -h|--help) echo "Uso: mon [--kde|--gnome|--hypr|--niri|--qtile]"; exit 0 ;;
+  *) echo "Opcao invalida: $1" >&2; exit 2 ;;
+esac
 load_session_env
-de="$(detect_de)"
+de="${force_de:-$(detect_de)}"
 case "$de" in
   niri) apply_niri ;;
   kde) apply_kde ;;
   gnome) apply_gnome ;;
   hyprland) apply_hyprland ;;
+  qtile) XDG_SESSION_TYPE=x11 apply_gnome ;;
   *)
-    echo "Ambiente não reconhecido (niri, kde, gnome ou hyprland)" >&2
+    echo "Ambiente nao reconhecido (niri, kde, gnome, hyprland ou qtile)" >&2
     exit 1
     ;;
 esac

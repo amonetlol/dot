@@ -170,10 +170,9 @@ alias binds2='cat ~/.config/hyprtheme/hyprland.conf | grep -E "bind|SUPER" | fzf
 
 
 # ============================================================
-# OPENBOX
+# GNOME / KDE
 # ============================================================
-alias od='cd ~/.config/openbox/ && ll'
-alias or='openbox --reconfigure'
+alias fix_gnome='gsettings set org.gnome.shell app-picker-layout "[]"'
 
 
 # ============================================================

@@ -202,9 +202,9 @@ up() {
 cd ()
 {
 	if [ -n "$1" ]; then
-		builtin cd "$@" && ls
+		builtin cd "$@" && ls -la
 	else
-		builtin cd ~ && ls
+		builtin cd ~ && ls -la
 	fi
 }
 

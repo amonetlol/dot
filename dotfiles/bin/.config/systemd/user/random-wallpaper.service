@@ -1,0 +1,10 @@
+[Unit]
+Description=Wallpaper aleatorio (sessao grafica ativa)
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.bin/random-wallpaper.sh
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+# Preserve o daemon awww iniciado pelo script ate o encerramento do user manager.
+KillMode=process

@@ -1,0 +1,195 @@
+scan_timeout = 200
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[](blue)\
+$os\
+$username\
+[](bg:sapphire fg:blue)\
+$directory\
+[](bg:sky fg:sapphire)\
+$git_branch\
+$git_status\
+[](fg:sky bg:teal)\
+$c\
+$rust\
+$golang\
+$nodejs\
+$bun\
+$php\
+$java\
+$kotlin\
+$haskell\
+$python\
+[](fg:teal bg:sapphire)\
+$conda\
+[](fg:sapphire bg:rosewater)\
+$time\
+[ ](fg:rosewater)\
+$cmd_duration\
+$line_break\
+$character"""
+
+palette = 'vora_blue'
+
+[os]
+disabled = false
+style = "bg:blue fg:crust"
+
+[os.symbols]
+Windows = " "
+Ubuntu = "󰕈 "
+SUSE = " "
+Raspbian = "󰐿 "
+Mint = "󰣭 "
+Macos = "󰀵 "
+Manjaro = " "
+Linux = "󰌽 "
+Gentoo = "󰣨 "
+Fedora = "󰣛 "
+Alpine = " "
+Amazon = " "
+Android = " "
+AOSC = " "
+Arch = "󰣇 "
+Artix = "󰣇 "
+CachyOS = " "
+CentOS = " "
+Debian = "󰣚 "
+Redhat = "󱄛 "
+RedHatEnterprise = "󱄛 "
+Void = " "
+
+[username]
+show_always = true
+style_user = "bg:blue fg:crust"
+style_root = "bg:blue fg:crust"
+format = '[$user]($style)'
+
+[directory]
+style = "bg:sapphire fg:crust"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Developer" = "󰲋 "
+
+[git_branch]
+symbol = ""
+style = "bg:sky"
+format = '[[ $symbol $branch ](fg:crust bg:sky)]($style)'
+
+[git_status]
+style = "bg:sky"
+format = '[[($all_status$ahead_behind )](fg:crust bg:sky)]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[bun]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[c]
+symbol = " "
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[php]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[java]
+symbol = " "
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[jj_bookmark]
+symbol = ""
+style = "bg:sky"
+format = '[[ $symbol $bookmark(@$remote)$diverged( \\(+$overflow_count others\\)) ](fg:crust bg:sky)]($style)'
+
+[jj_status]
+style = "bg:sky"
+format = '[[($all )](fg:crust bg:sky)]($style)'
+
+[kotlin]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[haskell]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version) ](fg:crust bg:teal)]($style)'
+
+[python]
+symbol = ""
+style = "bg:teal"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:teal)]($style)'
+
+[docker_context]
+symbol = ""
+style = "bg:sapphire"
+format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
+
+[conda]
+symbol = "  "
+style = "fg:crust bg:sapphire"
+format = '[$symbol$environment ]($style)'
+ignore_base = false
+
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:rosewater"
+format = '[[  $time ](fg:crust bg:rosewater)]($style)'
+
+[line_break]
+disabled = true
+
+[character]
+disabled = false
+success_symbol = ' '
+error_symbol = ' '
+vimcmd_symbol = '[❮](bold fg:teal)'
+vimcmd_replace_one_symbol = '[❮](bold fg:rosewater)'
+vimcmd_replace_symbol = '[❮](bold fg:rosewater)'
+vimcmd_visual_symbol = '[❮](bold fg:sky)'
+
+[cmd_duration]
+show_milliseconds = true
+format = " in $duration "
+style = "bg:rosewater"
+disabled = false
+show_notifications = true
+min_time_to_notify = 45000
+
+[palettes.vora_blue]
+rosewater = "#dce4f5"
+blue = "#89b4fa"
+sapphire = "#74c7ec"
+sky = "#89dceb"
+teal = "#94e2d5"
+text = "#cdd6f4"
+crust = "#11111b"
+base = "#1e1e2e"

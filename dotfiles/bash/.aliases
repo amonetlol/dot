@@ -246,3 +246,7 @@ bind -x '"\e[1;3R": fzf-ag'
 
 # Ver binds no terminal: showkey -a OU CTRL+v
 # ^[ = \e (ALT)
+
+# Fastfetch Vora
+alias ftv='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora.jsonc"'
+alias ftv2='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora-icons.jsonc"'

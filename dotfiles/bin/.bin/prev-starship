@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Mostra os presets Starship sem alterar a configuracao ativa.
+set -uo pipefail
+shopt -s nullglob
+
+if ! command -v starship >/dev/null 2>&1; then
+    printf 'Erro: starship nao esta instalado.
+' >&2
+    exit 1
+fi
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+configs=("$config_dir"/starship*.toml "$config_dir"/starship/*.toml)
+
+if (( ${#configs[@]} == 0 )); then
+    printf 'Nenhuma configuracao Starship encontrada em %s.
+' "$config_dir" >&2
+    exit 1
+fi
+
+width="${COLUMNS:-}"
+if [[ ! "$width" =~ ^[1-9][0-9]*$ ]]; then
+    width=$(tput cols 2>/dev/null) || width=80
+fi
+
+result=0
+for config in "${configs[@]}"; do
+    [[ -f "$config" ]] || continue
+    name="${config##*/}"
+    if [[ -t 1 ]]; then
+        printf '
+\033[1;36m--- %s ---\033[0m
+' "$name"
+    else
+        printf '
+--- %s ---
+' "$name"
+    fi
+    if ! STARSHIP_CONFIG="$config" STARSHIP_SHELL= starship prompt \
+        --path "$PWD" --terminal-width "$width" --status 0; then
+        printf '
+Erro ao gerar preview de %s.
+' "$name" >&2
+        result=1
+    fi
+    printf '
+'
+done
+exit "$result"

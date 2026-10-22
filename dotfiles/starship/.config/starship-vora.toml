@@ -180,7 +180,7 @@ vimcmd_visual_symbol = '[❮](bold fg:sky)'
 show_milliseconds = true
 format = " in $duration "
 style = "bg:rosewater"
-disabled = false
+disabled = true
 show_notifications = true
 min_time_to_notify = 45000
 

@@ -1,0 +1,112 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+format = """
+[░▒▓](fg:#212020)\
+$os\
+[](fg:#212020 bg:#252525)\
+$directory\
+[](fg:#252525 bg:#636366)\
+$git_branch\
+$git_status\
+[](fg:#636366 bg:#95a983)\
+$nodejs\
+$rust\
+$golang\
+$php\
+[](fg:#95a983 bg:#c3d9ac)\
+$time\
+[](fg:#c3d9ac)\
+$character"""
+
+scan_timeout = 500
+command_timeout = 2000
+
+[directory]
+style = "fg:#f2f2f2 bg:#252525"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = "󰉍 "
+"Music" = "󰝚 "
+"Pictures" = "󰉏 "
+
+[git_branch]
+symbol = "󰘬"
+style = "bg:#636366"
+format = '[[ $symbol $branch ](fg:#dff299 bg:#636366)]($style)'
+
+[git_status]
+style = "bg:#636366"
+format = '[[($all_status$ahead_behind )](fg:#dff299 bg:#636366)]($style)'
+conflicted = "󰞇 "
+ahead = "󰁝${count} "
+behind = "󰁅${count} "
+diverged = "󰹺 "
+untracked = "󰄱 "
+stashed = "󰆓 "
+modified = "󰷈 "
+staged = "󰐕 "
+renamed = "󰑕 "
+deleted = "󰮉 "
+
+[nodejs]
+symbol = "󰎙"
+style = "bg:#252525"
+format = '[[ $symbol ($version) ](fg:#c3d9ac bg:#252525)]($style)'
+
+[rust]
+symbol = "󱘗"
+style = "bg:#252525"
+format = '[[ $symbol ($version) ](fg:#c3d9ac bg:#252525)]($style)'
+
+[golang]
+symbol = "󰟓"
+style = "bg:#252525"
+format = '[[ $symbol ($version) ](fg:#c3d9ac bg:#252525)]($style)'
+
+[php]
+symbol = "󰌟"
+style = "bg:#252525"
+format = '[[ $symbol ($version) ](fg:#c3d9ac bg:#252525)]($style)'
+
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:#c3d9ac"
+format = '[[  $time ](fg:#252525 bg:#c3d9ac)]($style)'
+
+[character]
+success_symbol = "[❯](bold fg:#c3d9ac)"
+error_symbol = "[❯](bold fg:#f2a5b5)"
+vimcmd_symbol = "[❮](bold fg:#c3d9ac)"
+
+[os]
+disabled = false
+format = "[ $symbol]($style)"
+style = "bg:#212020 fg:#f2f2f2"
+
+[os.symbols]
+Windows = " "
+Ubuntu = "󰕈 "
+SUSE = " "
+Raspbian = "󰐿 "
+Mint = "󰣭 "
+Macos = "󰀵 "
+Manjaro = " "
+Linux = "󰌽 "
+Gentoo = "󰣨 "
+Fedora = "󰣛 "
+Alpine = " "
+Amazon = " "
+Android = " "
+AOSC = " "
+Arch = "󰣇 "
+Artix = "󰣇 "
+CachyOS = " "
+CentOS = " "
+Debian = "󰣚 "
+Redhat = "󱄛 "
+RedHatEnterprise = "󱄛 "
+Void = " "

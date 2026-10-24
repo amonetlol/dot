@@ -1,19 +1,10 @@
 # version: 1.0.0
 "$schema" = 'https://starship.rs/config-schema.json'
 
-add_newline = true
+add_newline = false
 continuation_prompt = "[▸▹ ](dimmed white)"
 
-format = """($nix_shell$container$fill$git_metrics\n)$cmd_duration\
-$hostname\
-$localip\
-$shlvl\
-$shell\
-$env_var\
-$jobs\
-$sudo\
-$username\
-$character"""
+format = "($nix_shell$container$fill$git_metrics)$cmd_duration$hostname$localip$shlvl$shell$env_var$jobs$sudo$username$character"
 
 right_format = """
 $singularity\

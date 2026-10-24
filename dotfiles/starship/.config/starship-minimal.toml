@@ -1,56 +1,5 @@
-format = """
- [╭──\\(](bold #9D66FF)$username$hostname[\\)─\\[](bold #9D66FF)$directory[\\]](bold #9D66FF) \
-$kubernetes\
-$git_branch\
-$hg_branch\
-$docker_context\
-$package\
-$buf\
-$cmake\
-$cobol\
-$container\
-$dart\
-$deno\
-$dotnet\
-$elixir\
-$elm\
-$erlang\
-$golang\
-$haskell\
-$helm\
-$java\
-$julia\
-$kotlin\
-$lua\
-$nim\
-$nodejs\
-$ocaml\
-$perl\
-$php\
-$pulumi\
-$purescript\
-$python\
-$rlang\
-$red\
-$ruby\
-$rust\
-$scala\
-$swift\
-$terraform\
-$vlang\
-$vagrant\
-$zig\
-$nix_shell\
-$conda\
-$aws\
-$gcloud\
-$openstack\
-$azure\
-$env_var\
-$crystal\
-$custom\
-$sudo
- [╰─⪧](bold #9D66FF) """
+add_newline = false
+format = " [──\\(](bold #9D66FF)$username$hostname[\\)─\\[](bold #9D66FF)$directory[\\]](bold #9D66FF)$kubernetes$git_branch$hg_branch$docker_context$package$buf$cmake$cobol$container$dart$deno$dotnet$elixir$elm$erlang$golang$haskell$helm$java$julia$kotlin$lua$nim$nodejs$ocaml$perl$php$pulumi$purescript$python$rlang$red$ruby$rust$scala$swift$terraform$vlang$vagrant$zig$nix_shell$conda$aws$gcloud$openstack$azure$env_var$crystal$custom$sudo[─⪧](bold #9D66FF) "
 
 [directory]
 truncation_length = 100
@@ -160,3 +109,6 @@ Debian = "󰣚 "
 Redhat = "󱄛 "
 RedHatEnterprise = "󱄛 "
 Void = " "
+
+[line_break]
+disabled = true

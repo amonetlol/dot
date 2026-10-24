@@ -1,0 +1,113 @@
+# Hypr LightBlue — based on the current starship-nord configuration.
+"$schema" = 'https://starship.rs/config-schema.json'
+format = """
+[░▒▓](fg:#101418)\
+$os\
+[](fg:#101418 bg:#212c39)\
+$directory\
+[](fg:#212c39 bg:#3b5270)\
+$git_branch\
+$git_status\
+[](fg:#3b5270 bg:#6081a7)\
+$nodejs\
+$rust\
+$golang\
+$php\
+[](fg:#6081a7 bg:#9fcafc)\
+$time\
+[](fg:#9fcafc)\
+$character"""
+
+scan_timeout = 500
+command_timeout = 2000
+
+[directory]
+style = "fg:#e1e2e8 bg:#212c39"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = "󰉍 "
+"Music" = "󰝚 "
+"Pictures" = "󰉏 "
+
+[git_branch]
+symbol = "󰘬"
+style = "bg:#3b5270"
+format = '[[ $symbol $branch ](fg:#9fcafc bg:#3b5270)]($style)'
+
+[git_status]
+style = "bg:#3b5270"
+format = '[[($all_status$ahead_behind )](fg:#9fcafc bg:#3b5270)]($style)'
+conflicted = "󰞇 "
+ahead = "󰁝${count} "
+behind = "󰁅${count} "
+diverged = "󰹺 "
+untracked = "󰄱 "
+stashed = "󰆓 "
+modified = "󰷈 "
+staged = "󰐕 "
+renamed = "󰑕 "
+deleted = "󰮉 "
+
+[nodejs]
+symbol = "󰎙"
+style = "bg:#6081a7"
+format = '[[ $symbol ($version) ](fg:#101418 bg:#6081a7)]($style)'
+
+[rust]
+symbol = "󱘗"
+style = "bg:#6081a7"
+format = '[[ $symbol ($version) ](fg:#101418 bg:#6081a7)]($style)'
+
+[golang]
+symbol = "󰟓"
+style = "bg:#6081a7"
+format = '[[ $symbol ($version) ](fg:#101418 bg:#6081a7)]($style)'
+
+[php]
+symbol = "󰌟"
+style = "bg:#6081a7"
+format = '[[ $symbol ($version) ](fg:#101418 bg:#6081a7)]($style)'
+
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:#9fcafc"
+format = '[[  $time ](fg:#101418 bg:#9fcafc)]($style)'
+
+[character]
+success_symbol = "[❯](bold fg:#9fcafc)"
+error_symbol = "[❯](bold fg:#ffb4ab)"
+vimcmd_symbol = "[❮](bold fg:#9fcafc)"
+
+[os]
+disabled = false
+format = "[ $symbol]($style)"
+style = "bg:#101418 fg:#e1e2e8"
+
+[os.symbols]
+Windows = " "
+Ubuntu = "󰕈 "
+SUSE = " "
+Raspbian = "󰐿 "
+Mint = "󰣭 "
+Macos = "󰀵 "
+Manjaro = " "
+Linux = "󰌽 "
+Gentoo = "󰣨 "
+Fedora = "󰣛 "
+Alpine = " "
+Amazon = " "
+Android = " "
+AOSC = " "
+Arch = "󰣇 "
+Artix = "󰣇 "
+CachyOS = " "
+CentOS = " "
+Debian = "󰣚 "
+Redhat = "󱄛 "
+RedHatEnterprise = "󱄛 "
+Void = " "

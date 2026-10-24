@@ -1,0 +1,76 @@
+# Reference: https://github.com/DeePZeeRa/startship_toml_windows11
+# Single-line adaptation for Hypr Karol (Catppuccin Frappe).
+"$schema" = "https://starship.rs/config-schema.json"
+add_newline = false
+format = "[](fg:base)$os[](fg:base bg:shade1)$directory[](fg:shade1 bg:shade2)[ ](bg:shade2)[](fg:shade2 bg:shade3)[ ](bg:shade3)[](fg:shade3 bg:blue)$character "
+right_format = ""
+palette = "karol"
+scan_timeout = 200
+
+[os]
+disabled = false
+format = "[ $symbol ]($style)"
+style = "bold fg:blue bg:base"
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CachyOS = ""
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+Void = ""
+NixOS = ""
+EndeavourOS = ""
+Unknown = ""
+
+[directory]
+style = "bold fg:text bg:shade1"
+format = "[ $path ]($style)"
+truncation_length = 100
+truncation_symbol = ""
+truncate_to_repo = false
+use_logical_path = true
+use_os_path_sep = false
+home_symbol = "~"
+read_only = ""
+
+[character]
+format = "$symbol"
+success_symbol = "[ ➤ ](bold fg:crust bg:blue)[](fg:blue)"
+error_symbol = "[ ➤ ](bold fg:crust bg:red)[](fg:red)"
+vimcmd_symbol = "[ ➤ ](bold fg:crust bg:green)[](fg:green)"
+
+[line_break]
+disabled = true
+
+[palettes.karol]
+lavender = "#babbf1"
+mauve = "#ca9ee6"
+text = "#c6d0f5"
+red = "#e78284"
+green = "#a6d189"
+base = "#303446"
+surface0 = "#414559"
+
+# Dark-to-blue ramp from the Karol / Catppuccin Frappe palette.
+crust = "#232634"
+shade1 = "#474f70"
+shade2 = "#5e6f9a"
+shade3 = "#758cc4"
+blue = "#8caaee"

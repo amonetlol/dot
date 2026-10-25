@@ -1,107 +1,267 @@
-#[line_break]
-#disabled = true
-
-format = """
-[░▒▓](#a3aed2)\
+add_newline = false
+palette = "default"
+format = """\
+[](fg:blue)\
 $os\
-[](bg:#769ff0 fg:#a3aed2)\
+[](bg:blue fg:red)\
+$username\
+[](bg:red fg:green)\
 $directory\
-[](fg:#769ff0 bg:#394260)\
+[ ](fg:green)\
 $git_branch\
 $git_status\
-[](fg:#394260 bg:#212736)\
-$nodejs\
-$rust\
-$golang\
-$php\
-[](fg:#212736 bg:#1d2230)\
-$time\
-[ ](fg:#1d2230)\
+$all\
 $character"""
-#\n$character"""
 
-scan_timeout   = 200
-command_timeout = 5000
-
-[directory]
-style = "fg:#e3e5e5 bg:#769ff0"
-format = "[ $path ]($style)"
-truncation_length = 3
-truncation_symbol = "…/"
-
-[directory.substitutions]
-"Documents" = " "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-"Desktop" = " "
-"~"=" "
-"CPP"=" "
-"Cpp"=" "
-"C++"=" "
-"c++"=" "
-"cpp"=" "
-
-[git_branch]
-symbol = ""
-style = "bg:#394260"
-format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
-
-[git_status]
-style = "bg:#394260"
-format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
-
-[nodejs]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
-
-[rust]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
-
-[golang]
-symbol = "ﳑ"
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
-
-[php]
-symbol = ""
-style = "bg:#212736"
-format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
-
-[time]
-disabled = true
-time_format = "%R" # Hour:Minute Format
-style = "bg:#1d2230"
-format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+[username]
+show_always = true
+format = '[$user ](bg:red fg:black)'
+disabled = false
 
 [os]
 disabled = false
-format = "[ $symbol]($style)"
-style = "bg:#a3aed2 fg:#090c0c"
-
+style = 'bg:blue fg:black'
 [os.symbols]
-Windows = " "
-Ubuntu = "󰕈 "
-SUSE = " "
-Raspbian = "󰐿 "
-Mint = "󰣭 "
-Macos = "󰀵 "
-Manjaro = " "
-Linux = "󰌽 "
-Gentoo = "󰣨 "
-Fedora = "󰣛 "
+Alpaquita = " "
 Alpine = " "
+AlmaLinux = " "
 Amazon = " "
-Android = " "
-AOSC = " "
-Arch = "󰣇 "
-Artix = "󰣇 "
-CachyOS = " "
+Android = " "
+Arch = " "
+Artix = " "
+CachyOS = " "
 CentOS = " "
-Debian = "󰣚 "
-Redhat = "󱄛 "
-RedHatEnterprise = "󱄛 "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Kali = " "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+Nobara = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
 Void = " "
+Windows = "󰍲 "
+
+[cmd_duration]
+disabled = true
+format = "[$duration](fg:red)"
+
+[directory]
+format = "[$path](bg:green fg:black)"
+truncation_length = 2
+truncation_symbol = "…/"
+
+[character]
+success_symbol = "[](bold blue)"
+error_symbol = "[✗](bold red)"
+disabled = false
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Scripts" = "󰲋 "
+
+[fossil_branch]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[git_branch]
+symbol = "  "
+format = '[$symbol($branch) ($version)]($style)'
+
+[git_commit]
+tag_symbol = '  '
+format = '[$symbol($version)]($style)'
+
+[aws]
+symbol = "   "
+format = '[$symbol($version)]($style)'
+
+[buf]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[c]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[cmake]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[conda]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[crystal]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[dart]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[docker_context]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[elixir]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[elm]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[fennel]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[golang]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[guix_shell]
+symbol = "   "
+format = '[$symbol($version)]($style)'
+
+[haskell]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[haxe]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[hg_branch]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[hostname]
+ssh_symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[java]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[julia]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[kotlin]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[lua]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[memory_usage]
+symbol = " 󰍛 "
+format = '[$symbol($version)]($style)'
+
+[meson]
+symbol = " 󰔷 "
+format = '[$symbol($version)]($style)'
+
+[nim]
+symbol = " 󰆥 "
+format = '[$symbol($version)]($style)'
+
+[nix_shell]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[nodejs]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[ocaml]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[package]
+symbol = " 󰏗 "
+format = '[$symbol($version)]($style)'
+
+[perl]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[php]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[pijul_channel]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[python]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[rlang]
+symbol = " 󰟔 "
+format = '[$symbol($version)]($style)'
+
+[ruby]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[rust]
+symbol = " 󱘗 "
+format = '[$symbol($version)]($style)'
+
+[scala]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[swift]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[zig]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[gradle]
+symbol = "  "
+format = '[$symbol($version)]($style)'
+
+[palettes.default]
+black = "#1e1e2e"
+blue = "#89b4fa"
+red = "#f38ba8"
+green = "#a6e3a1"
+
+[line_break]
+disabled = true

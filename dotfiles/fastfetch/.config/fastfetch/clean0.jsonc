@@ -1,119 +1,117 @@
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
-    // "type": "kitty-icat",
     "type": "small",
     "padding": {
       "top": 1,
-    },
-    //"width": 35,
+      "right": 2
+    }
   },
   "display": {
     "separator": " │ ",
     "bar": {
       "char": {
-        //"elapsed": "⣿", "total": "⣀"
-        // "elapsed": "•", "total": "•"
         "elapsed": "─",
-        "total": "─",
+        "total": "─"
       },
-      "width": 13,
+      "width": 13
     },
     "percent": {
-      "type": 15,
+      "type": 15
     },
+    "key": {
+      "width": 0
+    }
   },
   "modules": [
     "break",
     {
       "type": "title",
       "key": " ",
-      "format": "{6} {7} {8}",
+      "format": "{user-name-colored} {at-symbol-colored} {host-name-colored}"
     },
     {
       "type": "custom",
-      "format": "{#cyan}╭──────────────────────────────────────────╮",
+      "format": "{#cyan}╭───────────────────────────────────────────────╮"
     },
     {
-      // 
       "type": "os",
       "key": "{#cyan}│ {#magenta}󰣇 OS      ",
-      "format": "{2}                   {#cyan}│",
-      "keyColor": "magenta",
+      "format": "{name<32} {#cyan}│",
+      "keyColor": "magenta"
     },
     {
       "type": "wm",
       "key": "{#cyan}│ {#magenta} WM      ",
-      "format": "{2}                    {#cyan}│",
+      "format": "{pretty-name<32} {#cyan}│"
     },
     {
       "type": "terminal",
       "key": "{#cyan}│ {#magenta} Terminal",
-      "format": "{2}                        {#cyan}│",
+      "format": "{pretty-name<32} {#cyan}│"
     },
     {
       "type": "shell",
-      "key": "{#cyan}│ {#magenta}  Shell  ",
-      "format": "{3}                        {#cyan}│",
-      "keyColor": "magenta",
+      "key": "{#cyan}│ {#magenta} Shell   ",
+      "format": "{pretty-name<32} {#cyan}│",
+      "keyColor": "magenta"
     },
     {
       "type": "custom",
-      "format": "{#cyan}╰──────────────────────────────────────────╯",
+      "format": "{#cyan}╰───────────────────────────────────────────────╯"
     },
     "break",
     {
       "type": "host",
-      "format": "{#green}{5} {1}",
+      "format": "{#green}{vendor} {name}",
       "key": "{#green}  ",
-      "keyColor": "33",
+      "keyColor": "33"
     },
     {
       "type": "custom",
-      "format": "{#green}╭──────────────────────────────────────────╮",
+      "format": "{#green}╭───────────────────────────────────────────────╮"
     },
     {
-      // "format": "{1} @ {7}",
       "type": "cpu",
-      "format": "{1}   {#green}│",
-      "key": "{#green}│ {#blue} CPU    ",
+      "format": "{name<32} {#green}│",
+      "key": "{#green}│ {#blue} CPU     "
     },
     {
       "type": "gpu",
-      "format": "{1} {2}       {#green}│",
-      "key": "{#green}│ {#blue}󰊴 GPU    ",
+      "format": "{name<32} {#green}│",
+      "key": "{#green}│ {#blue}󰊴 GPU     "
     },
     {
       "type": "memory",
-      "key": "{#green}│ {#blue}󰑭 Memory ",
-      "format": "{4}            {#green}│",
+      "key": "{#green}│ {#blue}󰑭 Memory  ",
+      "format": "{percentage-bar}                {#green}│"
     },
     {
       "type": "disk",
-      "key": "{#green}│ {#blue}󰋊 Disk   ",
+      "key": "{#green}│ {#blue}󰋊 Disk    ",
       "folders": "/",
-      "format": "{13}            {#green}│",
+      "format": "{size-percentage-bar}                {#green}│"
     },
     {
       "type": "battery",
-      "key": "{#green}│ {#blue}󰁹 Battery",
-      "format": "{10}            {#green}│",
+      "key": "{#green}│ {#blue}󰁹 Battery ",
+      "format": "{capacity-bar}                {#green}│"
     },
     {
-      "type": "disk",
-      "key": "{#green}│ {#blue}󱦟 OS Age ",
-      "folders": "/",
-      "format": "{days} dias                     {#green}│",
+      "type": "command",
+      "key": "{#green}│ {#blue}󱦟 OS Age  ",
+      "format": "{result<32} {#green}│",
+      "text": "t=$(stat -c %W / 2>/dev/null || printf 0); if [ \"${t:-0}\" -gt 0 ]; then printf '%s dias' \"$(( ($(date +%s) - t) / 86400 ))\"; else printf 'N/D'; fi"
     },
     {
       "type": "custom",
-      "format": "{#green}╰──────────────────────────────────────────╯",
+      "format": "{#green}╰───────────────────────────────────────────────╯"
     },
     {
       "type": "colors",
       "paddingLeft": 2,
-      "symbol": "circle",
+      "symbol": "circle"
     },
-    "break",
-  ],
+    "break"
+  ]
 }

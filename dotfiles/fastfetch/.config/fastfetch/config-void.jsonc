@@ -1,7 +1,7 @@
 {
     "logo": {
-    "source": "~/.config/fastfetch/ascii-void.txt", // This tells it to use the built-in Void ASCII
-    "type": "auto",
+    "source": "~/.config/fastfetch/ascii-void-small.txt", // This tells it to use the built-in Void ASCII
+    "type": "file",
     "padding": {
         "left": 2,
         "bottom": 5

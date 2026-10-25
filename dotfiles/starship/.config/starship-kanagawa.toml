@@ -58,6 +58,8 @@ CentOS = ""
 Debian = "󰣚"
 Redhat = "󱄛"
 RedHatEnterprise = "󱄛"
+CachyOS = " "
+Void = " "
 
 [username]
 show_always = true

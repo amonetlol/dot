@@ -67,6 +67,7 @@ Ubuntu = " "
 Unknown = " "
 Void = " "
 Windows = "󰍲 "
+AOSC = " "
 
 [cmd_duration]
 disabled = true

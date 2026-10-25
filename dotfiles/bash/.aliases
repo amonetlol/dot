@@ -1,5 +1,5 @@
 # ~/.aliases
-# Apenas aliases comuns (sem condicional)
+# Aliases comuns e seleção do Fastfetch por terminal
 
 # ============================================================
 # GIT / DOTFILES
@@ -250,4 +250,9 @@ bind -x '"\e[1;3R": fzf-ag'
 
 # Fastfetch Vora
 alias ftv='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora.jsonc"'
-alias ftv2='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora-icons.jsonc"'
+# Fastfetch: Kitty usa seu protocolo de imagem; outros terminais usam Sixel.
+if [[ "${TERM:-}" == xterm-kitty || -n "${KITTY_WINDOW_ID:-}" ]]; then
+    alias ftv2='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora-icons-kitty.jsonc"'
+else
+    alias ftv2='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora-icons.jsonc"'
+fi

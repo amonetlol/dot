@@ -202,9 +202,9 @@ up() {
 cd ()
 {
 	if [ -n "$1" ]; then
-		builtin cd "$@" && ls -la
+		builtin cd "$@" && eza -lah --color=always --group-directories-first --icons always
 	else
-		builtin cd ~ && ls -la
+		builtin cd ~ && eza -lah --color=always --group-directories-first --icons always
 	fi
 }
 

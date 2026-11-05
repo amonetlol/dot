@@ -3,8 +3,11 @@
   "logo": {
     "type": "small",
     "source": "", //Image selected + Route
-    "width": 30,
-    "height": 15
+    "width": 12,
+    "height": 15,
+    "padding": {
+      "top": 1
+    },
   },
   "display": {
     "separator": "  "

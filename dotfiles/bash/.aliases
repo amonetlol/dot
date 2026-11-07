@@ -256,3 +256,9 @@ if [[ "${TERM:-}" == xterm-kitty || -n "${KITTY_WINDOW_ID:-}" ]]; then
 else
     alias ftv2='/usr/bin/fastfetch --config "$HOME/.config/fastfetch/vora-icons.jsonc"'
 fi
+
+# SSH Hub e Term Hub
+alias th='term-hub'
+alias tk='tmux -L "${TERM_HUB_SOCKET:-term-hub}" kill-server'
+alias shub='ssh-hub'
+alias sk='tmux -L "${SSH_HUB_SOCKET:-ssh-hub}" kill-server'

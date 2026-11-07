@@ -1,0 +1,4 @@
+#!/bin/sh
+PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+export PATH
+exec python3 "$HOME/.local/bin/term-hub.d/hub.py" "$@"

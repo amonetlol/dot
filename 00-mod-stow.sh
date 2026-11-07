@@ -50,6 +50,8 @@ packages=(
   waybar
   gtk-3.0
   btop
+  ssh-hub
+  term-hub
 )
 
 section "Resolvendo conflitos comuns antes do Stow"
@@ -72,6 +74,12 @@ backup_if_real_file "$HOME/.profile"
 backup_if_real_file "$HOME/.aliases"
 backup_if_real_file "$HOME/.functions"
 
+# Hubs: preservar instalacoes locais antes de criar os links do Stow.
+for hub in ssh-hub term-hub; do
+  backup_if_real_file "$HOME/.local/bin/$hub"
+  backup_if_real_file "$HOME/.local/bin/$hub.d"
+done
+
 section "Aplicando Stow"
 
 for pkg in "${packages[@]}"; do
@@ -81,6 +89,13 @@ for pkg in "${packages[@]}"; do
   else
     warn "Pacote stow não encontrado, ignorando: $pkg"
   fi
+done
+
+# Permissoes dos novos hubs e dos arquivos privados de conexao.
+for hub in ssh-hub term-hub; do
+  [[ ! -f "$HOME/.local/bin/$hub" ]] || chmod +x "$HOME/.local/bin/$hub"
+  [[ ! -f "$HOME/.local/bin/$hub.d/ssh-askpass" ]] || chmod +x "$HOME/.local/bin/$hub.d/ssh-askpass"
+  [[ ! -f "$HOME/.local/bin/$hub.d/ssh.conf" ]] || chmod 600 "$HOME/.local/bin/$hub.d/ssh.conf"
 done
 
 if [[ -d "$HOME/.bin" ]]; then

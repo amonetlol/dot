@@ -1,0 +1,31 @@
+USO: CTRL+b + key
+
+:: Tela ::
+t · Tab
+m · Multi
+r · Reset layout
+← → ↑ ↓ · navegar entre painéis
+1-9 · ir p/ Nº, modo TAB
+
+:: Janelas ::
+< · mover uma posição para trás (aba no Tab / painel no Multi)
+> · mover uma posição para frente (aba no Tab / painel no Multi)
+
+:: Terminal ::
+c · terminal local
+n · renomear painel em foco
+| · split lado a lado
+- · split cima/baixo
+
+:: Fechar/Sair ::
+x · fechar (y/n)
+X · fechar vários painéis: 2-4 ou 2,4 (y/n)
+d · sair | voltar exec: ~/.local/bin/term-hub
+
+:: Extra ::
+? · binds
+q / Esc · cancelar
+
+
+Sem CTRL+b
+~/.local/bin/term-hub.d/atalhos.txt

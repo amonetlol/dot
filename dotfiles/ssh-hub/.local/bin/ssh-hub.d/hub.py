@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""Dedicated tmux workspace; moving panes preserves shells and SSH sessions."""
+import os
+from pathlib import Path
+import re
+import shlex
+import subprocess
+import sys
+from connections import select_connections
+
+SOCKET = os.environ.get('SSH_HUB_SOCKET', 'ssh-hub')
+SESSION = 'ssh-hub'
+ROOT = Path(__file__).resolve().parent
+
+
+def tmux(*args, check=True):
+    result = subprocess.run(['tmux', '-L', SOCKET, *args], text=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if check and result.returncode:
+        raise RuntimeError(result.stderr.strip())
+    # Empty pane metadata is represented by trailing tabs; keep those fields.
+    return result.stdout.rstrip('\r\n')
+
+
+def panes():
+    rows = tmux('list-panes', '-s', '-t', SESSION, '-F',
+                '#{pane_id}\t#{window_id}\t#{@ssh_label}\t#{@ssh_order}').splitlines()
+    rows = [row.split('\t') for row in rows]
+    next_order = max(int(row[3] or 0) for row in rows) + 1
+    for row in rows:
+        if not row[3]:
+            row[2], row[3] = f'local-{next_order}', str(next_order)
+            label(row[0], row[2], next_order)
+            next_order += 1
+    return sorted(rows,
+                  key=lambda row: int(row[3] or 9999))
+
+
+def label(pane, name, order):
+    tmux('set-option', '-p', '-t', pane, '@ssh_label', name)
+    tmux('set-option', '-p', '-t', pane, '@ssh_order', str(order))
+    tmux('select-pane', '-t', pane, '-T', name)
+
+
+def layout():
+    first = panes()[0][0]
+    tmux('set-window-option', '-t', first, 'main-pane-width', '55%')
+    tmux('select-layout', '-t', first, 'main-vertical')
+
+
+def parse_panel_selection(value, count):
+    selected = set()
+    for part in value.split(','):
+        match = re.fullmatch(r'\s*(\d+)\s*(?:-\s*(\d+)\s*)?', part)
+        if not match:
+            raise ValueError('Use números separados por vírgula ou intervalo: 2,4 ou 2-4.')
+        first = int(match[1])
+        last = int(match[2]) if match[2] else first
+        if not 1 <= first <= last <= count:
+            raise ValueError(f'Escolha números de 1 a {count}, em ordem crescente no intervalo.')
+        selected.update(range(first, last + 1))
+    return sorted(selected)
+
+
+def close_many():
+    current = panes()
+    print('FECHAR PAINÉIS\n')
+    for number, row in enumerate(current, 1):
+        print(f'  {number} · {row[2]}')
+    value = input('\nNúmeros ou intervalo (2,4 / 2-4 / Enter cancela): ').strip()
+    if not value:
+        return
+    selected = parse_panel_selection(value, len(current))
+    print('\nFechar: ' + ', '.join(f'{number} · {current[number - 1][2]}' for number in selected))
+    if input('Os processos desses painéis serão encerrados. Confirmar (y/n)? ').strip().lower() != 'y':
+        return
+    # Use the stable IDs from the displayed list, not shifting pane numbers.
+    for number in selected:
+        tmux('kill-pane', '-t', current[number - 1][0], check=False)
+
+
+def rename_panel(pane):
+    current = next((row for row in panes() if row[0] == pane), None)
+    if current is None:
+        raise ValueError('O painel não está mais aberto.')
+    print(f'Nome atual: {current[2]}')
+    name = input('Novo nome (Enter cancela): ').strip()
+    if not name:
+        return
+    if len(name) > 64 or any(ord(char) < 32 or ord(char) == 127 for char in name):
+        raise ValueError('Use um nome de até 64 caracteres, sem controles.')
+    label(pane, name, current[3])
+    if tmux('display-message', '-p', '-t', pane, '#{window_panes}') == '1':
+        tmux('rename-window', '-t', pane, name)
+
+
+def move(direction):
+    current = panes()
+    active = tmux('display-message', '-p', '-t', SESSION, '#{pane_id}')
+    index = next(i for i, row in enumerate(current) if row[0] == active)
+    destination = index + direction
+    if not 0 <= destination < len(current):
+        tmux('display-message', 'Este terminal já está no início ou no fim da ordem.')
+        return
+    other = current[destination]
+    command = 'swap-pane' if current[index][1] == other[1] else 'swap-window'
+    tmux(command, '-s', active, '-t', other[0])
+    tmux('set-option', '-p', '-t', active, '@ssh_order', other[3])
+    tmux('set-option', '-p', '-t', other[0], '@ssh_order', current[index][3])
+    tmux('select-window', '-t', active)
+    tmux('select-pane', '-t', active)
+
+
+def mode(wanted):
+    if wanted not in ('Tab', 'Multi', 'Tiling'):
+        raise ValueError('Modo inválido')
+    current = panes()
+    active = tmux('display-message', '-p', '-t', SESSION, '#{pane_id}')
+    for window in dict.fromkeys(row[1] for row in current):
+        zoomed = tmux('display-message', '-p', '-t', window, '#{window_zoomed_flag}')
+        if zoomed == '1':
+            tmux('resize-pane', '-Z', '-t', window)
+    if wanted in ('Multi', 'Tiling'):
+        first, main_window = current[0][:2]
+        anchor = first
+        for pane, window, _, _ in current[1:]:
+            if window != main_window:
+                tmux('join-pane', '-d', '-s', pane, '-t', anchor)
+            anchor = pane
+        tmux('rename-window', '-t', first, 'servidores')
+        if wanted == 'Tiling':
+            tmux('select-layout', '-t', first, 'tiled')
+        else:
+            layout()
+    else:
+        for pane, _, name, _ in current:
+            count = int(tmux('display-message', '-p', '-t', pane, '#{window_panes}'))
+            if count > 1:
+                tmux('break-pane', '-d', '-s', pane)
+            tmux('rename-window', '-t', pane, name or 'terminal')
+        for index, (pane, _, _, _) in enumerate(current, 1):
+            actual = int(tmux('display-message', '-p', '-t', pane, '#{window_index}'))
+            if actual != index:
+                tmux('swap-window', '-s', pane, '-t', f'{SESSION}:{index}')
+    tmux('set-option', '-t', SESSION, '@ssh_hub_mode', wanted)
+    tmux('select-window', '-t', active)
+    tmux('select-pane', '-t', active)
+    tmux('refresh-client', '-S', check=False)
+
+
+def new_terminal(target=None, saved_alias=None):
+    if target and (target.startswith('-') or not re.fullmatch(r'[A-Za-z0-9_.@:%\[\]-]+', target)):
+        raise ValueError('Informe um alias SSH ou usuario@host, sem opções adicionais.')
+    current = panes()
+    order = max(int(row[3] or 0) for row in current) + 1
+    name = saved_alias or target or f'local-{order}'
+    args = ['new-window', '-d', '-P', '-F', '#{pane_id}', '-t', SESSION, '-n', name]
+    if saved_alias:
+        command = shlex.join(['python3', str(ROOT / 'connections.py'), 'open', saved_alias])
+        args += [f'{command}; exec "$SHELL" -l']
+    elif target:
+        args += [f'ssh -- {shlex.quote(target)}; exec "$SHELL" -l']
+    pane = tmux(*args)
+    label(pane, name, order)
+    wanted = tmux('show-options', '-v', '-t', SESSION, '@ssh_hub_mode')
+    mode(wanted)
+    tmux('select-window', '-t', pane)
+    tmux('select-pane', '-t', pane)
+
+
+def start():
+    if subprocess.run(['tmux', '-L', SOCKET, 'has-session', '-t', SESSION],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        tmux('-f', str(ROOT / 'tmux.conf'), 'new-session', '-d', '-s', SESSION,
+             '-n', 'servidores', '-x', '160', '-y', '42', '-c', str(Path.home()))
+        pane = tmux('display-message', '-p', '-t', SESSION, '#{pane_id}')
+        label(pane, 'one', 1)
+        tmux('set-option', '-t', SESSION, '@ssh_hub_mode', 'Multi')
+        new_terminal()
+        new_terminal()
+        tmux('select-pane', '-t', pane)
+    if sys.stdout.isatty():
+        os.execvp('tmux', ['tmux', '-L', SOCKET, 'attach-session', '-t', SESSION])
+    print('Sessão pronta. Abra com: ssh-hub')
+
+
+if __name__ == '__main__':
+    try:
+        command = sys.argv[1] if len(sys.argv) > 1 else 'start'
+        if command == 'start':
+            start()
+        elif command == 'mode':
+            mode(sys.argv[2])
+        elif command == 'close-many':
+            close_many()
+        elif command == 'rename':
+            rename_panel(sys.argv[2])
+        elif command == 'move':
+            direction = {'left': -1, 'right': 1}[sys.argv[2]]
+            move(direction)
+        elif command == 'new':
+            new_terminal(sys.argv[2] if len(sys.argv) > 2 else None)
+        elif command == 'connect':
+            aliases, temporary = select_connections()
+            for alias in aliases:
+                new_terminal(saved_alias=alias)
+            if temporary:
+                new_terminal(temporary)
+        elif command == 'temporary':
+            target = input('SSH temporário (alias ou usuario@host): ').strip()
+            if target:
+                new_terminal(target)
+        else:
+            raise ValueError('Comando inválido')
+    except (RuntimeError, ValueError, IndexError) as error:
+        print(f'ssh-hub: {error}', file=sys.stderr)
+        if sys.stdin.isatty():
+            input('Enter para voltar...')
+        sys.exit(1)

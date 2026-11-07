@@ -1,0 +1,2 @@
+Source: https://github.com/dream-wa1ker/hyprdots-0/tree/89d452d8347c4bb96a03666337a9897f42b19f33/dots/dot_config/kitty
+Adapted: Bash, Vviva, profile launcher and Portuguese shortcuts guide.

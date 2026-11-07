@@ -1,0 +1,6 @@
+@import "selectors.rasi"
+window { width: 1050px; }
+listview { lines: 16; columns: 1; fixed-height: false; scrollbar: true; }
+element { padding: 8px 14px; font: "CodeNewRoman Nerd Font 12"; }
+entry { placeholder: "Pesquisar atalho ou ação…"; }
+textbox { padding: 8px 22px; text-color: @fg; }

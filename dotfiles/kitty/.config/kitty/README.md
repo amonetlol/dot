@@ -12,7 +12,7 @@ Mantém CodeNewRoman Nerd Font 12, o tema Catppuccin Frappe e os ajustes existen
 - Ctrl+Alt+Setas: redimensionar painel; Alt+C: fechar painel.
 - Alt+F: ampliar/restaurar painel; Alt+K: selecionar painel.
 - Ctrl+F: pesquisar no terminal.
-- Ctrl+Shift+F1: guia de atalhos em Rofi.
+- Super+/: guia de atalhos em Rofi.
 
 Os helpers ficam no mesmo diretório. Copiar esta pasta para `~/.config/kitty`.
 Recarregar o Kitty com Ctrl+Shift+F5 ou abrir uma nova janela.

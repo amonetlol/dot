@@ -1,26 +1,25 @@
-KITTY — Ctrl/Alt são teclas; Enter = Return; painel = terminal dividido
-Ctrl+Shift+F1    Abrir este guia de atalhos
-Ctrl+C          Copiar seleção; sem seleção, interromper o comando
-Ctrl+Shift+V    Colar o texto copiado
-Ctrl+F          Procurar texto no terminal (digite; Esc fecha)
-F3 / Shift+F3   Na busca: ir ao resultado anterior / próximo
-Page Up/Down    Ver o histórico acima / abaixo
-Ctrl++ ou Ctrl+= Aumentar o tamanho das letras
-Ctrl+Shift+-    Diminuir o tamanho das letras (padrão Kitty)
-Ctrl+Shift+Backspace Restaurar o tamanho das letras
-Ctrl+Shift+T    Abrir uma nova aba
-Alt+N / Alt+P   Ir para a próxima aba / aba anterior
-Alt+H           Abrir um painel abaixo do atual
-Alt+V           Abrir um painel ao lado do atual
-Alt+Esquerda    Ir para a aba anterior
-Alt+Direita     Ir para a próxima aba
-Alt+Cima        Abrir uma nova aba
-Alt+Baixo       Fechar a aba atual (encerra os painéis dela)
-Ctrl+Alt+Setas  Aumentar ou diminuir o painel atual
-Alt+C           Fechar o painel atual (encerra o que estiver nele)
-Alt+Q           Fechar a aba atual (encerra os painéis dela)
-Alt+R           Dar um nome à aba
-Alt+F           Ampliar o painel atual; pressione de novo para voltar
-Alt+K           Mostrar letras para escolher um painel
-Esc             Fechar este guia
-Alt+1 até Alt+9 Ir diretamente para a aba com esse número
+Super + /                     │ Guia de atalhos                     │ Ajuda
+Ctrl + Shift + T              │ Nova aba                            │ Abas
+Alt + N / P                   │ Próxima aba / aba anterior          │ Abas
+Alt + Esquerda / Direita      │ Aba anterior / próxima aba          │ Abas
+Alt + Cima                    │ Nova aba                            │ Abas
+Alt + Baixo / Alt + Q         │ Fechar aba                          │ Abas
+Alt + 1…9                     │ Selecionar aba                      │ Abas
+Alt + R                       │ Renomear aba                        │ Abas
+Alt + H                       │ Dividir painel horizontalmente      │ Painéis
+Alt + V                       │ Dividir painel verticalmente        │ Painéis
+Ctrl + Alt + Setas            │ Redimensionar painel                │ Painéis
+Alt + C                       │ Fechar painel                       │ Painéis
+Alt + F                       │ Ampliar / restaurar painel          │ Painéis
+Alt + K                       │ Selecionar painel por letra         │ Painéis
+Ctrl + C                      │ Copiar seleção / interromper        │ Texto
+Ctrl + Shift + C              │ Copiar seleção                      │ Texto
+Ctrl + Shift + V              │ Colar                               │ Texto
+Ctrl + F                      │ Pesquisar no terminal               │ Busca
+F3 / Shift + F3               │ Resultado anterior / próximo        │ Busca
+Page Up / Page Down           │ Rolar histórico                     │ Histórico
+Ctrl + + / Ctrl + =           │ Aumentar fonte                      │ Fonte
+Ctrl + -                      │ Diminuir fonte                      │ Fonte
+Ctrl + 0                      │ Restaurar tamanho da fonte          │ Fonte
+Ctrl + Shift + N              │ Nova janela                         │ Janelas
+Esc                           │ Fechar este guia                    │ Ajuda

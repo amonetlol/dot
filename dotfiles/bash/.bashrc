@@ -80,6 +80,9 @@ case "$DISTRO" in
     slackware)
         [[ -f "$HOME/.aliases-slackware" ]] && . "$HOME/.aliases-slackware"
         ;;
+    salix)
+        [[ -f "$HOME/.aliases-salix" ]] && . "$HOME/.aliases-salix"
+        ;;
     void)
         [[ -f "$HOME/.aliases-void" ]] && . "$HOME/.aliases-void"
         ;;

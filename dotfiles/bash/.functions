@@ -7,6 +7,10 @@ detect_distro() {
         echo freebsd
         return
     fi
+    if [[ -f /etc/salix-version ]]; then
+        echo salix
+        return
+    fi
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
         if [[ "$ID" == fedora && "$VARIANT_ID" == silverblue ]]; then

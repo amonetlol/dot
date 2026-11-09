@@ -20,6 +20,7 @@ detect_distro() {
         for distro in $ID $ID_LIKE; do
             case "$distro" in
                 arch|artix) echo arch; return ;;
+                kali) echo kali; return ;;
                 debian|ubuntu|pop|linuxmint) echo debian; return ;;
                 fedora) echo fedora; return ;;
                 gentoo) echo gentoo; return ;;
@@ -38,6 +39,8 @@ detect_distro() {
         echo "arch"
     elif [[ -f /etc/gentoo-release ]]; then
         echo "gentoo"
+    elif [[ -f /etc/os-release ]] && grep -qE '^ID=kali$' /etc/os-release; then
+        echo "kali"
     elif [[ -f /etc/debian_version ]] || grep -qiE '^(ID|ID_LIKE)=.*(debian|ubuntu|pop|mint)' /etc/os-release 2>/dev/null; then
         echo "debian"
     elif [[ -f /etc/fedora-release ]] || grep -qiE '^(ID|ID_LIKE)=.*fedora' /etc/os-release 2>/dev/null; then

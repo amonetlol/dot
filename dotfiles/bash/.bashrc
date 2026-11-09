@@ -56,6 +56,9 @@ case "$DISTRO" in
     gentoo)
         [[ -f "$HOME/.aliases-gentoo" ]] && . "$HOME/.aliases-gentoo"
         ;;
+    kali)
+        [[ -f "$HOME/.aliases-kali" ]] && . "$HOME/.aliases-kali"
+        ;;
     debian)
         [[ -f "$HOME/.aliases-debian" ]] && . "$HOME/.aliases-debian"
         ;;

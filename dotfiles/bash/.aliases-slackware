@@ -2,7 +2,8 @@
 # Mesmos nomes de ~/.aliases-arch, adaptados para Slackware (slackpkg/pkgtools).
 # Configure um mirror em /etc/slackpkg/mirrors antes de usar o slackpkg.
 
-alias up2='sudo slackpkg update && sudo slackpkg install-new && sudo slackpkg upgrade-all'
+# Atualiza apenas pacotes instalados; exibe a estimativa antes do download.
+alias up2='sudo slackpkg update && slackpkg-size && sudo slackpkg upgrade-all'
 alias yay='sudo slackpkg'
 alias yin='sudo slackpkg install'
 alias yse='sudo slackpkg search'

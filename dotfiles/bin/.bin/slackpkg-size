@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+"""Preview up2 download sizes using slackpkg's own lists; always answer no."""
+from pathlib import Path
+import os,re,subprocess,sys
+
+if os.geteuid()!=0:
+    os.execvp('sudo',['sudo',sys.executable,str(Path(__file__).resolve())])
+index=Path('/var/lib/slackpkg/PACKAGES.TXT')
+if not index.exists():raise SystemExit('Execute sudo slackpkg update primeiro.')
+sizes={}
+for block in index.read_text(encoding='utf-8',errors='replace').split('PACKAGE NAME:')[1:]:
+    name=block.splitlines()[0].strip()
+    match=re.search(r'^PACKAGE SIZE \(compressed\):\s*(\d+)\s+K',block,re.M)
+    if match:sizes[name]=int(match[1])*1024
+all_packages=set()
+print('Consulta pelo indice local; nenhuma atualizacao sera instalada.',flush=True)
+for action,label in [('upgrade-all','Atualizacoes dos pacotes instalados')]:
+    result=subprocess.run(['/usr/sbin/slackpkg','-dialog=off','-batch=on','-default_answer=n',action],
+                          text=True,errors='replace',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    names=set(re.findall(r'\b([\w+.-]+\.t[blxg]z)\b',result.stdout))
+    if not names and 'No packages match' not in result.stdout:
+        raise SystemExit(result.stdout)
+    missing=names-sizes.keys()
+    if missing:raise SystemExit('Tamanhos ausentes no indice: '+', '.join(sorted(missing)))
+    all_packages.update(names)
+    print(f'{label}: {len(names)} pacotes, {sum(sizes[n] for n in names)/1024**2:.1f} MiB',flush=True)
+print(f'Total proposto pelo up2: {sum(sizes[n] for n in all_packages)/1024**2:.1f} MiB')
+print('Estimativa antes de descontar pacotes ja presentes no cache. Para atualizar o indice: sudo slackpkg update')

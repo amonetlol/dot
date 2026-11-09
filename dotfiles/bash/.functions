@@ -3,6 +3,10 @@
 # ============================================================
 detect_distro() {
     local ID="" ID_LIKE="" distro
+    if [[ $(uname -s) == FreeBSD ]]; then
+        echo freebsd
+        return
+    fi
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
         for distro in $ID $ID_LIKE; do

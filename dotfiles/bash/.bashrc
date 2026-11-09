@@ -80,6 +80,9 @@ case "$DISTRO" in
     void)
         [[ -f "$HOME/.aliases-void" ]] && . "$HOME/.aliases-void"
         ;;
+    freebsd)
+        [[ -f "$HOME/.aliases-freebsd" ]] && . "$HOME/.aliases-freebsd"
+        ;;
     unknown)
         # Descomente para debug:
         # echo "[AVISO] Distro não reconhecida."

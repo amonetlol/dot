@@ -62,6 +62,9 @@ case "$DISTRO" in
     nixos)
         [[ -f "$HOME/.aliases-nixos" ]] && . "$HOME/.aliases-nixos"
         ;;
+    fedora-silverblue)
+        [[ -f "$HOME/.aliases-fedora-silverblue" ]] && . "$HOME/.aliases-fedora-silverblue"
+        ;;
     fedora)
         [[ -f "$HOME/.aliases-fedora" ]] && . "$HOME/.aliases-fedora"
         ;;

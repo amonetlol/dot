@@ -2,13 +2,17 @@
 # DETECÇÃO DA DISTRO
 # ============================================================
 detect_distro() {
-    local ID="" ID_LIKE="" distro
+    local ID="" ID_LIKE="" VARIANT_ID="" distro
     if [[ $(uname -s) == FreeBSD ]]; then
         echo freebsd
         return
     fi
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
+        if [[ "$ID" == fedora && "$VARIANT_ID" == silverblue ]]; then
+            echo fedora-silverblue
+            return
+        fi
         for distro in $ID $ID_LIKE; do
             case "$distro" in
                 arch|artix) echo arch; return ;;

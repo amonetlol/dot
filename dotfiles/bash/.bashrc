@@ -53,6 +53,9 @@ case "$DISTRO" in
     arch)
         [[ -f "$HOME/.aliases-arch" ]] && . "$HOME/.aliases-arch"
         ;;
+    gentoo)
+        [[ -f "$HOME/.aliases-gentoo" ]] && . "$HOME/.aliases-gentoo"
+        ;;
     debian)
         [[ -f "$HOME/.aliases-debian" ]] && . "$HOME/.aliases-debian"
         ;;

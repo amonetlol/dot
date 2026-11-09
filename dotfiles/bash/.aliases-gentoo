@@ -1,0 +1,16 @@
+# ~/.aliases-gentoo
+# Mesmos nomes do Arch, com Portage. Operacoes de pacotes pedem confirmacao.
+# Dependencias: app-portage/gentoolkit, app-portage/portage-utils e app-portage/mirrorselect.
+
+alias up2='sudo emaint sync -a && sudo emerge --ask --getbinpkg --update --deep --newuse @world'
+alias yay='sudo emerge --ask --getbinpkg --update --deep --newuse @world'
+alias yin='sudo emerge --ask --getbinpkg'
+alias yse='emerge --searchdesc'
+alias ysel='qlist -IC | grep -i'
+alias yre='sudo emerge --ask --depclean'
+alias yinfo='equery meta'
+# Limpar arquivos e binarios obsoletos, preservando o cache ainda necessario.
+alias cls='sudo eclean-dist --interactive --deep && sudo eclean-pkg --interactive --deep'
+# Selecionar espelhos interativamente e salvar GENTOO_MIRRORS no make.conf.
+alias rpac='sudo sh -c "mirrorselect -i -o >> /etc/portage/make.conf"'
+alias orf='sudo emerge --ask --depclean'

@@ -6,6 +6,8 @@ detect_distro() {
         echo "nixos"
     elif [[ -f /etc/arch-release || -f /etc/artix-release ]]; then
         echo "arch"
+    elif [[ -f /etc/gentoo-release ]]; then
+        echo "gentoo"
     elif [[ -f /etc/debian_version ]] || grep -qiE '^(ID|ID_LIKE)=.*(debian|ubuntu|pop|mint)' /etc/os-release 2>/dev/null; then
         echo "debian"
     elif [[ -f /etc/fedora-release ]] || grep -qiE '^(ID|ID_LIKE)=.*fedora' /etc/os-release 2>/dev/null; then

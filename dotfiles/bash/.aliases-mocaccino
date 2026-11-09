@@ -1,0 +1,12 @@
+# Aliases para MocaccinoOS (Luet). A atualizacao pede confirmacao.
+alias up2='sudo luet upgrade'
+alias yay='sudo luet upgrade'
+alias yin='sudo luet install'
+alias yse='sudo luet search'
+alias ysel='sudo luet search --installed'
+alias yre='sudo luet uninstall'
+alias yinfo='sudo luet search'
+alias cls='sudo luet cleanup'
+alias rpac='sudo luet repo update'
+# Luet nao oferece uma operacao equivalente de remocao de orfaos.
+alias orf='echo "Remocao automatica de orfaos nao disponivel no Luet."'

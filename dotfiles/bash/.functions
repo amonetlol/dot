@@ -11,6 +11,10 @@ detect_distro() {
         echo salix
         return
     fi
+    if [[ -f /etc/antix-version ]]; then
+        echo antix
+        return
+    fi
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
         if [[ "$ID" == fedora && "$VARIANT_ID" == silverblue ]]; then
@@ -23,6 +27,7 @@ detect_distro() {
                 kali) echo kali; return ;;
                 debian|ubuntu|pop|linuxmint) echo debian; return ;;
                 fedora) echo fedora; return ;;
+                mocaccinoos) echo mocaccino; return ;;
                 gentoo) echo gentoo; return ;;
                 nixos) echo nixos; return ;;
                 opensuse*|suse|sles) echo opensuse; return ;;

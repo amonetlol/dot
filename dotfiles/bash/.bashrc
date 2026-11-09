@@ -62,6 +62,9 @@ case "$DISTRO" in
     kali)
         [[ -f "$HOME/.aliases-kali" ]] && . "$HOME/.aliases-kali"
         ;;
+    antix)
+        [[ -f "$HOME/.aliases-antix" ]] && . "$HOME/.aliases-antix"
+        ;;
     debian)
         [[ -f "$HOME/.aliases-debian" ]] && . "$HOME/.aliases-debian"
         ;;

@@ -1,0 +1,11 @@
+# Calculate Linux: aliases de pacotes Portage.
+alias up2='sudo emaint sync -a && sudo emerge --ask --getbinpkg --update --deep --newuse @world'
+alias yay='sudo emerge --ask --getbinpkg --update --deep --newuse @world'
+alias yin='sudo emerge --ask --getbinpkg'
+alias yse='emerge --searchdesc'
+alias ysel='qlist -IC | grep -i'
+alias yre='sudo emerge --ask --depclean'
+alias yinfo='equery meta'
+alias cls='sudo eclean-dist --interactive --deep && sudo eclean-pkg --interactive --deep'
+alias rpac='sudo mirrorselect -i -o'
+alias orf='sudo emerge --ask --depclean'

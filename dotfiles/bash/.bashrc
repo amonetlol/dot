@@ -56,6 +56,9 @@ case "$DISTRO" in
     mocaccino)
         [[ -f "$HOME/.aliases-mocaccino" ]] && . "$HOME/.aliases-mocaccino"
         ;;
+    calculate)
+        [[ -f "$HOME/.aliases-calculate" ]] && . "$HOME/.aliases-calculate"
+        ;;
     gentoo)
         [[ -f "$HOME/.aliases-gentoo" ]] && . "$HOME/.aliases-gentoo"
         ;;

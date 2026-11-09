@@ -29,6 +29,7 @@ detect_distro() {
                 debian|ubuntu|pop|linuxmint) echo debian; return ;;
                 fedora) echo fedora; return ;;
                 mocaccinoos) echo mocaccino; return ;;
+                calculate) echo calculate; return ;;
                 gentoo) echo gentoo; return ;;
                 nixos) echo nixos; return ;;
                 opensuse*|suse|sles) echo opensuse; return ;;

@@ -2,6 +2,24 @@
 # DETECÇÃO DA DISTRO
 # ============================================================
 detect_distro() {
+    local ID="" ID_LIKE="" distro
+    if [[ -r /etc/os-release ]]; then
+        . /etc/os-release
+        for distro in $ID $ID_LIKE; do
+            case "$distro" in
+                arch|artix) echo arch; return ;;
+                debian|ubuntu|pop|linuxmint) echo debian; return ;;
+                fedora) echo fedora; return ;;
+                gentoo) echo gentoo; return ;;
+                nixos) echo nixos; return ;;
+                opensuse*|suse|sles) echo opensuse; return ;;
+                openmandriva) echo openmandriva; return ;;
+                slackware) echo slackware; return ;;
+                solus) echo solus; return ;;
+                void) echo void; return ;;
+            esac
+        done
+    fi
     if [[ -f /etc/nixos/configuration.nix || -d /etc/nixos ]]; then
         echo "nixos"
     elif [[ -f /etc/arch-release || -f /etc/artix-release ]]; then

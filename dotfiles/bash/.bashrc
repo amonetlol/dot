@@ -74,6 +74,9 @@ case "$DISTRO" in
     openmandriva)
         [[ -f "$HOME/.aliases-openmandriva" ]] && . "$HOME/.aliases-openmandriva"
         ;;
+    slackware)
+        [[ -f "$HOME/.aliases-slackware" ]] && . "$HOME/.aliases-slackware"
+        ;;
     void)
         [[ -f "$HOME/.aliases-void" ]] && . "$HOME/.aliases-void"
         ;;

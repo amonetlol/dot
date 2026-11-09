@@ -1,0 +1,12 @@
+# ~/.aliases-void
+# Aliases específicos para Void Linux (xbps)
+
+alias up2='sudo xbps-install -Syu'
+alias yin='sudo xbps-install -y'
+alias yse='xbps-query -Rs'
+alias ysel='xbps-query -l | grep'
+alias yre='sudo xbps-remove -Ry'
+alias yinfo='xbps-query -R'
+alias cls='sudo xbps-remove -OOy'
+alias rpac='sudo xbps-install -S'
+alias orf='sudo xbps-remove -oy'

@@ -71,6 +71,9 @@ case "$DISTRO" in
     openmandriva)
         [[ -f "$HOME/.aliases-openmandriva" ]] && . "$HOME/.aliases-openmandriva"
         ;;
+    void)
+        [[ -f "$HOME/.aliases-void" ]] && . "$HOME/.aliases-void"
+        ;;
     unknown)
         # Descomente para debug:
         # echo "[AVISO] Distro não reconhecida."

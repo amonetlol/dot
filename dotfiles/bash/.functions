@@ -14,6 +14,8 @@ detect_distro() {
         echo "opensuse"
     elif [[ -f /etc/os-release ]] && grep -qiE '^(ID|ID_LIKE)=.*solus' /etc/os-release; then
         echo "solus"
+    elif [[ -f /etc/os-release ]] && grep -qiE '^(ID|ID_LIKE)=.*void' /etc/os-release; then
+        echo "void"
     else
         echo "unknown"
     fi

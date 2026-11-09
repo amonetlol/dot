@@ -1,0 +1,21 @@
+# ~/.aliases-slackware
+# Mesmos nomes de ~/.aliases-arch, adaptados para Slackware (slackpkg/pkgtools).
+# Configure um mirror em /etc/slackpkg/mirrors antes de usar o slackpkg.
+
+alias up2='sudo slackpkg update && sudo slackpkg install-new && sudo slackpkg upgrade-all'
+alias yay='sudo slackpkg'
+alias yin='sudo slackpkg install'
+alias yse='sudo slackpkg search'
+alias ysel='find -L /var/log/packages -maxdepth 1 -type f -printf "%f\n" | sed "s/-[^-]*-[^-]*-[^-]*$//" | sort | grep'
+alias yre='sudo slackpkg remove'
+alias yinfo='sudo slackpkg info'
+
+# Limpa apenas os arquivos de pacotes e assinaturas do cache de downloads.
+alias cls='sudo find /var/cache/packages -type f \( -name "*.t?z" -o -name "*.asc" \) -delete'
+
+# Slackware nao tem reflector: atualiza o indice do mirror selecionado.
+alias rpac='sudo slackpkg update'
+
+# Slackware nao rastreia dependencias orfas. clean-system nao e equivalente:
+# ele tambem seleciona pacotes externos, como os componentes compilados do Sway.
+alias orf='printf "%s\n" "Slackware nao possui remocao automatica de dependencias orfas. Use yre para remover pacotes especificos."'

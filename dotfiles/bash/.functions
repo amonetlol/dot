@@ -15,6 +15,10 @@ detect_distro() {
         echo antix
         return
     fi
+    if [[ -d /etc/calamaroos ]]; then
+        echo calamaro
+        return
+    fi
     if [[ -r /etc/os-release ]]; then
         . /etc/os-release
         if [[ "$ID" == fedora && "$VARIANT_ID" == silverblue ]]; then

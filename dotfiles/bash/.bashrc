@@ -104,6 +104,9 @@ case "$DISTRO" in
     freebsd)
         [[ -f "$HOME/.aliases-freebsd" ]] && . "$HOME/.aliases-freebsd"
         ;;
+    calamaro)
+        [[ -f "$HOME/.aliases-calamaro" ]] && . "$HOME/.aliases-calamaro"
+        ;;
     unknown)
         # Descomente para debug:
         # echo "[AVISO] Distro não reconhecida."

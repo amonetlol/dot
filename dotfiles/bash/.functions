@@ -31,7 +31,8 @@ detect_distro() {
                 antix) echo antix; return ;;
                 kali) echo kali; return ;;
                 debian|ubuntu|pop|linuxmint) echo debian; return ;;
-                centos|rhel|rocky|almalinux) echo cento_os; return ;;
+                centos|rhel|almalinux) echo cento_os; return ;;
+                rocky) echo rocky; return ;;
                 fedora) echo fedora; return ;;
                 mocaccinoos) echo mocaccino; return ;;
                 calculate) echo calculate; return ;;

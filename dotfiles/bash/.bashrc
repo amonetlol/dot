@@ -74,6 +74,9 @@ case "$DISTRO" in
     cento_os)
         [[ -f "$HOME/.aliases-cento_os" ]] && . "$HOME/.aliases-cento_os"
         ;;
+    rocky)
+        [[ -f "$HOME/.aliases-distro" ]] && . "$HOME/.aliases-distro"
+        ;;
     nixos)
         [[ -f "$HOME/.aliases-nixos" ]] && . "$HOME/.aliases-nixos"
         ;;

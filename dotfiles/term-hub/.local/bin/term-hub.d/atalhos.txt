@@ -23,6 +23,7 @@ X · fechar vários painéis: 2-4 ou 2,4 (y/n)
 d · sair | voltar exec: ~/.local/bin/term-hub
 
 :: Extra ::
+f ? acompanhar logs ff (install / scripts / downloads)
 ? · binds
 q / Esc · cancelar
 

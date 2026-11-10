@@ -168,7 +168,27 @@ def new_terminal(target=None, saved_alias=None):
     tmux('select-pane', '-t', pane)
 
 
-def start():
+def follow_logs():
+    current = panes()
+    if len(current) < 3:
+        raise ValueError('S?o necess?rios pelo menos tr?s pain?is para acompanhar os logs.')
+    selected = current[:3]
+    shells = {'bash', 'zsh', 'fish', 'sh', 'dash'}
+    for pane, _, name, _ in selected:
+        command = tmux('display-message', '-p', '-t', pane, '#{pane_current_command}')
+        if command not in shells:
+            raise ValueError(f'O painel {name} est? ocupado ({command}); n?o foi alterado.')
+    for (pane, _, _, order), name in zip(selected, ('install', 'scripts', 'downloads')):
+        path = Path('/tmp') / f'ff-{name}.log'
+        with path.open('a'):
+            pass
+        label(pane, name, order)
+        if tmux('display-message', '-p', '-t', pane, '#{window_panes}') == '1':
+            tmux('rename-window', '-t', pane, name)
+        tmux('send-keys', '-t', pane, shlex.join(['tail', '-f', str(path)]), 'Enter')
+
+
+def start(follow=False):
     if subprocess.run(['tmux', '-L', SOCKET, 'has-session', '-t', SESSION],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
         tmux('-f', str(ROOT / 'tmux.conf'), 'new-session', '-d', '-s', SESSION,
@@ -186,6 +206,8 @@ def start():
             window, name = row.split('\t', 1)
             if name.lower() == 'servidores':
                 tmux('rename-window', '-t', window, 'Terminais')
+    if follow:
+        follow_logs()
     if sys.stdout.isatty():
         os.execvp('tmux', ['tmux', '-L', SOCKET, 'attach-session', '-t', SESSION])
     print('Sessão pronta. Abra com: term-hub')
@@ -197,8 +219,10 @@ if __name__ == '__main__':
         if command in ('top', 'status'):
             from monitor import main
             main(command)
-        elif command == 'start':
-            start()
+        elif command in ('start', '--ff', '-ff'):
+            start(follow=command in ('--ff', '-ff'))
+        elif command == 'follow-logs':
+            follow_logs()
         elif command == 'mode':
             mode(sys.argv[2])
         elif command == 'close-many':

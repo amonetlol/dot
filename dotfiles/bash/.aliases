@@ -64,7 +64,7 @@ alias .r='source ~/.bashrc'
 alias man='tldr'
 
 alias al='nvim ~/.bashrc ~/.aliases'
-alias al2='nvim ~/.bashrc ~/.aliases ~/.aliases-arch ~/.functions'
+alias al2='edit_aliases_distro'
 alias aln='cd ~/.config/nvim/ && nvim init.lua'
 alias alw='cd ~/.config/hypr/hypr-rox-vmware/.config/waybar/ && nvim config.jsonc style.css'
 alias j-edit='nvim ~/.local/share/autojump/autojump.txt'

@@ -65,6 +65,13 @@ detect_distro() {
     fi
 }
 
+edit_aliases_distro() {
+    local distro="${DISTRO:-$(detect_distro)}" aliases_file
+    aliases_file="$HOME/.aliases-$distro"
+    [[ -f "$aliases_file" ]] || aliases_file="$HOME/.aliases-distro"
+    "${VISUAL:-${EDITOR:-nvim}}" "$HOME/.bashrc" "$HOME/.aliases" "$aliases_file" "$HOME/.functions"
+}
+
 reload_shell() {
     source "$HOME/.bashrc"
     echo "Bash recarregado."

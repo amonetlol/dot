@@ -71,6 +71,9 @@ case "$DISTRO" in
     debian)
         [[ -f "$HOME/.aliases-debian" ]] && . "$HOME/.aliases-debian"
         ;;
+    cento_os)
+        [[ -f "$HOME/.aliases-cento_os" ]] && . "$HOME/.aliases-cento_os"
+        ;;
     nixos)
         [[ -f "$HOME/.aliases-nixos" ]] && . "$HOME/.aliases-nixos"
         ;;

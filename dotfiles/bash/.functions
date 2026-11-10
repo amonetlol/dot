@@ -4,6 +4,10 @@
 detect_distro() {
     local ID="" ID_LIKE="" VARIANT_ID="" distro
     if [[ $(uname -s) == FreeBSD ]]; then
+        if [[ -f /etc/os-release ]] && grep -qi '^ID="\?ghostbsd"\?$' /etc/os-release; then
+            echo ghostbsd
+            return
+        fi
         echo freebsd
         return
     fi

@@ -104,6 +104,9 @@ case "$DISTRO" in
     void)
         [[ -f "$HOME/.aliases-void" ]] && . "$HOME/.aliases-void"
         ;;
+    ghostbsd)
+        [[ -f "$HOME/.aliases-ghostbsd" ]] && . "$HOME/.aliases-ghostbsd"
+        ;;
     freebsd)
         [[ -f "$HOME/.aliases-freebsd" ]] && . "$HOME/.aliases-freebsd"
         ;;

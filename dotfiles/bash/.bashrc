@@ -53,35 +53,14 @@ case "$DISTRO" in
     arch)
         [[ -f "$HOME/.aliases-arch" ]] && . "$HOME/.aliases-arch"
         ;;
-    mocaccino)
-        [[ -f "$HOME/.aliases-mocaccino" ]] && . "$HOME/.aliases-mocaccino"
-        ;;
-    calculate)
-        [[ -f "$HOME/.aliases-calculate" ]] && . "$HOME/.aliases-calculate"
-        ;;
     gentoo)
         [[ -f "$HOME/.aliases-gentoo" ]] && . "$HOME/.aliases-gentoo"
-        ;;
-    kali)
-        [[ -f "$HOME/.aliases-kali" ]] && . "$HOME/.aliases-kali"
-        ;;
-    antix)
-        [[ -f "$HOME/.aliases-antix" ]] && . "$HOME/.aliases-antix"
         ;;
     debian)
         [[ -f "$HOME/.aliases-debian" ]] && . "$HOME/.aliases-debian"
         ;;
-    cento_os)
-        [[ -f "$HOME/.aliases-cento_os" ]] && . "$HOME/.aliases-cento_os"
-        ;;
-    rocky)
-        [[ -f "$HOME/.aliases-distro" ]] && . "$HOME/.aliases-distro"
-        ;;
     nixos)
         [[ -f "$HOME/.aliases-nixos" ]] && . "$HOME/.aliases-nixos"
-        ;;
-    fedora-silverblue)
-        [[ -f "$HOME/.aliases-fedora-silverblue" ]] && . "$HOME/.aliases-fedora-silverblue"
         ;;
     fedora)
         [[ -f "$HOME/.aliases-fedora" ]] && . "$HOME/.aliases-fedora"
@@ -98,20 +77,11 @@ case "$DISTRO" in
     slackware)
         [[ -f "$HOME/.aliases-slackware" ]] && . "$HOME/.aliases-slackware"
         ;;
-    salix)
-        [[ -f "$HOME/.aliases-salix" ]] && . "$HOME/.aliases-salix"
-        ;;
     void)
         [[ -f "$HOME/.aliases-void" ]] && . "$HOME/.aliases-void"
         ;;
-    ghostbsd)
-        [[ -f "$HOME/.aliases-ghostbsd" ]] && . "$HOME/.aliases-ghostbsd"
-        ;;
     freebsd)
         [[ -f "$HOME/.aliases-freebsd" ]] && . "$HOME/.aliases-freebsd"
-        ;;
-    calamaro)
-        [[ -f "$HOME/.aliases-calamaro" ]] && . "$HOME/.aliases-calamaro"
         ;;
     unknown)
         # Descomente para debug:

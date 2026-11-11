@@ -1,16 +1,66 @@
 #!/usr/bin/env python3
-"""Linux mini-top using procfs only; no extra Python dependencies."""
+"""Mini-top for Linux and FreeBSD, without extra Python dependencies."""
 import curses
 import os
 from pathlib import Path
 import shutil
 import socket
+import subprocess
+import re
 import sys
 import time
 from collections import deque
 
 
+def command(*args):
+    return subprocess.run(args, text=True, stdout=subprocess.PIPE,
+                          stderr=subprocess.DEVNULL, check=True).stdout
+
+
+def freebsd_snapshot(processes=False):
+    values = list(map(int, command('sysctl', '-n', 'kern.cp_time').split()))
+    cpu = {'cpu': (sum(values), values[-1])}
+    keys = ('hw.pagesize', 'vm.stats.vm.v_page_count', 'vm.stats.vm.v_free_count',
+            'vm.stats.vm.v_inactive_count', 'vm.stats.vm.v_cache_count')
+    page, total, free, inactive, cache = map(int, command('sysctl', '-n', *keys).split())
+    mem = {'MemTotal': total * page, 'MemAvailable': (free + inactive + cache) * page,
+           'SwapTotal': 0, 'SwapFree': 0}
+    for line in command('swapinfo', '-k').splitlines()[1:]:
+        fields = line.split()
+        if len(fields) >= 4 and fields[0] != 'Total':
+            mem['SwapTotal'] += int(fields[1]) * 1024
+            mem['SwapFree'] += int(fields[3]) * 1024
+    net = {}
+    lines = command('netstat', '-ibn').splitlines()
+    if lines:
+        header = lines[0].split()
+        rx, tx = header.index('Ibytes'), header.index('Obytes')
+        for line in lines[1:]:
+            fields = line.split()
+            if len(fields) > max(rx, tx) and fields[2].startswith('<Link#') and not fields[0].startswith('lo'):
+                try:
+                    net[fields[0]] = (int(fields[rx]), int(fields[tx]))
+                except ValueError:
+                    continue
+    procs = {}
+    if processes:
+        ticks = os.sysconf('SC_CLK_TCK')
+        for line in command('ps', '-axo', 'pid,comm,cputime,rss').splitlines()[1:]:
+            fields = line.split(None, 3)
+            if len(fields) != 4:
+                continue
+            try:
+                parts = fields[2].split(':')
+                seconds = sum(float(value) * 60 ** i for i, value in enumerate(reversed(parts)))
+                procs[int(fields[0])] = (fields[1], int(seconds * ticks), int(fields[3]) * 1024, '')
+            except ValueError:
+                continue
+    return dict(time=time.monotonic(), cpu=cpu, mem=mem, net=net, procs=procs)
+
+
 def snapshot(processes=False):
+    if sys.platform.startswith('freebsd'):
+        return freebsd_snapshot(processes)
     cpus = {}
     for line in Path('/proc/stat').read_text().splitlines():
         fields = line.split()
@@ -74,7 +124,11 @@ def size(value):
 
 
 def uptime():
-    minutes = int(float(Path('/proc/uptime').read_text().split()[0])) // 60
+    if sys.platform.startswith('freebsd'):
+        match = re.search(r'sec\s*=\s*(\d+)', command('sysctl', '-n', 'kern.boottime'))
+        minutes = int(time.time() - int(match.group(1))) // 60 if match else 0
+    else:
+        minutes = int(float(Path('/proc/uptime').read_text().split()[0])) // 60
     days, minutes = divmod(minutes, 1440)
     hours, minutes = divmod(minutes, 60)
     return f'{days}d {hours:02}:{minutes:02}'

@@ -10,6 +10,7 @@ from connections import select_connections
 
 SOCKET = os.environ.get('TERM_HUB_SOCKET', 'term-hub')
 SESSION = 'term-hub'
+PARKED = 'term-hub-parked'
 ROOT = Path(__file__).resolve().parent
 
 
@@ -23,7 +24,7 @@ def tmux(*args, check=True):
 
 
 def panes():
-    rows = tmux('list-panes', '-s', '-t', SESSION, '-F',
+    rows = tmux('list-panes', '-t', SESSION, '-F',
                 '#{pane_id}\t#{window_id}\t#{@ssh_label}\t#{@ssh_order}').splitlines()
     rows = [row.split('\t') for row in rows]
     next_order = max(int(row[3] or 0) for row in rows) + 1
@@ -34,6 +35,31 @@ def panes():
             next_order += 1
     return sorted(rows,
                   key=lambda row: int(row[3] or 9999))
+
+
+def restore_parked(window):
+    if subprocess.run(
+            ['tmux', '-L', SOCKET, 'has-session', '-t', PARKED],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        return
+    rows = tmux('list-panes', '-s', '-t', PARKED, '-F',
+                '#{pane_id}\t#{@term_hub_home}', check=False).splitlines()
+    for row in rows:
+        pane, _, home = row.partition('\t')
+        if home == window:
+            tmux('join-pane', '-d', '-s', pane, '-t', window)
+            tmux('set-option', '-pu', '-t', pane, '@term_hub_home', check=False)
+
+
+def park_extra(window, rows):
+    if len(rows) <= 2:
+        return
+    if subprocess.run(['tmux', '-L', SOCKET, 'has-session', '-t', PARKED],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        tmux('new-session', '-d', '-s', PARKED, '-n', 'storage', 'sleep 2147483647')
+    for pane, _, _, _ in rows[2:]:
+        tmux('set-option', '-p', '-t', pane, '@term_hub_home', window)
+        tmux('join-pane', '-d', '-s', pane, '-t', f'{PARKED}:1')
 
 
 def label(pane, name, order):
@@ -112,37 +138,26 @@ def move(direction):
 
 
 def mode(wanted):
-    if wanted not in ('Tab', 'Multi', 'Tiling'):
+    if wanted not in ('Tab', 'Multi', 'Tiling', '1:2'):
         raise ValueError('Modo inválido')
-    current = panes()
     active = tmux('display-message', '-p', '-t', SESSION, '#{pane_id}')
-    for window in dict.fromkeys(row[1] for row in current):
-        zoomed = tmux('display-message', '-p', '-t', window, '#{window_zoomed_flag}')
-        if zoomed == '1':
-            tmux('resize-pane', '-Z', '-t', window)
-    if wanted in ('Multi', 'Tiling'):
-        first, main_window = current[0][:2]
-        anchor = first
-        for pane, window, _, _ in current[1:]:
-            if window != main_window:
-                tmux('join-pane', '-d', '-s', pane, '-t', anchor)
-            anchor = pane
-        tmux('rename-window', '-t', first, 'Terminais')
-        if wanted == 'Tiling':
-            tmux('select-layout', '-t', first, 'tiled')
-        else:
-            layout()
-    else:
-        for pane, _, name, _ in current:
-            count = int(tmux('display-message', '-p', '-t', pane, '#{window_panes}'))
-            if count > 1:
-                tmux('break-pane', '-d', '-s', pane)
-            tmux('rename-window', '-t', pane, name or 'terminal')
-        for index, (pane, _, _, _) in enumerate(current, 1):
-            actual = int(tmux('display-message', '-p', '-t', pane, '#{window_index}'))
-            if actual != index:
-                tmux('swap-window', '-s', pane, '-t', f'{SESSION}:{index}')
-    tmux('set-option', '-t', SESSION, '@term_hub_mode', wanted)
+    window = tmux('display-message', '-p', '-t', active, '#{window_id}')
+    if tmux('display-message', '-p', '-t', window, '#{window_zoomed_flag}') == '1':
+        tmux('resize-pane', '-Z', '-t', window)
+    restore_parked(window)
+    current = panes()
+    if wanted == '1:2':
+        if active not in [row[0] for row in current[:2]]:
+            active = current[0][0]
+        park_extra(window, current)
+        tmux('select-layout', '-t', window, 'even-horizontal')
+    elif wanted == 'Tiling':
+        tmux('select-layout', '-t', window, 'tiled')
+    elif wanted == 'Multi':
+        layout()
+    elif len(current) > 1:
+        tmux('resize-pane', '-Z', '-t', active)
+    tmux('set-option', '-w', '-t', window, '@term_hub_mode', wanted)
     tmux('select-window', '-t', active)
     tmux('select-pane', '-t', active)
     tmux('refresh-client', '-S', check=False)
@@ -151,10 +166,15 @@ def mode(wanted):
 def new_terminal(target=None, saved_alias=None):
     if target and (target.startswith('-') or not re.fullmatch(r'[A-Za-z0-9_.@:%\[\]-]+', target)):
         raise ValueError('Informe um alias SSH ou usuario@host, sem opções adicionais.')
+    window = tmux('display-message', '-p', '-t', SESSION, '#{window_id}')
+    wanted = tmux('show-options', '-w', '-v', '-t', window, '@term_hub_mode', check=False) or 'Multi'
+    if tmux('display-message', '-p', '-t', window, '#{window_zoomed_flag}') == '1':
+        tmux('resize-pane', '-Z', '-t', window)
+    restore_parked(window)
     current = panes()
     order = max(int(row[3] or 0) for row in current) + 1
     name = saved_alias or target or f'term-{order}'
-    args = ['new-window', '-d', '-P', '-F', '#{pane_id}', '-t', SESSION, '-n', name]
+    args = ['split-window', '-d', '-P', '-F', '#{pane_id}', '-t', window]
     if saved_alias:
         command = shlex.join(['python3', str(ROOT / 'connections.py'), 'open', saved_alias])
         args += [f'{command}; exec "$SHELL" -l']
@@ -162,10 +182,18 @@ def new_terminal(target=None, saved_alias=None):
         args += [f'ssh -- {shlex.quote(target)}; exec "$SHELL" -l']
     pane = tmux(*args)
     label(pane, name, order)
-    wanted = tmux('show-options', '-v', '-t', SESSION, '@term_hub_mode')
-    mode(wanted)
-    tmux('select-window', '-t', pane)
     tmux('select-pane', '-t', pane)
+    mode(wanted)
+    return pane
+
+
+def new_group(select=True):
+    pane = tmux('new-window', '-d', '-P', '-F', '#{pane_id}', '-t', SESSION,
+                '-n', 'Terminais', '-c', str(Path.home()))
+    label(pane, 'term-1', 1)
+    tmux('set-option', '-w', '-t', pane, '@term_hub_mode', 'Multi')
+    if select:
+        tmux('select-window', '-t', pane)
     return pane
 
 
@@ -232,6 +260,7 @@ def follow_logs(per_distro=False):
     paths = distro_logs() if per_distro else [Path('/tmp') / f'ff-{name}.log' for name in GENERAL_LOGS]
     if not paths:
         raise ValueError('Nenhum log /tmp/ff-DISTRO.log encontrado. Crie um para cada instalação.')
+    mode('Tiling')
     current = panes()
     shells = {'bash', 'zsh', 'fish', 'sh', 'dash'}
     selected = [row for row in current
@@ -250,6 +279,19 @@ def follow_logs(per_distro=False):
         tmux('send-keys', '-t', pane, shlex.join(['tail', '-f', str(path)]), 'Enter')
 
 
+def choose_logs():
+    from log_picker import select_logs
+    paths = select_logs()
+    if not paths:
+        return
+    mode('Tiling')
+    for path in paths:
+        pane = new_terminal()
+        current = next(row for row in panes() if row[0] == pane)
+        label(pane, path.stem[3:], current[3])
+        tmux('send-keys', '-t', pane, shlex.join(['tail', '-f', str(path)]), 'Enter')
+
+
 def start(follow=False):
     if subprocess.run(['tmux', '-L', SOCKET, 'has-session', '-t', SESSION],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
@@ -257,9 +299,12 @@ def start(follow=False):
              '-n', 'Terminais', '-x', '160', '-y', '42', '-c', str(Path.home()))
         pane = tmux('display-message', '-p', '-t', SESSION, '#{pane_id}')
         label(pane, 'term-1', 1)
-        tmux('set-option', '-t', SESSION, '@term_hub_mode', 'Multi')
+        tmux('set-option', '-w', '-t', pane, '@term_hub_mode', 'Multi')
         new_terminal()
         new_terminal()
+        new_group(select=False)
+        new_group(select=False)
+        tmux('select-window', '-t', pane)
         tmux('select-pane', '-t', pane)
     else:
         tmux('source-file', str(ROOT / 'tmux.conf'))
@@ -287,6 +332,8 @@ if __name__ == '__main__':
             follow_logs()
         elif command == 'follow-distro-logs':
             follow_logs(per_distro=True)
+        elif command == 'choose-logs':
+            choose_logs()
         elif command == 'mode':
             mode(sys.argv[2])
         elif command == 'close-many':
@@ -298,6 +345,8 @@ if __name__ == '__main__':
             move(direction)
         elif command == 'new':
             new_terminal(sys.argv[2] if len(sys.argv) > 2 else None)
+        elif command == 'new-group':
+            new_group()
         elif command == 'connect':
             aliases, temporary = select_connections()
             for alias in aliases:

@@ -19,7 +19,7 @@ Prefixo: Ctrl+b, soltar, depois a tecla. `?` exibe `atalhos.txt`; `e` edita os c
 `t`/`m`/`v` alternam modos; `c` cria terminal; `s` abre conexões; `T` usa destino temporário.
 `d` desconecta do hub preservando os processos.
 
-Terminais iniciais: `term-1`, `term-2` e `term-3`. `term-hub top` abre o monitor; `term-hub status` gera a barra.
+Uma sessão nova abre três grupos: o primeiro com `term-1`, `term-2` e `term-3`, e os outros dois com um terminal local cada. `Ctrl+b N` cria outro grupo e `Ctrl+b c` adiciona um terminal ao grupo atual. O layout `1:2` mostra os dois primeiros terminais do grupo e preserva os demais até escolher outro layout. `Ctrl+b l` seleciona logs com Espaço, incluindo a opção Todos. `Ctrl+b Q` encerra o servidor dedicado do term-hub; as sessões `ff` e `ffd` no socket padrão permanecem separadas. `term-hub top` abre o monitor; `term-hub status` gera a barra.
 
 Acompanhamento: `Ctrl+b f` acompanha `/tmp/ff-install.log`, `/tmp/ff-scripts.log` e
 `/tmp/ff-downloads.log`; `Ctrl+b F` acompanha os arquivos existentes

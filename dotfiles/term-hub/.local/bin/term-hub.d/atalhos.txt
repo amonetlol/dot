@@ -3,6 +3,7 @@ USO: CTRL+b + key
 :: Tela ::
 t · Tab
 m · Multi
+2 · 1:2 (dois primeiros terminais)
 r · Reset layout
 ← → ↑ ↓ · navegar entre painéis
 1-9 · ir p/ Nº, modo TAB
@@ -13,6 +14,7 @@ r · Reset layout
 
 :: Terminal ::
 c · terminal local
+N · novo grupo de terminais
 n · renomear painel em foco
 | · split lado a lado
 - · split cima/baixo
@@ -21,10 +23,12 @@ n · renomear painel em foco
 x · fechar (y/n)
 X · fechar vários painéis: 2-4 ou 2,4 (y/n)
 d · sair | voltar exec: ~/.local/bin/term-hub
+Q · encerrar o servidor dedicado do term-hub
 
 :: Extra ::
 f · logs gerais (install / scripts / downloads)
 F · logs por distro (/tmp/ff-DISTRO.log)
+l · escolher logs (Espaço marca; Todos seleciona todos)
 ? · binds
 q / Esc · cancelar
 

@@ -166,22 +166,84 @@ def new_terminal(target=None, saved_alias=None):
     mode(wanted)
     tmux('select-window', '-t', pane)
     tmux('select-pane', '-t', pane)
+    return pane
 
 
-def follow_logs():
+GENERAL_LOGS = ('install', 'scripts', 'downloads')
+
+
+def distro_logs():
+    excluded = {f'ff-{name}.log' for name in GENERAL_LOGS}
+    return sorted(path for path in Path('/tmp').glob('ff-*.log')
+                  if path.is_file() and path.name not in excluded)
+
+
+def monitor_sessions():
+    # The hub uses a private socket; ff and ffd must use tmux's default server.
+    env = os.environ.copy()
+    env.pop('TMUX', None)
+
+    def default_tmux(*args, check=True):
+        result = subprocess.run(['tmux', *args], env=env, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if check and result.returncode:
+            raise RuntimeError(result.stderr.strip())
+        return result
+
+    def ensure_session(name, first_name, first_command):
+        if default_tmux('has-session', '-t', f'={name}', check=False).returncode:
+            default_tmux('new-session', '-d', '-s', name, '-n', first_name, first_command)
+            return True
+        return False
+
+    general = [Path('/tmp') / f'ff-{name}.log' for name in GENERAL_LOGS]
+    for path in general:
+        if not path.exists():
+            path.touch()
+    ensure_session('ff', 'install', shlex.join(['tail', '-f', str(general[0])]))
+    existing = set(default_tmux('list-windows', '-t', '=ff', '-F', '#{window_name}').stdout.splitlines())
+    for name, path in zip(GENERAL_LOGS[1:], general[1:]):
+        if name not in existing:
+            default_tmux('new-window', '-d', '-t', 'ff:', '-n', name,
+                         shlex.join(['tail', '-f', str(path)]))
+
+    logs = distro_logs()
+    if logs:
+        first = logs[0]
+        ensure_session('ffd', first.stem[3:], shlex.join(['tail', '-f', str(first)]))
+    else:
+        if ensure_session('ffd', 'aguardando',
+                          "printf 'Nenhum /tmp/ff-DISTRO.log encontrado.\\n'; exec tail -f /dev/null"):
+            default_tmux('set-window-option', '-t', 'ffd:aguardando', '@ff_hub_waiting', '1')
+    existing = set(default_tmux('list-windows', '-t', '=ffd', '-F', '#{window_name}').stdout.splitlines())
+    for path in logs:
+        name = path.stem[3:]
+        if name not in existing:
+            default_tmux('new-window', '-d', '-t', 'ffd:', '-n', name,
+                         shlex.join(['tail', '-f', str(path)]))
+    if logs and 'aguardando' in existing:
+        waiting = default_tmux('display-message', '-p', '-t', 'ffd:aguardando',
+                               '#{@ff_hub_waiting}\t#{pane_current_command}', check=False).stdout.strip()
+        if waiting == '1\ttail':
+            default_tmux('kill-window', '-t', 'ffd:aguardando')
+
+
+def follow_logs(per_distro=False):
+    paths = distro_logs() if per_distro else [Path('/tmp') / f'ff-{name}.log' for name in GENERAL_LOGS]
+    if not paths:
+        raise ValueError('Nenhum log /tmp/ff-DISTRO.log encontrado. Crie um para cada instalação.')
     current = panes()
-    if len(current) < 3:
-        raise ValueError('S?o necess?rios pelo menos tr?s pain?is para acompanhar os logs.')
-    selected = current[:3]
     shells = {'bash', 'zsh', 'fish', 'sh', 'dash'}
-    for pane, _, name, _ in selected:
-        command = tmux('display-message', '-p', '-t', pane, '#{pane_current_command}')
-        if command not in shells:
-            raise ValueError(f'O painel {name} est? ocupado ({command}); n?o foi alterado.')
-    for (pane, _, _, order), name in zip(selected, ('install', 'scripts', 'downloads')):
-        path = Path('/tmp') / f'ff-{name}.log'
-        with path.open('a'):
-            pass
+    selected = [row for row in current
+                if tmux('display-message', '-p', '-t', row[0], '#{pane_current_command}') in shells]
+    while len(selected) < len(paths):
+        pane = new_terminal()
+        selected.append(next(row for row in panes() if row[0] == pane))
+    monitor_sessions()
+    for (pane, _, _, order), path in zip(selected, paths):
+        if not path.exists():
+            path.touch()
+        name = path.stem[3:]
         label(pane, name, order)
         if tmux('display-message', '-p', '-t', pane, '#{window_panes}') == '1':
             tmux('rename-window', '-t', pane, name)
@@ -223,6 +285,8 @@ if __name__ == '__main__':
             start(follow=command in ('--ff', '-ff'))
         elif command == 'follow-logs':
             follow_logs()
+        elif command == 'follow-distro-logs':
+            follow_logs(per_distro=True)
         elif command == 'mode':
             mode(sys.argv[2])
         elif command == 'close-many':

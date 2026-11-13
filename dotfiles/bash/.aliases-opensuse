@@ -2,7 +2,8 @@
 # Aliases adaptados do Arch/yay pro openSUSE Tumbleweed (zypper)
 
 # Update completo do sistema (o mais importante no Tumbleweed)
-alias up2='sudo zypper --non-interactive refresh && sudo zypper --non-interactive dup'
+alias up2='sudo zypper refresh && sudo zypper dup'
+alias yay='zypper'
 
 # Instalar pacote(s)
 alias yin='sudo zypper --non-interactive install'

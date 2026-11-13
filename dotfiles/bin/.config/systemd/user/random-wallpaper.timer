@@ -3,7 +3,7 @@ Description=Timer wallpaper aleatorio (5 minutos)
 
 [Timer]
 OnBootSec=2min
-OnUnitActiveSec=5min
+OnUnitActiveSec=90s
 
 [Install]
 WantedBy=timers.target

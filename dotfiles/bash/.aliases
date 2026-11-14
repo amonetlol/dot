@@ -43,7 +43,8 @@ alias cpa='copypath'
 # ============================================================
 alias grep='grep -i'
 alias hg='history | grep'
-alias ag='alias | grep'
+# ag <padrão>: procura em aliases E em funções (ex.: yse2 é função, não alias)
+ag() { { alias; declare -F | awk '{print "function " $3 "()"}'; } | grep "$@"; }
 alias lg="ls | grep"
 alias gfont='flist'
 alias gfont-p='flist-preview'

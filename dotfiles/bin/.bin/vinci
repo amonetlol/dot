@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# vinci — mini fastfetch só do rice: no lugar do rótulo ("Tema:", "Icone:"...) vai um ícone nerd font + o valor.
+# Fontes: gsettings/gtk (tema, ícones, cursor, fonte do sistema), config do terminal em uso (fonte+tamanho), WM/barra/launcher.
+G() { printf "$1"; }   # imprime glifo (\uXXXX / \UXXXXXXXX)
+c_i=$'\e[38;2;137;180;250m'; c_v=$'\e[38;2;205;214;244m'; c_d=$'\e[38;2;108;112;134m'; c_t=$'\e[1;38;2;203;166;247m'; r=$'\e[0m'
+
+gs() { gsettings get org.gnome.desktop.interface "$1" 2>/dev/null | tr -d "'"; }
+ini() { grep -h "^$1=" "$HOME/.config/gtk-3.0/settings.ini" 2>/dev/null | head -1 | cut -d= -f2-; }
+
+theme=$(gs gtk-theme);   [ -n "$theme" ] || theme=$(ini gtk-theme-name)
+icons=$(gs icon-theme);  [ -n "$icons" ] || icons=$(ini gtk-icon-theme-name)
+cursor=$(gs cursor-theme); [ -n "$cursor" ] || cursor=$(ini gtk-cursor-theme-name)
+if [ "$cursor" = default ]; then cursor=$(grep -E "^Inherits=" "$HOME/.icons/default/index.theme" 2>/dev/null | head -1 | cut -d= -f2 | cut -d, -f1); fi
+csize=$(gs cursor-size)
+sysfont=$(gs font-name); [ -n "$sysfont" ] || sysfont=$(ini gtk-font-name)
+sysname=${sysfont% *}; syssize=${sysfont##* }
+[ "$sysname" = "$sysfont" ] && syssize=""
+
+# terminal em uso: sobe a árvore de processos até achar um terminal conhecido
+term=""
+p=$$
+for _ in 1 2 3 4 5 6 7 8; do
+  p=$(ps -o ppid= -p "$p" 2>/dev/null | tr -d ' '); [ -n "$p" ] && [ "$p" != 0 ] || break
+  n=$(ps -o comm= -p "$p" 2>/dev/null)
+  case "$n" in kitty|alacritty|ghostty|foot|wezterm*|konsole|gnome-terminal*|xterm) term=$n; break;; esac
+done
+[ -n "$term" ] || term=${TERM_PROGRAM:-${TERMINAL:-kitty}}
+tfont=""; tsize=""
+case "$term" in
+  kitty)
+    d="$HOME/.config/kitty"; files=("$d/kitty.conf")
+    while read -r _ inc; do [ -f "$d/$inc" ] && files+=("$d/$inc"); done < <(grep -E '^include ' "$d/kitty.conf" 2>/dev/null)
+    for f in "${files[@]}"; do
+      v=$(grep -E '^font_family ' "$f" | tail -1 | cut -d' ' -f2-); [ -n "$v" ] && tfont=$v
+      v=$(grep -E '^font_size ' "$f" | tail -1 | awk '{print $2}'); [ -n "$v" ] && tsize=$v
+    done;;
+  alacritty)
+    f="$HOME/.config/alacritty/alacritty.toml"
+    tfont=$(grep -A3 'font.normal\|\[font.normal\]' "$f" 2>/dev/null | grep family | head -1 | cut -d'"' -f2)
+    tsize=$(grep -E '^\s*size\s*=' "$f" 2>/dev/null | head -1 | awk -F= '{print $2}' | tr -d ' ');;
+  ghostty)
+    f="$HOME/.config/ghostty/config"
+    tfont=$(grep -E '^font-family' "$f" 2>/dev/null | tail -1 | cut -d= -f2- | tr -d ' "' )
+    tsize=$(grep -E '^font-size' "$f" 2>/dev/null | tail -1 | cut -d= -f2 | tr -d ' ');;
+  foot)
+    v=$(grep -E '^font=' "$HOME/.config/foot/foot.ini" 2>/dev/null | head -1 | cut -d= -f2-); tfont=${v%%:*}; tsize=${v##*size=};;
+esac
+
+# extras só do rice
+wm=""; command -v hyprctl >/dev/null && wm="Hyprland $(hyprctl version 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+[ -n "$wm" ] || wm=${XDG_CURRENT_DESKTOP:-?}
+bar=""; pgrep -x waybar >/dev/null && bar=waybar
+[ -z "$bar" ] && pgrep -x polybar >/dev/null && bar=polybar
+launcher=rofi; command -v rofi >/dev/null || launcher=""
+prompt=""; command -v starship >/dev/null && prompt=starship
+wall=$(awww query 2>/dev/null | grep -oE 'image: .*' | head -1 | sed 's/image: //'); wall=${wall##*/}
+res=$(hyprctl monitors -j 2>/dev/null | grep -oE '"width": *[0-9]+|"height": *[0-9]+' | grep -oE '[0-9]+' | head -2 | paste -sd'x')
+scheme=$(gs color-scheme | sed 's/prefer-//;s/default/light/')
+
+row() { # glifo valor [detalhe]
+  [ -n "$2" ] || return 0
+  printf '  %s%s%s  %s%s%s' "$c_i" "$(G "$1")" "$r" "$c_v" "$2" "$r"
+  [ -n "${3:-}" ] && printf ' %s%s%s' "$c_d" "$3" "$r"
+  printf '\n'
+}
+
+echo
+printf '  %s%s  vinci%s\n' "$c_t" "$(G '')" "$r"
+row ''     "$theme"            "${scheme:+($scheme)}"
+row ''     "$icons"
+row ''     "$cursor"           "${csize:+$csize}"
+row ''     "$sysname"          "${syssize:+$syssize}"
+row ''     "${tfont:-?}"       "${tsize:+$tsize}${term:+ · $term}"
+row ''     "$wm"
+row ''     "$bar"
+row ''     "$launcher"
+row ''     "$prompt"
+row ''     "$wall"
+row ''     "$res"
+echo

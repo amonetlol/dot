@@ -47,14 +47,19 @@ case "$term" in
 esac
 
 # extras só do rice
-wm=""; command -v hyprctl >/dev/null && wm="Hyprland $(hyprctl version 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+wm=""
+if pgrep -x Hyprland >/dev/null 2>&1; then wm="Hyprland $(hyprctl version 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+elif pgrep -x qtile >/dev/null 2>&1; then wm="Qtile $(qtile --version 2>/dev/null)"; fi
 [ -n "$wm" ] || wm=${XDG_CURRENT_DESKTOP:-?}
 bar=""; pgrep -x waybar >/dev/null && bar=waybar
 [ -z "$bar" ] && pgrep -x polybar >/dev/null && bar=polybar
+[ -z "$bar" ] && pgrep -x qtile >/dev/null && bar="qtile bar"
 launcher=rofi; command -v rofi >/dev/null || launcher=""
 prompt=""; command -v starship >/dev/null && prompt=starship
 wall=$(awww query 2>/dev/null | grep -oE 'image: .*' | head -1 | sed 's/image: //'); wall=${wall##*/}
 res=$(hyprctl monitors -j 2>/dev/null | grep -oE '"width": *[0-9]+|"height": *[0-9]+' | grep -oE '[0-9]+' | head -2 | paste -sd'x')
+[ -n "$res" ] || res=$(xrandr 2>/dev/null | awk '/\*/{print $1; exit}')
+[ -n "$wall" ] || wall=$(cat "$HOME/.config/qtile/cache/saved_wallpaper" 2>/dev/null)
 scheme=$(gs color-scheme | sed 's/prefer-//;s/default/light/')
 
 row() { # glifo valor [detalhe]

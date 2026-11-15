@@ -60,16 +60,8 @@ official_packages=(
 
   nodejs
   npm
-  lua51
-  luarocks
-  python
-  python-pip
-  python-pynvim
-  python-pipenv
   tree-sitter-cli
-  python-virtualenv
   tmux
-  prettier
 
   foot
   kitty

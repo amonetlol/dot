@@ -3,7 +3,7 @@ set -euo pipefail
 
 # O timer pode sobreviver a trocas de sessao; leia o ambiente do login ativo.
 session_env=$(python3 - <<'PY_SESSION'
-import os, pathlib, shlex, subprocess
+import os, pathlib, shlex, shutil, subprocess
 uid = str(os.getuid())
 def run(*args):
     return subprocess.check_output(args, text=True, stderr=subprocess.DEVNULL)
@@ -51,7 +51,7 @@ merged["XDG_SESSION_TYPE"] = props["Type"]
 merged["XDG_SESSION_ID"] = sid
 if props.get("Desktop"):
     merged["XDG_CURRENT_DESKTOP"] = props["Desktop"]
-if props["Type"] == "wayland" and not merged.get("WAYLAND_DISPLAY"):
+if props["Type"] == "wayland" and not merged.get("WAYLAND_DISPLAY") and shutil.which("systemctl"):
     # O ambiente importado pelo compositor cobre sessoes UWSM.
     fallback = dict(item.split("=", 1) for item in run(
         "systemctl", "--user", "show-environment").splitlines() if "=" in item)
@@ -73,7 +73,7 @@ fi
 
 wallpaper_dir="$HOME/Imagens/wallpapers"
 [[ -d "$wallpaper_dir" ]] || exit 0
-wallpaper=$(find "$wallpaper_dir" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | shuf -n 1)
+wallpaper=$(find -L "$wallpaper_dir" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | shuf -n 1)
 [[ -n "$wallpaper" ]] || exit 0
 de="${XDG_CURRENT_DESKTOP:-${XDG_SESSION_DESKTOP:-}}"
 

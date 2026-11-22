@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
 # vinci — mini fastfetch só do rice: no lugar do rótulo ("Tema:", "Icone:"...) vai um ícone nerd font + o valor.
-# Fontes: gsettings/gtk (tema, ícones, cursor, fonte do sistema), config do terminal em uso (fonte+tamanho), WM/barra/launcher.
+# Fontes: rice da sessão (GTK_THEME, XCURSOR_*, ~/.config/<DE>/xsettingsd.conf e kitty-theme.conf), senão gsettings/gtk;
+# config do terminal em uso (fonte+tamanho), WM/barra/launcher.
 G() { printf "$1"; }   # imprime glifo (\uXXXX / \UXXXXXXXX)
 c_i=$'\e[38;2;137;180;250m'; c_v=$'\e[38;2;205;214;244m'; c_d=$'\e[38;2;108;112;134m'; c_t=$'\e[1;38;2;203;166;247m'; r=$'\e[0m'
 
 gs() { gsettings get org.gnome.desktop.interface "$1" 2>/dev/null | tr -d "'"; }
 ini() { grep -h "^$1=" "$HOME/.config/gtk-3.0/settings.ini" 2>/dev/null | head -1 | cut -d= -f2-; }
 
-theme=$(gs gtk-theme);   [ -n "$theme" ] || theme=$(ini gtk-theme-name)
-icons=$(gs icon-theme);  [ -n "$icons" ] || icons=$(ini gtk-icon-theme-name)
-cursor=$(gs cursor-theme); [ -n "$cursor" ] || cursor=$(ini gtk-cursor-theme-name)
+# rice isolado por DE (awesome/dwm/xmonad...): GTK_THEME/XCURSOR_* da sessão + ~/.config/<DE>/xsettingsd.conf valem
+# antes do gsettings (que é global e fica no padrão Adwaita nessas sessões)
+de=$(printf '%s' "${XDG_CURRENT_DESKTOP:-}" | tr '[:upper:]' '[:lower:]'); de=${de%%:*}
+xsf="$HOME/.config/$de/xsettingsd.conf"
+xs() { [ -n "$de" ] && grep -m1 "^$1 " "$xsf" 2>/dev/null | cut -d' ' -f2- | tr -d '"'; }
+
+theme=${GTK_THEME:-$(xs Net/ThemeName)}; [ -n "$theme" ] || theme=$(gs gtk-theme);   [ -n "$theme" ] || theme=$(ini gtk-theme-name)
+icons=$(xs Net/IconThemeName);           [ -n "$icons" ] || icons=$(gs icon-theme);  [ -n "$icons" ] || icons=$(ini gtk-icon-theme-name)
+cursor=${XCURSOR_THEME:-$(xs Gtk/CursorThemeName)}; [ -n "$cursor" ] || cursor=$(gs cursor-theme); [ -n "$cursor" ] || cursor=$(ini gtk-cursor-theme-name)
 if [ "$cursor" = default ]; then cursor=$(grep -E "^Inherits=" "$HOME/.icons/default/index.theme" 2>/dev/null | head -1 | cut -d= -f2 | cut -d, -f1); fi
-csize=$(gs cursor-size)
-sysfont=$(gs font-name); [ -n "$sysfont" ] || sysfont=$(ini gtk-font-name)
+csize=${XCURSOR_SIZE:-$(xs Gtk/CursorThemeSize)}; [ -n "$csize" ] || csize=$(gs cursor-size)
+sysfont=$(xs Gtk/FontName); [ -n "$sysfont" ] || sysfont=$(gs font-name); [ -n "$sysfont" ] || sysfont=$(ini gtk-font-name)
 sysname=${sysfont% *}; syssize=${sysfont##* }
 [ "$sysname" = "$sysfont" ] && syssize=""
 
@@ -30,7 +37,10 @@ case "$term" in
   kitty)
     d="$HOME/.config/kitty"; files=("$d/kitty.conf")
     while read -r _ inc; do [ -f "$d/$inc" ] && files+=("$d/$inc"); done < <(grep -E '^include ' "$d/kitty.conf" 2>/dev/null)
+    # rices passam um --config extra por cima do kitty.conf (ex.: ~/.config/awesome/kitty-theme.conf)
+    [ -n "$de" ] && [ -f "$HOME/.config/$de/kitty-theme.conf" ] && files+=("$HOME/.config/$de/kitty-theme.conf")
     for f in "${files[@]}"; do
+      [ -f "$f" ] || continue
       v=$(grep -E '^font_family ' "$f" | tail -1 | cut -d' ' -f2-); [ -n "$v" ] && tfont=$v
       v=$(grep -E '^font_size ' "$f" | tail -1 | awk '{print $2}'); [ -n "$v" ] && tsize=$v
     done;;
@@ -60,7 +70,10 @@ wall=$(awww query 2>/dev/null | grep -oE 'image: .*' | head -1 | sed 's/image: /
 res=$(hyprctl monitors -j 2>/dev/null | grep -oE '"width": *[0-9]+|"height": *[0-9]+' | grep -oE '[0-9]+' | head -2 | paste -sd'x')
 [ -n "$res" ] || res=$(xrandr 2>/dev/null | awk '/\*/{print $1; exit}')
 [ -n "$wall" ] || wall=$(cat "$HOME/.config/qtile/cache/saved_wallpaper" 2>/dev/null)
-scheme=$(gs color-scheme | sed 's/prefer-//;s/default/light/')
+[ -n "$wall" ] || { w=$(cat "$HOME/.cache/$de/last-wallpaper" 2>/dev/null); wall=${w##*/}; }   # X11: último wallpaper do rice
+if [ -n "${ADW_DEBUG_COLOR_SCHEME:-}" ]; then scheme=$(printf '%s' "$ADW_DEBUG_COLOR_SCHEME" | sed 's/prefer-//;s/default/light/')
+elif [ "$(xs Gtk/ApplicationPreferDarkTheme)" = 1 ]; then scheme=dark
+else scheme=$(gs color-scheme | sed 's/prefer-//;s/default/light/'); fi
 
 row() { # glifo valor [detalhe]
   [ -n "$2" ] || return 0

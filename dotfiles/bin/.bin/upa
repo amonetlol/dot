@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Atualiza os agentes de IA instalados e resume as alterações de versão.
+set -u
+
+if [[ -t 1 || ${1:-} == --preview ]]; then
+  bold=$'\033[1m'; dim=$'\033[2m'; red=$'\033[31m'; green=$'\033[32m'; cyan=$'\033[36m'; reset=$'\033[0m'
+else
+  bold= dim= red= green= cyan= reset=
+fi
+
+names=('Codex' 'Codex 2' 'Cursor Agent' 'Claude Code')
+icons=('󰚩' '󰚩' '󰘦' '󰧑')
+commands=(codex codex2 agent claude)
+results=()
+
+version() {
+  local line
+  line=$("$1" --version 2>/dev/null) || return 1
+  printf '%s\n' "${line%%$'\n'*}"
+}
+
+if [[ ${1:-} == --preview ]]; then
+  printf '\n%s󰚩  ATUALIZADOR DE AGENTES IA%s\n' "$bold$cyan" "$reset"
+  printf '%s━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%s\n\n' "$dim" "$reset"
+  for i in "${!names[@]}"; do
+    if command -v "${commands[i]}" >/dev/null 2>&1; then
+      before=$(version "${commands[i]}") || before='versão indisponível'
+      printf '  %s%s  %s%s\n' "$bold" "${icons[i]}" "${names[i]}" "$reset"
+      printf '     %s%s%s  %s󰁔%s  %s%s%s\n\n' "$red" "$before" "$reset" "$cyan" "$reset" "$green" 'nova versão (exemplo)' "$reset"
+    else
+      printf '  %s%s  %s%s  %s• não instalado%s\n\n' "$bold" "${icons[i]}" "${names[i]}" "$reset" "$dim" "$reset"
+    fi
+  done
+  printf '%sPrévia ilustrativa: nenhuma atualização foi executada.%s\n\n' "$dim" "$reset"
+  exit 0
+fi
+if [[ $# -gt 0 ]]; then
+  printf 'Uso: upa [--preview]\n' >&2
+  exit 2
+fi
+
+printf '\n%s󰚩  ATUALIZADOR DE AGENTES IA%s\n' "$bold$cyan" "$reset"
+printf '%s━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%s\n' "$dim" "$reset"
+for i in "${!names[@]}"; do
+  cmd=${commands[i]}
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    results+=("${icons[i]}  ${names[i]}: não instalado")
+    continue
+  fi
+  before=$(version "$cmd") || before='versão indisponível'
+  printf '\n%s%s  %s%s\n' "$bold" "${icons[i]}" "${names[i]}" "$reset"
+  case "$cmd" in
+    codex) sudo npm install -g @openai/codex@latest ;;
+    codex2) npm install --prefix "$HOME/.local/share/codex2" @openai/codex@latest ;;
+    agent) agent update ;;
+    claude) claude update ;;
+  esac
+  status=$?
+  after=$(version "$cmd") || after='versão indisponível'
+  if (( status != 0 )); then
+    results+=("${icons[i]}  ${names[i]}: falhou (código $status) — $before → $after")
+  elif [[ $before == 'versão indisponível' || $after == 'versão indisponível' ]]; then
+    results+=("${icons[i]}  ${names[i]}: versão indisponível para comparação — $before → $after")
+  elif [[ $before != "$after" ]]; then
+    results+=("$(printf '%s  %s\n     %s%s%s  %s󰁔%s  %s%s%s' "${icons[i]}" "${names[i]}" "$red" "$before" "$reset" "$cyan" "$reset" "$green" "$after" "$reset")")
+  else
+    results+=("${icons[i]}  ${names[i]}: já atualizado ($after)")
+  fi
+done
+printf '\n%s󰄬  RESULTADO%s\n' "$bold$cyan" "$reset"
+printf '%s━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━%s\n' "$dim" "$reset"
+printf '  %s\n\n' "${results[@]}"

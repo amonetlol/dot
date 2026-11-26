@@ -134,6 +134,24 @@ def uptime():
     return f'{days}d {hours:02}:{minutes:02}'
 
 
+def cpu_temperature():
+    for hwmon in Path('/sys/class/hwmon').glob('hwmon*'):
+        try:
+            if (hwmon / 'name').read_text().strip() not in ('coretemp', 'k10temp', 'zenpower'):
+                continue
+            readings = sorted(hwmon.glob('temp*_input'))
+            for reading in readings:
+                label = reading.with_name(reading.name.replace('_input', '_label'))
+                name = label.read_text().strip() if label.exists() else ''
+                if name.startswith('Package id') or name in ('Tctl', 'Tdie'):
+                    return int(reading.read_text()) / 1000
+            if readings:
+                return int(readings[0].read_text()) / 1000
+        except (OSError, ValueError):
+            continue
+    return None
+
+
 def status():
     before = snapshot()
     time.sleep(.2)
@@ -144,8 +162,12 @@ def status():
         color = '#e78284' if value >= 85 else '#e5c890' if value >= 65 else '#a6d189'
         return f'{label} #[fg={color}]{value:.0f}%#[fg=#a5adce]'
 
+    temperature = cpu_temperature()
+    temp_color = '#e78284' if temperature is not None and temperature >= 85 else '#e5c890' if temperature is not None and temperature >= 65 else '#a6d189'
+    temp_text = f'{temperature:.0f}°C' if temperature is not None else '--'
     print(' | '.join((field('CPU', m['cpu']['cpu']), field('RAM', m['ram']),
                        field('SWP', m['swap']), field('/', m['disk']),
+                       f'TEMP #[fg={temp_color}]{temp_text}#[fg=#a5adce]',
                        f"↓{size(m['rates'][0])}/s ↑{size(m['rates'][1])}/s",
                        f'load {os.getloadavg()[0]:.2f}', f'up {uptime()}')))
 
